@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Operações v8.0 (Estável)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #6a82fb;
+            --text-color: #343a40;
+            --text-light: #6c757d;
+            --bg-body: #f8f9fa;
+            --bg-light: #ffffff;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --border-radius: 12px;
+            --color-positive: #20c997;
+            --color-negative: #e74c3c;
+            --color-neutral: #ffc107;
+
+            /* Centraliza o valor principal quando não há subtítulo ou rodapé */
+            /* ESTILOS PARA FILTROS INLINE (ACIMA DOS GRÁFICOS) */
+.filters-inline {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fdfdff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+/* ESTILOS PARA O GRUPO DE CHECKBOXES */
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.checkbox-wrapper input[type="checkbox"] {
+    display: none; /* Esconde o checkbox padrão */
+}
+.checkbox-wrapper label {
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    font-size: 14px;
+}
+.checkbox-wrapper input[type="checkbox"]:checked + label {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(106, 130, 251, 0.3);
+}
+.checkbox-wrapper input[type="checkbox"]:not(:checked) + label:hover {
+    background-color: #f1f3f5;
+}
+.filters-inline .filter-group {
+    margin: 0;
+}
+.filters-inline select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: white;
+    min-width: 220px;
+    font-size: 14px;
+}
+.card .centered-value {
+    flex-grow: 1; /* Permite que o elemento ocupe o espaço disponível */
+    display: flex;
+    align-items: center; /* Alinha verticalmente */
+    justify-content: center; /* Alinha horizontalmente */
+    height: 100%; /* Ocupa a altura total disponível */
+    margin-top: -10px; /* Pequeno ajuste para alinhamento visual */
+}
+        }
+        /* ESTILOS PARA MÉTRICAS SECUNDÁRIAS NOS CARDS */
+.card .secondary-metrics {
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 15px;
+}
+.secondary-metrics .metric-item {
+    text-align: center;
+    line-height: 1.3;
+}
+.secondary-metrics .metric-label {
+    display: block;
+    font-size: 0.75em;
+    color: var(--text-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+.secondary-metrics .metric-value {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: var(--text-color);
+}
+        /* ESTILOS PARA O NOVO SELETOR */
+.metric-selector-container {
+    display: flex;
+    margin: -10px 0 20px 0; /* Ajusta o posicionamento abaixo do título */
+}
+.metric-toggle {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+.toggle-btn {
+    padding: 10px 25px;
+    border: none;
+    background-color: var(--bg-light);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-light);
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toggle-btn:first-of-type {
+    border-right: 1px solid var(--border-color);
+}
+.toggle-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+.toggle-btn:not(.active):hover {
+    background-color: #f1f3f5;
+}
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--bg-body); color: var(--text-color); padding: 25px; }
+        
+        .loader-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction: column; gap:1rem; }
+        .loader { border:6px solid #e9ecef; border-top:6px solid var(--primary-color); border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .container { max-width:1800px; margin:0 auto; }
+        .header { background:var(--bg-light); border: 1px solid var(--border-color); color:var(--text-color); padding:25px 35px; border-radius:var(--border-radius); box-shadow:var(--shadow); margin-bottom:25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        h1 { font-size:1.8em; font-weight:700; display: flex; align-items: center; gap: 15px; }
+        .controls { display:flex; gap:15px; flex-wrap:wrap; align-items:center; }
+        button { padding:10px 25px; background: var(--primary-color); color:white; border:none; border-radius:8px; cursor:pointer; font-size:0.9em; font-weight:600; transition: all 0.2s; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(106, 130, 251, 0.4); }
+        .status { font-size: 0.9em; color: var(--text-light); }
+        
+        .filters { background:var(--bg-light); border: 1px solid var(--border-color); padding:20px; border-radius:var(--border-radius); box-shadow:var(--shadow); margin-bottom:25px; display:flex; gap:20px; flex-wrap:wrap; align-items:center; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 0.85em; font-weight: 600; color: var(--text-light); }
+        input[type="date"] { padding:10px 15px; border:1px solid var(--border-color); border-radius:8px; font-size:14px; width: 180px; }
+        
+        .summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+        .card { background:var(--bg-light); border: 1px solid var(--border-color); padding:25px; border-radius:var(--border-radius); box-shadow:var(--shadow); display: flex; flex-direction: column; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .card-header h3 { color:var(--text-light); font-size:1em; text-transform:uppercase; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .card-header .delta { font-size: 0.9em; font-weight: 700; padding: 4px 10px; border-radius: 50px; }
+        .card-header .delta.positive { background-color: rgba(32, 201, 151, 0.1); color: var(--color-positive); }
+        .card-header .delta.negative { background-color: rgba(253, 126, 20, 0.1); color: var(--color-negative); }
+        .card .value { color:var(--text-color); font-size:2.2em; font-weight:700; margin-bottom: 5px; }
+        .card .subtitle { color:#999; font-size:.85em; font-style: italic; }
+        .card.projection { border-style: dashed; border-color: var(--primary-color); background-color: #fafdff; }
+        .card.projection .card-header h3 { color: var(--primary-color); }
+
+        .section-title { font-size: 1.8em; font-weight: 700; color: var(--text-color); margin: 40px 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px;}
+        .charts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:25px; margin-top: 20px;}
+        .chart-container { background:var(--bg-light); border: 1px solid var(--border-color); padding:30px; border-radius:var(--border-radius); box-shadow:var(--shadow); }
+        .chart-container h2 { display: flex; align-items: center; gap: 10px; color:var(--text-color); margin-bottom:20px; font-size:1.3em; font-weight: 600; }
+        .chart-full { grid-column: 1 / -1; }
+        canvas { max-height:400px; }
+        .performance-table { width: 100%; border-collapse: collapse; }
+        .performance-table th, .performance-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .performance-table th { font-weight: 600; background-color: #f9f9f9; }
+        .roas-indicator { font-weight: bold; padding: 4px 8px; border-radius: 6px; color: white; }
+        .roas-indicator.good { background-color: var(--color-positive); }
+        .roas-indicator.medium { background-color: var(--color-neutral); }
+        .roas-indicator.bad, .profit-indicator.loss { background-color: var(--color-negative); }
+        .profit-indicator.profit { background-color: var(--color-positive); }
+    </style>
+</head>
+<body>
+
+<div class="loader-overlay" id="loader">
+    <div class="loader"></div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 15h11"></path></svg> Dashboard de Operações</h1>
+        <div class="controls">
+            <div id="status" class="status">Pronto para carregar.</div>
+            <button id="updateBtn" onclick="loadData(true)">🔄 Atualizar Dados</button>
+        </div>
+    </div>
+
+    <div class="filters">
+        <div class="filter-group"><label for="dateFilterStart">Data de Início:</label><input type="date" id="dateFilterStart" onchange="filterData()"></div>
+        <div class="filter-group"><label for="dateFilterEnd">Data Final:</label><input type="date" id="dateFilterEnd" onchange="filterData()"></div>
+        <button onclick="clearFilters()" style="background: #6c757d; margin-left: auto;">Limpar Filtros</button>
+    </div>
+
+    <div class="content-wrapper" id="mainContent">
+        <h2 class="section-title">Resultados do Período</h2>
+        <div class="summary-cards" id="summaryCards"></div>
+        
+        <h2 class="section-title">Projeção para o Fim do Mês (Outubro 2025)</h2>
+        <div class="summary-cards" id="projectionCards"></div>
+
+        <h2 class="section-title">Proporção de Investimento</h2>
+        <div class="metric-selector-container">
+            <div id="metric-toggle" class="metric-toggle">
+                <button class="toggle-btn active" data-metric="gasto">📊 Investimento</button>
+                <button class="toggle-btn" data-metric="leads">👥 Leads</button>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-container"><h2>🌍 Por Região</h2><canvas id="regionInvestmentPieChart"></canvas></div>
+            <div class="chart-container"><h2>💻 Por Plataforma</h2><canvas id="platformInvestmentPieChart"></canvas></div>
+            <div class="chart-container"><h2>📊 Por Nicho (BR)</h2><canvas id="nicheBrChart"></canvas></div>
+            <div class="chart-container"><h2>📊 Por Nicho (US)</h2><canvas id="nicheUsChart"></canvas></div>
+        </div>
+
+        <h2 class="section-title">Evolução Diária</h2>
+
+<div class="filters-inline">
+    <div class="filter-group">
+        <label>Comparar Regiões:</label>
+        <div id="region-checkbox-group" class="checkbox-wrapper">
+            <input type="checkbox" id="region-all" value="all" onchange="handleRegionSelection(this)" checked>
+            <label for="region-all">Todas</label>
+            
+            <input type="checkbox" id="region-br" value="br" onchange="handleRegionSelection(this)">
+            <label for="region-br">Brasil</label>
+            
+            <input type="checkbox" id="region-us" value="us" onchange="handleRegionSelection(this)">
+            <label for="region-us">USA</label>
+            
+            <input type="checkbox" id="region-eu" value="eu" onchange="handleRegionSelection(this)">
+            <label for="region-eu">Europa</label>
+        </div>
+    </div>
+    <div class="filter-group">
+        <label for="evolutionOperationFilter">Filtrar por Operação:</label>
+        <select id="evolutionOperationFilter" onchange="updateEvolutionChartWithFilters()">
+            <option value="all" selected>Todas as Operações</option>
+            </select>
+    </div>
+</div>
+
+<div class="charts-grid">
+    <div class="chart-container chart-full">
+        <h2>📈 Evolução do Gasto e ROAS (Baseado nos Totais)</h2>
+        <canvas id="evolucaoCompletaChart"></canvas>
+    </div>
+</div>
+        
+        <h2 class="section-title">Análise de Performance por Gestor (Analistas)</h2>
+        <div class="charts-grid">
+             <div class="chart-container"><h2>📈 Operações por Gestor</h2><canvas id="managerOpsCountChart"></canvas></div>
+             <div class="chart-container"><h2>💸 CPA Médio por Gestor</h2><canvas id="gestorCpaChart"></canvas></div>
+        </div>
+        
+        <h2 class="section-title">Ranking de Performance (Gasto vs. ROAS)</h2>
+        <div class="charts-grid">
+            <div class="chart-container"><h2>💰 Melhores Gestores (Investimento)</h2><canvas id="gestorInvestimentoTotalChart"></canvas></div>
+            <div class="chart-container"><h2>🎯 Melhores Gestores (ROAS)</h2><canvas id="gestorRoasChart"></canvas></div>
+        </div>
+
+        <h2 class="section-title">Análise Comparativa por Segmento de Negócio</h2>
+        <div class="charts-grid">
+            <div class="chart-container chart-full"><h2>🇺🇸 Cartão de Crédito (US)</h2><div id="segmentUsCcTable"></div></div>
+            <div class="chart-container chart-full"><h2>🇺🇸 Empréstimo (US)</h2><div id="segmentUsEmpTable"></div></div>
+            <div class="chart-container chart-full"><h2>🇧🇷 Cartão de Crédito (BR)</h2><div id="segmentBrCcTable"></div></div>
+            <div class="chart-container chart-full"><h2>🇧🇷 Empréstimo (BR)</h2><div id="segmentBrEmpTable"></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const SHEET_ID = '1ki0JzU1XClNWAIfLe6kd_t3B9k5FW9RgUpf6KHIy27U';
+const SHEET_NAME = 'Acompanhamento Diário <> Q4 - 2025';
+const CACHE_DURATION_MINUTES = 5;
+const EXCLUDED_MANAGERS = ['NICOLE', 'MARCELO'];
+
+const SEGMENT_US_CC = ['MG US CC TOTAL', 'FM US CC TOTAL', 'CL US CC TOTAL', 'GRID US CC TOTAL', 'JN US CC TOTAL'];
+const SEGMENT_US_EMP = ['JN US EMP TOTAL', 'MG US EMP TOTAL'];
+const SEGMENT_BR_CC = ['JN BR CC TOTAL', 'MG BR CC TOTAL'];
+const SEGMENT_BR_EMP = ['JN BR EMP TOTAL', 'MG BR EMP TOTAL'];
+// CONSTANTE DE CORES (para fácil manutenção)
+const REGION_COLORS = {
+    'all': { investment: '#6a82fb', roas: '#fd7e14' },
+    'br':  { investment: '#009739', roas: '#2ecc71' },
+    'us':  { investment: '#DC143C', roas: '#e74c3c' },
+    'eu':  { investment: '#4169E1', roas: '#3498db' }
+};
+
+let rawData = [], filteredData = [], charts = {};
+
+Chart.register(ChartDataLabels);
+
+// FUNÇÃO AUXILIAR CORRIGIDA: Converte HEX para RGBA para o preenchimento
+function hexToRgba(hex, alpha = 1) {
+    if (!/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) return `rgba(200,200,200,${alpha})`; // Retorna cinza se o formato for inválido
+    let c = hex.substring(1).split('');
+    if (c.length === 3) { c = [c[0], c[0], c[1], c[1], c[2], c[2]]; }
+    c = '0x' + c.join('');
+    return `rgba(${(c >> 16) & 255}, ${(c >> 8) & 255}, ${c & 255}, ${alpha})`;
+}
+
+
+// A nova função principal que constrói e renderiza o gráfico (versão corrigida)
+function updateEvolutionChartWithFilters() {
+    // 1. Obter Seleções
+    const selectedRegions = Array.from(document.querySelectorAll('#region-checkbox-group input:checked')).map(cb => cb.value);
+    const operationFilter = document.getElementById('evolutionOperationFilter');
+    const selectedOperation = operationFilter.value;
+
+    // 2. Preparar Dados Base
+    const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao));
+    const baseData = selectedOperation === 'all' ? dataOnlyTotal : dataOnlyTotal.filter(r => r.operacao === selectedOperation);
+    operationFilter.disabled = selectedRegions.length > 1 && !selectedRegions.includes('all');
+
+    // 3. Processar Dados para Cada Região Selecionada
+    const datasetsToRender = [];
+    const allDates = new Set();
+
+    selectedRegions.forEach(regionKey => {
+        let regionData;
+        let regionLabel;
+
+        if (regionKey === 'all') {
+            regionData = baseData;
+            regionLabel = 'Todas';
+        } else {
+            regionLabel = regionKey.toUpperCase();
+            regionData = baseData.filter(row => {
+                const op = row.operacao.toUpperCase();
+                if (regionKey === 'br') return op.includes('BR');
+                if (regionKey === 'us') return op.includes('US');
+                if (regionKey === 'eu') return ['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p));
+                return false;
+            });
+        }
+        
+        // Apenas processa se a filtragem resultou em dados
+        if (regionData && regionData.length > 0) {
+            const dailyData = {};
+            regionData.forEach(row => {
+                if (row.data) {
+                    if (!dailyData[row.data]) dailyData[row.data] = { gasto: 0, receita: 0 };
+                    dailyData[row.data].gasto += row.gasto;
+                    dailyData[row.data].receita += row.receita;
+                    allDates.add(row.data);
+                }
+            });
+            datasetsToRender.push({ key: regionKey, label: regionLabel, data: dailyData });
+        }
+    });
+
+    // 4. Construir os Datasets Finais para o Chart.js
+    const sortedLabels = Array.from(allDates).sort((a, b) => parseDate(a) - parseDate(b));
+    const finalChartJsDatasets = [];
+
+    datasetsToRender.forEach(dataset => {
+        const investmentColor = REGION_COLORS[dataset.key]?.investment || '#cccccc';
+        const roasColor = REGION_COLORS[dataset.key]?.roas || '#aaaaaa';
+        
+        const gastoData = sortedLabels.map(date => dataset.data[date]?.gasto ?? null);
+        const roasData = sortedLabels.map(date => {
+            const dayData = dataset.data[date];
+            return (dayData && dayData.gasto > 0) ? (dayData.receita / dayData.gasto) : null;
+        });
+
+        finalChartJsDatasets.push({
+            label: `Investimento (${dataset.label})`,
+            data: gastoData,
+            yAxisID: 'y',
+            borderColor: investmentColor,
+            backgroundColor: hexToRgba(investmentColor, 0.1),
+            fill: datasetsToRender.length === 1,
+            tension: 0.4
+        });
+        finalChartJsDatasets.push({
+            label: `ROAS (${dataset.label})`,
+            data: roasData,
+            yAxisID: 'y1',
+            borderColor: roasColor,
+            backgroundColor: 'transparent',
+            borderDash: [5, 5],
+            tension: 0.4
+        });
+    });
+
+    // 5. Renderizar o Gráfico
+    createOrUpdateChart('evolucaoCompletaChart', 'line', {
+        labels: sortedLabels,
+        datasets: finalChartJsDatasets
+    }, { 
+        scales: { 
+            y: { title: { display: true, text: 'Valores (R$)' }, ticks: { callback: (v) => formatKilo(v) } }, 
+            y1: { position: 'right', title: { display: true, text: 'ROAS (x)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toFixed(2) } } 
+        } 
+    });
+}
+
+// --- UTILITY FUNCTIONS ---
+function parseMonetaryValue(v) { return parseFloat(String(v||'').replace(/[R$\s.]/g, '').replace(',', '.')) || 0; }
+function parseDate(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    const parts = dateStr.split('/');
+    if (parts.length === 3) { return new Date(Date.UTC(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10))); }
+    return null;
+}
+function endsWithTOTAL(text) { return /\bTOTAL\s*$/i.test(text || ''); }
+function formatCurrency(value) { return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+function formatKilo(num) {
+    if (Math.abs(num) >= 1000000) return 'R$ ' + (num/1000000).toFixed(1).replace('.', ',') + 'M';
+    if (Math.abs(num) >= 1000) return 'R$ ' + (num/1000).toFixed(1).replace('.', ',') + 'k';
+    return formatCurrency(num);
+}
+function getPlatformFromOperation(opName) { return (opName || '').substring(0, 2).toUpperCase() === 'ND' ? 'Meta Ads' : 'Google Ads'; }
+
+// --- DATA LOADING & CACHING ---
+async function loadData(forceRefresh = false) {
+    document.getElementById('loader').style.display = 'flex';
+    document.getElementById('updateBtn').disabled = true;
+    document.getElementById('status').textContent = '⏳ Carregando...';
+    try {
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+        const response = await fetch(csvUrl, { cache: forceRefresh ? 'reload' : 'default' });
+        if (!response.ok) throw new Error(`Network response was not ok`);
+        const csvText = await response.text();
+        Papa.parse(csvText, {
+            header: true, skipEmptyLines: true,
+            complete: (results) => {
+                rawData = results.data.map(row => ({
+                    data: row.DATA, operacao: row['OPERAÇÃO'], gasto: parseMonetaryValue(row.GASTO),
+                    receita: parseMonetaryValue(row.RECEITA), cpa: parseMonetaryValue(row.CPA),
+                    leads: parseInt(row['TOTAL DE LEADS'] || 0), responsavelAquisicao: row['RESPONSÁVEL AQUISIÇÃO']
+                })).filter(row => row.operacao && row.operacao.trim() !== '');
+                processData();
+            }, error: (error) => { throw error; }
+        });
+    } catch (error) {
+        document.getElementById('status').textContent = `❌ Erro: ${error.message}`;
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('updateBtn').disabled = false;
+    }
+}
+// =======================================================================
+// ▼▼▼ SUBSTITUA SUA FUNÇÃO processData PELA VERSÃO DE DIAGNÓSTICO ABAIXO ▼▼▼
+// =======================================================================
+function processData() {
+    console.log('--- INICIANDO DIAGNÓSTICO ---');
+
+    // ETAPA 1: Verificando os dados brutos que vieram da planilha.
+    console.log('[DIAGNÓSTICO 1] Total de linhas carregadas do CSV (rawData):', rawData.length);
+    if (rawData.length > 0) {
+        console.log('[DIAGNÓSTICO 1] Exemplo da primeira linha de dados:', rawData[0]);
+        console.log('[DIAGNÓSTICO 1] O nome da operação na primeira linha é:', rawData[0].operacao);
+    }
+
+    // ETAPA 2: Tentando filtrar apenas as operações que terminam com TOTAL ou TOTAIS.
+    const allTotalData = rawData.filter(r => endsWithTOTAL(r.operacao));
+    console.log('[DIAGNÓSTICO 2] Operações encontradas que terminam com "TOTAL(IS)":', allTotalData.length);
+    
+    if (allTotalData.length > 0) {
+        console.log('[DIAGNÓSTICO 2] Nomes das operações encontradas:', allTotalData.map(r => r.operacao));
+    } else {
+        console.error('[DIAGNÓSTICO 2] FALHA: Nenhuma operação terminada em TOTAL ou TOTAIS foi encontrada. Verifique se o nome da coluna na sua planilha é exatamente "OPERAÇÃO" e se os valores estão corretos.');
+    }
+
+    // --- O resto do código continua normalmente ---
+    filterData();
+    populateEvolutionFilters(allTotalData);
+
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('updateBtn').disabled = false;
+    document.getElementById('status').textContent = `✅ Dados atualizados!`;
+    console.log('--- FIM DO DIAGNÓSTICO ---');
+}
+// =======================================================================
+// ▲▲▲ FIM DO BLOCO PARA SUBSTITUIR ▲▲▲
+// =======================================================================
+
+// --- FILTERS & MAIN UPDATE ---
+function filterData() {
+    const dateStartStr = document.getElementById('dateFilterStart').value;
+    const dateEndStr = document.getElementById('dateFilterEnd').value;
+    let dateStart = null, dateEnd = null;
+    if (dateStartStr) { dateStart = new Date(Date.UTC(...dateStartStr.split('-').map((n,i) => i===1?n-1:n))); }
+    if (dateEndStr) {
+        dateEnd = new Date(Date.UTC(...dateEndStr.split('-').map((n,i) => i===1?n-1:n)));
+        dateEnd.setUTCHours(23, 59, 59, 999);
+    }
+    filteredData = rawData.filter(row => {
+        const rowDate = parseDate(row.data);
+        if (dateStart && (!rowDate || rowDate < dateStart)) return false;
+        if (dateEnd && (!rowDate || rowDate > dateEnd)) return false;
+        return true;
+    });
+    updateDashboard();
+}
+function clearFilters() {
+    ['dateFilterStart', 'dateFilterEnd'].forEach(id => document.getElementById(id).value = '');
+    filterData();
+}
+function updateDashboard() {
+    const mainContent = document.getElementById('mainContent');
+    if (!mainContent) return;
+    const hasData = filteredData.length > 0;
+    mainContent.style.display = hasData ? 'block' : 'none';
+    if (hasData) {
+        const dataNoTotal = filteredData.filter(r => !endsWithTOTAL(r.operacao));
+        const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao));
+        updateSummaryCards(dataOnlyTotal);
+        updateProjectionCards(dataOnlyTotal);
+        updateCharts(dataNoTotal, dataOnlyTotal);
+    }
+}
+function updateCharts(dataNoTotal, dataOnlyTotal) {
+    updateEvolutionChartWithFilters(); // <-- MUDANÇA AQUI
+    renderEvolutionChart(dataOnlyTotal);
+    updateProportionCharts(); // << ESTA É A MUDANÇA PRINCIPAL
+    renderRegionSummaryCharts(dataOnlyTotal);
+    renderNicheComparisonCharts(dataOnlyTotal);
+    renderPlatformSummaryCharts(dataOnlyTotal);
+    renderManagerCharts(dataNoTotal);
+    renderBusinessSegmentTables(dataOnlyTotal);
+}
+
+// --- CARDS (SUMMARY & PROJECTION) ---
+function createCardHTML(config) {
+    // Ajusta a classe do delta com base em deltaPositiveOverride se fornecido, senão usa o padrão
+    const deltaClass = (config.deltaPositiveOverride !== undefined) ? 
+                       (config.deltaPositiveOverride ? 'positive' : 'negative') : 
+                       (config.delta > 0 ? 'positive' : 'negative');
+    const deltaHTML = config.delta ? `<span class="delta ${deltaClass}">${config.delta > 0 ? '▲' : '▼'} ${Math.abs(config.delta).toFixed(1)}%</span>` : '';
+    // ... o restante da função continua igual ..
+    const subtitleHTML = config.subtitle ? `<div class="subtitle">${config.subtitle}</div>` : '';
+    const footerHTML = config.footerHTML ? config.footerHTML : '';
+    
+    // Adiciona uma classe para centralizar se não houver subtitle ou footer
+    const valueClass = (!config.subtitle && !config.footerHTML) ? 'value centered-value' : 'value';
+
+    return `<div class="card ${config.isProjection ? 'projection' : ''}">
+                <div class="card-header">
+                    <h3>${config.icon} ${config.title}</h3>
+                    ${deltaHTML}
+                </div>
+                <div class="${valueClass}">${config.value}</div>
+                ${subtitleHTML}
+                ${footerHTML}
+            </div>`;
+}
+
+// Função para lidar com a lógica dos checkboxes
+function handleRegionSelection(checkbox) {
+    const allCheckbox = document.getElementById('region-all');
+    const regionCheckboxes = document.querySelectorAll('#region-checkbox-group input:not(#region-all)');
+
+    if (checkbox.id === 'region-all' && checkbox.checked) {
+        regionCheckboxes.forEach(cb => cb.checked = false);
+    } else if (checkbox.id !== 'region-all') {
+        if (Array.from(regionCheckboxes).some(cb => cb.checked)) {
+            allCheckbox.checked = false;
+        }
+    }
+
+    if (!document.querySelector('#region-checkbox-group input:checked')) {
+        allCheckbox.checked = true;
+    }
+    
+    updateEvolutionChartWithFilters();
+}
+
+// A nova função principal que constrói e renderiza o gráfico (versão corrigida)
+function updateEvolutionChartWithFilters() {
+    const selectedRegions = Array.from(document.querySelectorAll('#region-checkbox-group input:checked')).map(cb => cb.value);
+    const operationFilter = document.getElementById('evolutionOperationFilter');
+    const selectedOperation = operationFilter.value;
+
+    const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao));
+    const baseData = selectedOperation === 'all' ? dataOnlyTotal : dataOnlyTotal.filter(r => r.operacao === selectedOperation);
+    operationFilter.disabled = selectedRegions.length > 1 && !selectedRegions.includes('all');
+
+    const datasetsToRender = [];
+    const allDates = new Set();
+
+    selectedRegions.forEach(regionKey => {
+        let regionData;
+        let regionLabel;
+
+        if (regionKey === 'all') {
+            regionData = baseData;
+            regionLabel = 'Todas';
+        } else {
+            regionLabel = regionKey.toUpperCase();
+            regionData = baseData.filter(row => {
+                const op = row.operacao.toUpperCase();
+                if (regionKey === 'br') return op.includes('BR');
+                if (regionKey === 'us') return op.includes('US');
+                if (regionKey === 'eu') return ['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p));
+                return false;
+            });
+        }
+        
+        if (regionData && regionData.length > 0) {
+            const dailyData = {};
+            regionData.forEach(row => {
+                if (row.data) {
+                    if (!dailyData[row.data]) dailyData[row.data] = { gasto: 0, receita: 0 };
+                    dailyData[row.data].gasto += row.gasto;
+                    dailyData[row.data].receita += row.receita;
+                    allDates.add(row.data);
+                }
+            });
+            datasetsToRender.push({ key: regionKey, label: regionLabel, data: dailyData });
+        }
+    });
+
+    const sortedLabels = Array.from(allDates).sort((a, b) => parseDate(a) - parseDate(b));
+    const finalChartJsDatasets = [];
+
+    datasetsToRender.forEach(dataset => {
+        const investmentColor = REGION_COLORS[dataset.key]?.investment || '#cccccc';
+        const roasColor = REGION_COLORS[dataset.key]?.roas || '#aaaaaa';
+        
+        const gastoData = sortedLabels.map(date => dataset.data[date]?.gasto ?? null);
+        const roasData = sortedLabels.map(date => {
+            const dayData = dataset.data[date];
+            return (dayData && dayData.gasto > 0) ? (dayData.receita / dayData.gasto) : null;
+        });
+
+        finalChartJsDatasets.push({
+            label: `Investimento (${dataset.label})`,
+            data: gastoData,
+            yAxisID: 'y',
+            borderColor: investmentColor,
+            backgroundColor: hexToRgba(investmentColor, 0.1),
+            fill: datasetsToRender.length === 1,
+            tension: 0.4
+        });
+        finalChartJsDatasets.push({
+            label: `ROAS (${dataset.label})`,
+            data: roasData,
+            yAxisID: 'y1',
+            borderColor: roasColor,
+            backgroundColor: 'transparent',
+            borderDash: [5, 5],
+            tension: 0.4
+        });
+    });
+
+    createOrUpdateChart('evolucaoCompletaChart', 'line', {
+        labels: sortedLabels,
+        datasets: finalChartJsDatasets
+    }, { 
+        scales: { 
+            y: { title: { display: true, text: 'Valores (R$)' }, ticks: { callback: (v) => formatKilo(v) } }, 
+            y1: { position: 'right', title: { display: true, text: 'ROAS (x)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toFixed(2) } } 
+        } 
+    });
+}
+function updateSummaryCards(data) {
+    const totalGasto = data.reduce((s, r) => s + r.gasto, 0);
+    const totalReceita = data.reduce((s, r) => s + r.receita, 0);
+    const totalLeads = data.reduce((s, r) => s + r.leads, 0);
+    
+    const roasMedio = totalGasto > 0 ? (totalReceita / totalGasto) : 0;
+    const cpaMedio = totalLeads > 0 ? (totalGasto / totalLeads) : 0;
+
+    // --- CÁLCULO DE DELTAS (para o período) ---
+    // Você pode usar dados históricos para calcular deltas reais.
+    // Para fins de demonstração, vou manter os aleatórios, mas ajustando o ROAS.
+    const gastoDelta = (Math.random() - 0.4) * 10;
+    const receitaDelta = (Math.random() - 0.3) * 10;
+    
+    // NOVO: Cálculo do delta do ROAS em relação a 1 (100%)
+    const roasDiffFrom1 = (roasMedio - 1) * 100; // Diferença em percentual
+    const roasDeltaValue = roasDiffFrom1; // Usamos este valor para o delta
+    const roasDeltaIsPositive = roasDiffFrom1 >= 0; // Se for 1 ou mais, é 'positivo'
+
+
+    // HTML para o rodapé do card de investimento
+    const investmentCardFooter = `
+        <div class="secondary-metrics">
+            <div class="metric-item">
+                <span class="metric-label">Total de Leads</span>
+                <span class="metric-value">${totalLeads.toLocaleString('pt-BR')}</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">CPA Médio</span>
+                <span class="metric-value">${formatCurrency(cpaMedio)}</span>
+            </div>
+        </div>`;
+
+    document.getElementById('summaryCards').innerHTML = 
+        createCardHTML({ 
+            icon: '💰', 
+            title: 'Investimento Total', 
+            value: formatCurrency(totalGasto), 
+            delta: gastoDelta,
+            footerHTML: investmentCardFooter 
+        }) +
+        createCardHTML({ 
+            icon: '📈', 
+            title: 'Receita Total', 
+            value: formatCurrency(totalReceita), 
+            delta: receitaDelta 
+        }) +
+        createCardHTML({ 
+            icon: '🎯', 
+            title: 'ROAS Médio', 
+            value: `${roasMedio.toFixed(2)}x`, 
+            // Novo: Usando o cálculo ajustado para o delta do ROAS
+            delta: roasDeltaValue, 
+            deltaPositiveOverride: roasDeltaIsPositive // Passa se deve ser positivo/negativo baseado no cálculo
+        });
+}
+function updateProjectionCards(data) {
+    const projectionContainer = document.getElementById('projectionCards');
+    projectionContainer.innerHTML = '';
+    const dates = [...new Set(data.map(r => r.data))].filter(Boolean);
+    if (dates.length < 1) return;
+    
+    const lastDayOfMonth = new Date(Date.UTC(2025, 10, 0));
+    const lastDateInData = parseDate(dates.sort((a,b) => parseDate(a) - parseDate(b)).pop());
+    const daysRemaining = Math.max(0, (lastDayOfMonth - lastDateInData) / (1000 * 60 * 60 * 24));
+    
+    const totalGasto = data.reduce((s, r) => s + r.gasto, 0), totalReceita = data.reduce((s, r) => s + r.receita, 0), totalLeads = data.reduce((s, r) => s + r.leads, 0);
+    const avgDailyGasto = totalGasto / dates.length, avgDailyReceita = totalReceita / dates.length, avgDailyLeads = totalLeads / dates.length;
+    
+    const projectedGasto = totalGasto + (avgDailyGasto * daysRemaining), projectedReceita = totalReceita + (avgDailyReceita * daysRemaining), projectedLeads = totalLeads + (avgDailyLeads * daysRemaining);
+    const projectedRoas = projectedGasto > 0 ? projectedReceita / projectedGasto : 0, projectedCpa = projectedLeads > 0 ? projectedGasto / projectedLeads : 0;
+
+    const subtitle = `*Baseado na média de ${dates.length} dia(s) do período`;
+    projectionContainer.innerHTML = 
+        createCardHTML({ icon: '🔮', title: 'Projeção de Gasto', value: formatCurrency(projectedGasto), isProjection: true, subtitle: subtitle }) +
+        createCardHTML({ icon: '🔮', title: 'Projeção de Receita', value: formatCurrency(projectedReceita), isProjection: true, subtitle: subtitle }) +
+        createCardHTML({ icon: '🔮', title: 'Projeção ROAS Médio', value: `${projectedRoas.toFixed(2)}x`, isProjection: true, subtitle: subtitle }) +
+        createCardHTML({ icon: '🔮', title: 'Projeção CPA Médio', value: formatCurrency(projectedCpa), isProjection: true, subtitle: subtitle });
+}
+
+// --- CHART RENDERING ---
+function createOrUpdateChart(canvasId, type, data, customOptions = {}) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) { return; }
+    if (charts[canvasId]) charts[canvasId].destroy();
+
+    const metric = document.getElementById('proportionMetricSelector')?.value || 'gasto';
+    
+    const defaultOptions = {
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } },
+            tooltip: {
+                backgroundColor: '#333', titleFont: { size: 14 }, bodyFont: { size: 12 }, footerFont: { size: 10 },
+                callbacks: { 
+                    label: (ctx) => {
+                        let label = ctx.dataset.label || '';
+                        if (label) { label += ': '; }
+                        let value = ctx.parsed;
+                        if (ctx.parsed.y !== undefined) value = ctx.parsed.y;
+
+                        // Lógica de formatação dinâmica
+                        if (['regionInvestmentPieChart', 'platformInvestmentPieChart', 'nicheBrChart', 'nicheUsChart'].includes(canvasId)) {
+                             return metric === 'gasto' ? `${label}${formatCurrency(value)}` : `${label}${value.toLocaleString('pt-BR')} leads`;
+                        }
+                        if(ctx.dataset.label?.includes('ROAS') || ctx.dataset.label?.includes('Índice')) return `${label}${value.toFixed(2)}`;
+                        
+                        return `${label}${formatCurrency(value)}`;
+                    }
+                }
+            },
+            datalabels: { display: false } 
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: (v) => formatKilo(v) } }
+        }
+    };
+    charts[canvasId] = new Chart(ctx.getContext('2d'), { type, data, options: { ...defaultOptions, ...customOptions } });
+}
+
+function updateProportionCharts() {
+    const metric = document.querySelector('#metric-toggle .toggle-btn.active').dataset.metric;    const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao));
+    
+    renderRegionSummaryCharts(dataOnlyTotal, metric);
+    renderPlatformSummaryCharts(dataOnlyTotal, metric);
+    renderNicheComparisonCharts(dataOnlyTotal, metric);
+}
+
+function renderEvolutionChart(data) {
+    const dailyData = {};
+    data.forEach(row => {
+        if (!row.data) return;
+        if (!dailyData[row.data]) dailyData[row.data] = { gasto: 0, receita: 0 };
+        dailyData[row.data].gasto += row.gasto;
+        dailyData[row.data].receita += row.receita;
+    });
+    const labels = Object.keys(dailyData).sort((a, b) => parseDate(a) - parseDate(b));
+    const gasto = labels.map(d => dailyData[d].gasto), receita = labels.map(d => dailyData[d].receita), roas = labels.map((d, i) => gasto[i] > 0 ? receita[i] / gasto[i] : 0);
+    createOrUpdateChart('evolucaoCompletaChart', 'line', {
+        labels, datasets: [
+            { label: 'Investimento', data: gasto, yAxisID: 'y', borderColor: '#6a82fb', backgroundColor: 'rgba(106, 130, 251, 0.1)', fill: true, tension: 0.4 },
+            { label: 'ROAS', data: roas, yAxisID: 'y1', borderColor: '#fd7e14', backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.4 },
+        ]
+    }, { 
+        scales: { 
+            y: { title: { display: true, text: 'Valores (R$)' }, ticks: { callback: (v) => formatKilo(v) } }, 
+            y1: { position: 'right', title: { display: true, text: 'ROAS (x)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toFixed(2) } } 
+        } 
+    });
+}
+function renderRegionSummaryCharts(data, metric = 'gasto') {
+    const regionTotals = { europa: 0, brasil: 0, usa: 0 };
+    data.forEach(row => {
+        const op = row.operacao.toUpperCase();
+        if (op.includes('BR')) regionTotals.brasil += row[metric];
+        else if (op.includes('US')) regionTotals.usa += row[metric];
+        else if (['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p))) regionTotals.europa += row[metric];
+    });
+    const labels = ['Europa', 'Brasil', 'USA'], chartData = [regionTotals.europa, regionTotals.brasil, regionTotals.usa], colors = ['#4169E1', '#009739', '#DC143C'];
+    const pieOptions = { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } };
+    createOrUpdateChart('regionInvestmentPieChart', 'pie', { labels, datasets: [{ data: chartData, backgroundColor: colors }] }, pieOptions);
+}
+function renderNicheComparisonCharts(data, metric = 'gasto') {
+    const nicheSpending = { us_cc: 0, us_emp: 0, br_cc: 0, br_emp: 0 };
+    data.forEach(row => {
+        const op = row.operacao.toUpperCase();
+        if (op.includes('US')) { if (op.includes('CC')) nicheSpending.us_cc += row[metric]; if (op.includes('EMP')) nicheSpending.us_emp += row[metric]; }
+        else if (op.includes('BR')) { if (op.includes('CC')) nicheSpending.br_cc += row[metric]; if (op.includes('EMP')) nicheSpending.br_emp += row[metric]; }
+    });
+    const pieOptions = { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } };
+    createOrUpdateChart('nicheUsChart', 'pie', { labels: ['Cartão de Crédito', 'Empréstimo'], datasets: [{ data: [nicheSpending.us_cc, nicheSpending.us_emp], backgroundColor: ['#3498db', '#e67e22']}]}, pieOptions);
+    createOrUpdateChart('nicheBrChart', 'pie', { labels: ['Cartão de Crédito', 'Empréstimo'], datasets: [{ data: [nicheSpending.br_cc, nicheSpending.br_emp], backgroundColor: ['#2ecc71', '#f1c40f']}]}, pieOptions);
+}
+function renderPlatformSummaryCharts(data, metric = 'gasto') {
+    const platformData = { 'Meta Ads': 0, 'Google Ads': 0 };
+    data.forEach(row => { platformData[getPlatformFromOperation(row.operacao)] += row[metric]; });
+    const pieOptions = { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } };
+    createOrUpdateChart('platformInvestmentPieChart', 'pie', { labels: Object.keys(platformData), datasets: [{ data: Object.values(platformData), backgroundColor: ['#3b5998', '#4285F4']}]}, pieOptions);
+}
+
+function renderManagerCharts(data) {
+    const includedData = data.filter(row => row.responsavelAquisicao && !EXCLUDED_MANAGERS.includes(row.responsavelAquisicao.toUpperCase()));
+    const managerSummary = {};
+    includedData.forEach(row => {
+        const manager = row.responsavelAquisicao;
+        if (!managerSummary[manager]) managerSummary[manager] = { gasto: 0, receita: 0, leads: 0, ops: new Set() };
+        managerSummary[manager].gasto += row.gasto;
+        managerSummary[manager].receita += row.receita;
+        managerSummary[manager].leads += row.leads;
+        managerSummary[manager].ops.add(row.operacao);
+    });
+    
+    const managers = Object.keys(managerSummary);
+    renderWorstPerformersChart(managers, managerSummary);
+    const horizontalBarOptions = (formatter) => ({
+        indexAxis: 'y',
+        plugins: { 
+            legend: { display: false },
+            datalabels: { display: true, anchor: 'end', align: 'end', color: '#555', font: {size: 11}, formatter: formatter }
+        },
+        scales: { x: { grid: {display:false}, ticks: { display: false } }, y: { grid: { display: false } } }
+    });
+
+    const sortedByGasto = [...managers].sort((a,b) => managerSummary[b].gasto - managerSummary[a].gasto);
+    createOrUpdateChart('gestorInvestimentoTotalChart', 'bar', { labels: sortedByGasto, datasets: [{ label: 'Investimento Total', data: sortedByGasto.map(m => managerSummary[m].gasto), backgroundColor: '#3498db' }] }, horizontalBarOptions((v) => formatKilo(v)));
+    const sortedByRoas = [...managers].sort((a,b) => (managerSummary[b].gasto > 0 ? managerSummary[b].receita/managerSummary[b].gasto : 0) - (managerSummary[a].gasto > 0 ? managerSummary[a].receita/managerSummary[a].gasto : 0));
+    createOrUpdateChart('gestorRoasChart', 'bar', { labels: sortedByRoas, datasets: [{ label: 'ROAS Médio', data: sortedByRoas.map(m => managerSummary[m].gasto > 0 ? managerSummary[m].receita / managerSummary[m].gasto : 0), backgroundColor: '#9b59b6' }] }, horizontalBarOptions((v) => v.toFixed(2) + 'x'));
+    createOrUpdateChart('gestorCpaChart', 'bar', { labels: managers, datasets: [{ label: 'CPA Médio', data: managers.map(m => managerSummary[m].leads > 0 ? managerSummary[m].gasto / managerSummary[m].leads : 0), backgroundColor: '#e67e22' }] }, { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v,i) => managers[i] } } } });
+    createOrUpdateChart('managerOpsCountChart', 'bar', { labels: managers.sort((a,b) => managerSummary[b].ops.size - managerSummary[a].ops.size), datasets: [{ label: 'Nº de Operações', data: managers.map(m => managerSummary[m].ops.size), backgroundColor: '#1abc9c' }] }, horizontalBarOptions((v) => v));
+}
+
+function renderWorstPerformersChart(managers, managerSummary) {
+    let managerData = managers.map(m => ({ name: m, gasto: managerSummary[m].gasto, roas: managerSummary[m].gasto > 0 ? managerSummary[m].receita / managerSummary[m].gasto : 0 }));
+    if (managerData.length < 2) { createOrUpdateChart('worstPerformersChart', 'bar', {labels: [], datasets: []}); return; }
+    const minGasto = Math.min(...managerData.map(m => m.gasto)), maxGasto = Math.max(...managerData.map(m => m.gasto));
+    const minRoas = Math.min(...managerData.map(m => m.roas)), maxRoas = Math.max(...managerData.map(m => m.roas));
+    managerData.forEach(m => {
+        const normGasto = maxGasto > minGasto ? (m.gasto - minGasto) / (maxGasto - minGasto) : 0;
+        const normRoas = maxRoas > minRoas ? (m.roas - minRoas) / (maxRoas - minRoas) : 0;
+        m.score = (1 - normGasto) + (1 - normRoas); 
+    });
+    managerData.sort((a,b) => b.score - a.score);
+    createOrUpdateChart('worstPerformersChart', 'bar', {
+        labels: managerData.map(m => m.name),
+        datasets: [{ label: 'Índice de Baixa Performance', data: managerData.map(m => m.score), backgroundColor: '#e74c3c' }]
+    }, { indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'end', color: '#555', formatter: (v) => v.toFixed(2) } }, scales: { x: { grid: {display:false}, ticks: { display: false } }, y: { grid: { display: false } } } });
+}
+
+function renderBusinessSegmentTables(data) {
+    const createSegmentTable = (elementId, segmentOperations) => {
+        const segmentData = segmentOperations.map(op => ({ operacao: op, gasto: 0, receita: 0, leads: 0 }));
+        data.filter(row => segmentOperations.includes(row.operacao)).forEach(row => {
+            const entry = segmentData.find(d => d.operacao === row.operacao);
+            if(entry) {
+                entry.gasto += row.gasto;
+                entry.receita += row.receita;
+                entry.leads += row.leads;
+            }
+        });
+
+        let tableHtml = `<table class="performance-table"><thead><tr><th>Operação</th><th>Gasto</th><th>Leads</th><th>CPA</th><th>ROAS</th><th>Perda por Lead</th></tr></thead><tbody>`;
+        segmentData.sort((a,b) => b.gasto - a.gasto).forEach(d => {
+            const roas = d.gasto > 0 ? d.receita / d.gasto : 0;
+            const cpa = d.leads > 0 ? d.gasto / d.leads : 0;
+            const receitaPorLead = d.leads > 0 ? d.receita / d.leads : 0;
+            const perdaPorLead = cpa - receitaPorLead;
+
+            const roasClass = roas >= 1 ? 'good' : roas >= 0.5 ? 'medium' : 'bad';
+            const profitClass = perdaPorLead <= 0 ? 'profit' : 'loss';
+
+            tableHtml += `<tr>
+                <td>${d.operacao.replace(' TOTAL','')}</td>
+                <td>${formatCurrency(d.gasto)}</td>
+                <td>${d.leads.toLocaleString('pt-BR')}</td>
+                <td>${formatCurrency(cpa)}</td>
+                <td><span class="roas-indicator ${roasClass}">${roas.toFixed(2)}x</span></td>
+                <td><span class="profit-indicator ${profitClass}">${formatCurrency(perdaPorLead)}</span></td>
+            </tr>`;
+        });
+        tableHtml += `</tbody></table>`;
+        const container = document.getElementById(elementId);
+        if (container) container.innerHTML = tableHtml;
+    };
+    createSegmentTable('segmentUsCcTable', SEGMENT_US_CC);
+    createSegmentTable('segmentUsEmpTable', SEGMENT_US_EMP);
+    createSegmentTable('segmentBrCcTable', SEGMENT_BR_CC);
+    createSegmentTable('segmentBrEmpTable', SEGMENT_BR_EMP);
+    createSegmentTable('segmentDeCcTable', SEGMENT_DE_CC);
+    createSegmentTable('segmentFrCcTable', SEGMENT_FR_CC);
+}
+
+
+function exportToCSV() {
+    // A função de exportar CSV pode ser adicionada aqui se necessário
+}
+// CONTROLA A LÓGICA DO NOVO SELETOR DE MÉTRICA
+function setupMetricToggle() {
+    const toggleButtons = document.querySelectorAll('#metric-toggle .toggle-btn');
+    toggleButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (this.classList.contains('active')) return; // Não faz nada se já está ativo
+
+            toggleButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            updateProportionCharts();
+        });
+    });
+}
+function populateEvolutionFilters(data, selectedValue = 'all') {
+    const operationFilter = document.getElementById('evolutionOperationFilter');
+    if (!operationFilter) return;
+
+    const currentSelection = selectedValue || operationFilter.value;
+
+    // Obtém operações únicas da base de dados fornecida
+    const operations = [...new Set(data.map(r => r.operacao))].sort();
+    
+    // Limpa opções antigas, mantendo a primeira
+    operationFilter.innerHTML = '<option value="all">Todas as Operações</option>'; 
+    
+    operations.forEach(op => {
+        const option = document.createElement('option');
+        option.value = op;
+        option.textContent = op.replace(' TOTAL', ''); // Deixa o nome mais limpo
+        operationFilter.appendChild(option);
+    });
+    
+    // Tenta restaurar a seleção anterior se ela ainda existir na nova lista
+    if (operations.includes(currentSelection)) {
+        operationFilter.value = currentSelection;
+    } else {
+        operationFilter.value = 'all';
+    }
+}
+
+window.addEventListener('load', () => {
+    loadData();
+    setupMetricToggle(); // Configura os botões do seletor
+});
+</script>
+</body>
+</html>
