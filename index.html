@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Operações v10.4 (Correção de Bug)</title>
+    <title>Dashboard de Operações | Aquisição)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script
@@ -135,7 +135,7 @@
         }
         .filter-group { display: flex; flex-direction: column; gap: 5px; }
         .filter-group label { font-size: 0.85em; font-weight: 600; color: var(--text-light); }
-        input[type="date"], select {
+        input[type="date"], select, input[type="search"] {
             padding: 10px 15px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -156,6 +156,7 @@
             box-shadow: var(--shadow);
             margin-bottom: 25px;
             border: 1px solid var(--border-color);
+            flex-wrap: wrap;
         }
         .nav-btn {
             flex-grow: 1;
@@ -282,9 +283,9 @@
         .chart-filters-container {
             display: flex;
             gap: 25px;
-            align-items: flex-end;
+            align-items: flex-start;
             background-color: var(--bg-light);
-            padding: 15px 20px;
+            padding: 20px;
             border-radius: var(--border-radius);
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow);
@@ -297,7 +298,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
-        .checkbox-wrapper input[type="checkbox"] {
+        .checkbox-wrapper input[type="checkbox"], .checkbox-wrapper input[type="radio"] {
             display: none;
         }
         .checkbox-wrapper label {
@@ -310,7 +311,7 @@
             transition: all 0.2s ease-in-out;
             margin: 0;
         }
-        .checkbox-wrapper input[type="checkbox"]:checked + label {
+        .checkbox-wrapper input[type="checkbox"]:checked + label, .checkbox-wrapper input[type="radio"]:checked + label {
             background-color: var(--primary-color);
             color: white;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
@@ -318,6 +319,77 @@
         .checkbox-wrapper label:not(:last-of-type) {
             border-right: 1px solid var(--border-color);
         }
+
+        /* --- NOVOS ESTILOS PARA BUSCA E COMPARAÇÃO --- */
+        .comparison-controls-wrapper {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+        .search-container {
+            flex-grow: 1;
+            position: relative;
+        }
+        .search-results {
+            position: absolute;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 10;
+            margin-top: 5px;
+        }
+        .search-result-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .search-result-item:hover {
+            background-color: #f1f3f5;
+        }
+        .selected-accounts-container {
+            flex-basis: 40%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .selected-accounts-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .account-pill {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .account-pill .remove-pill {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .currency-warning-box {
+            display: none; 
+            padding: 10px; 
+            background-color: #fff3cd; 
+            border: 1px solid #ffeeba; 
+            border-radius: 5px; 
+            margin-bottom: 15px; 
+            color: #856404;
+            font-size: 0.9em;
+        }
+        /* --- FIM DOS NOVOS ESTILOS --- */
+
 
         /* Tabelas de Performance (Segmentos & Metas) */
         .performance-table { width: 100%; border-collapse: collapse; }
@@ -336,6 +408,7 @@
             display: inline-block;
             margin-left: 5px;
             color: var(--text-light);
+            font-size: 0.8em;
         }
         
         .progress-bar-container {
@@ -427,7 +500,7 @@
             <h1>📊 Dashboard de Operações</h1>
             <div class="controls">
                 <div id="status" class="status">Pronto para carregar.</div>
-                <button id="updateBtn" onclick="loadData(true)">🔄 Atualizar Dados</button>
+                <button id="updateBtn" onclick="loadAllData(true)">🔄 Atualizar Dados</button>
             </div>
         </div>
 
@@ -445,6 +518,8 @@
             <button class="nav-btn" data-target="view-segments">Segmentos de Negócio</button>
             <button class="nav-btn" data-target="view-companies">Performance por Empresa</button>
             <button class="nav-btn" data-target="view-metas">Metas</button>
+            <button class="nav-btn" data-target="view-jn-analysis">Análise de Contas JN</button>
+            <button class="nav-btn" data-target="view-mg-analysis">Análise de Contas MG</button>
         </nav>
         
         <div class="content-wrapper" id="mainContent">
@@ -548,7 +623,7 @@
             <div id="view-companies" class="view-section">
                 <div class="section-header"><h2 class="section-title">Resultados Consolidados por Empresa</h2></div>
                 <div class="regional-cards-wrapper" id="company-cards-wrapper">
-                    </div>
+                </div>
                 
                 <div class="section-header"><h2 class="section-title">Distribuição do Gasto Total por Empresa</h2></div>
                 <div class="charts-grid">
@@ -562,7 +637,7 @@
                     <div class="filter-group">
                         <label>Selecionar Empresas:</label>
                         <div id="company-checkbox-group" class="checkbox-wrapper">
-                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="charts-grid">
@@ -573,7 +648,7 @@
 
                 <div class="section-header"><h2 class="section-title">Distribuição Regional do Investimento por Empresa</h2></div>
                 <div class="charts-grid" id="companyDistributionCharts">
-                    </div>
+                </div>
             </div>
 
             <div id="view-metas" class="view-section">
@@ -599,13 +674,138 @@
                 </div>
             </div>
 
+            <div id="view-jn-analysis" class="view-section">
+                <div class="section-header">
+                    <h2 class="section-title">Análise de Performance por Conta (JN)</h2>
+                </div>
+                <div class="chart-filters-container">
+                    <div class="filter-group">
+                        <label>Modo de Visualização:</label>
+                        <div class="checkbox-wrapper">
+                            <input type="radio" id="jn-mode-single" name="jn-view-mode" value="single" onchange="toggleJnViewMode('single')" checked><label for="jn-mode-single">Visão Única</label>
+                            <input type="radio" id="jn-mode-compare" name="jn-view-mode" value="compare" onchange="toggleJnViewMode('compare')"><label for="jn-mode-compare">Modo de Comparação</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Métricas do Gráfico:</label>
+                        <div id="jn-metric-checkbox-group" class="checkbox-wrapper">
+                             <input type="checkbox" id="jn-metric-gasto" value="gasto" onchange="renderJnAnalysisView()" checked><label for="jn-metric-gasto">Gasto</label>
+                             <input type="checkbox" id="jn-metric-cpa" value="cpa" onchange="renderJnAnalysisView()" checked><label for="jn-metric-cpa">CPA</label>
+                             <input type="checkbox" id="jn-metric-cpm" value="cpm" onchange="renderJnAnalysisView()"><label for="jn-metric-cpm">CPM</label>
+                             <input type="checkbox" id="jn-metric-ctr" value="ctr" onchange="renderJnAnalysisView()"><label for="jn-metric-ctr">CTR</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="jn-single-view-controls" class="chart-filters-container">
+                    <div class="filter-group">
+                        <label for="jnAccountFilter">Selecione uma Conta:</label>
+                        <select id="jnAccountFilter" onchange="renderJnAnalysisView()" style="width: 450px;">
+                            <option value="">-- Carregando contas --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="jn-compare-view-controls" class="chart-filters-container" style="display: none;">
+                    <div class="comparison-controls-wrapper">
+                        <div class="search-container">
+                             <div class="filter-group">
+                                <label for="jnAccountSearch">Buscar conta por palavra-chave:</label>
+                                <input type="search" id="jnAccountSearch" onkeyup="handleJnAccountSearch()" placeholder="Digite para buscar..." style="width: 100%;">
+                                <div id="jnSearchResults" class="search-results"></div>
+                             </div>
+                        </div>
+                        <div class="selected-accounts-container">
+                            <label>Contas em comparação:</label>
+                            <div id="jnSelectedAccounts" class="selected-accounts-list"></div>
+                            <button onclick="clearJnComparison()" style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar Seleção</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container chart-full">
+                        <div id="jn-currency-warning" class="currency-warning-box"></div>
+                        <canvas id="jnEvolutionChart"></canvas>
+                    </div>
+                </div>
+                <div class="section-header" style="margin-top: 20px;">
+                    <h2 class="section-title">Dados Diários Agregados</h2>
+                </div>
+                <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                    <div id="jn-daily-table" style="overflow-x: auto;"></div>
+                </div>
+            </div>
+            
+            <div id="view-mg-analysis" class="view-section">
+                 <div class="section-header">
+                    <h2 class="section-title">Análise de Performance por Conta (MG)</h2>
+                </div>
+                <div class="chart-filters-container">
+                    <div class="filter-group">
+                        <label>Modo de Visualização:</label>
+                        <div class="checkbox-wrapper">
+                            <input type="radio" id="mg-mode-single" name="mg-view-mode" value="single" onchange="toggleMgViewMode('single')" checked><label for="mg-mode-single">Visão Única</label>
+                            <input type="radio" id="mg-mode-compare" name="mg-view-mode" value="compare" onchange="toggleMgViewMode('compare')"><label for="mg-mode-compare">Modo de Comparação</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Métricas do Gráfico:</label>
+                        <div id="mg-metric-checkbox-group" class="checkbox-wrapper">
+                             <input type="checkbox" id="mg-metric-gasto" value="gasto" onchange="renderMgAnalysisView()" checked><label for="mg-metric-gasto">Gasto</label>
+                             <input type="checkbox" id="mg-metric-cpa" value="cpa" onchange="renderMgAnalysisView()" checked><label for="mg-metric-cpa">CPA</label>
+                             <input type="checkbox" id="mg-metric-cpm" value="cpm" onchange="renderMgAnalysisView()"><label for="mg-metric-cpm">CPM</label>
+                             <input type="checkbox" id="mg-metric-ctr" value="ctr" onchange="renderMgAnalysisView()"><label for="mg-metric-ctr">CTR</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="mg-single-view-controls" class="chart-filters-container">
+                    <div class="filter-group">
+                        <label for="mgAccountFilter">Selecione uma Conta:</label>
+                        <select id="mgAccountFilter" onchange="renderMgAnalysisView()" style="width: 450px;">
+                            <option value="">-- Carregando contas --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="mg-compare-view-controls" class="chart-filters-container" style="display: none;">
+                     <div class="comparison-controls-wrapper">
+                        <div class="search-container">
+                             <div class="filter-group">
+                                <label for="mgAccountSearch">Buscar conta por palavra-chave:</label>
+                                <input type="search" id="mgAccountSearch" onkeyup="handleMgAccountSearch()" placeholder="Digite para buscar..." style="width: 100%;">
+                                <div id="mgSearchResults" class="search-results"></div>
+                             </div>
+                        </div>
+                        <div class="selected-accounts-container">
+                            <label>Contas em comparação:</label>
+                            <div id="mgSelectedAccounts" class="selected-accounts-list"></div>
+                            <button onclick="clearMgComparison()" style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar Seleção</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container chart-full">
+                        <div id="mg-currency-warning" class="currency-warning-box"></div>
+                        <canvas id="mgEvolutionChart"></canvas>
+                    </div>
+                </div>
+                <div class="section-header" style="margin-top: 20px;">
+                    <h2 class="section-title">Dados Diários Agregados</h2>
+                </div>
+                <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                    <div id="mg-daily-table" style="overflow-x: auto;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const SHEET_ID = '1iMEXFAfdB--bCzNYF8DkyTbzxjRARAHXaUX2_KBUvpc';
         const SHEET_NAME = 'Controle_diario';
-        const EXCLUDED_MANAGERS = ['NICOLE', 'MARCELO', 'AMANDA']; 
+        const SHEET_NAME_JN = 'EXTRAÇAO JN';
+        const SHEET_NAME_MG = 'EXTRAÇAO MG';
+        const EXCLUDED_MANAGERS = ['NICOLE', 'MARCELO', 'AMANDA'];
         const REGION_COLORS = { 'all': { investment: '#6a82fb', roas: '#fd7e14', leads: '#9b59b6' }, 'br': { investment: '#009739', roas: '#2ecc71', leads: '#1abc9c' }, 'us': { investment: '#DC143C', roas: '#e74c3c', leads: '#c0392b' }, 'eu': { investment: '#4169E1', roas: '#3498db', leads: '#2980b9' } };
         const SEGMENT_US_CC = ['MG US CC TOTAL', 'FM US CC TOTAL', 'CL US CC TOTAL', 'GRID US CC TOTAL', 'JN US CC TOTAL'];
         const SEGMENT_US_EMP = ['JN US EMP TOTAL', 'MG US EMP TOTAL'];
@@ -613,956 +813,823 @@
         const SEGMENT_BR_EMP = ['JN BR EMP TOTAL', 'MG BR EMP TOTAL'];
         const SEGMENT_DE_CC = ['JN DE CC TOTAL', 'MG DE CC TOTAL'];
         const SEGMENT_FR_CC = ['JN FR CC TOTAL', 'MG FR CC TOTAL'];
-        
+    
         const COMPANIES = {
-            'MG': { name: 'MG', color: '#3498db' }, 'JN': { name: 'JN', color: '#2ecc71' }, 'GRID': { name: 'GRID', color: '#e74c3c' }, 'FM': { name: 'FM', color: '#f1c40f' }, 'CL': { name: 'CL', color: '#9b59b6'}, 'ND': { name: 'ND', color: '#34495e'}
+            'MG': { name: 'MG', color: '#3498db' }, 'JN': { name: 'JN', color: '#2ecc71' }, 'GRID': { name: 'GRID', color: '#e74c3c' }, 'FM': { name: 'FM', color: '#f1c40f' }, 'CL': { name: 'CL', color: '#9b59b6' }, 'ND': { name: 'ND', color: '#34495e' }
         };
-        
+    
         const GOALS_DATA = {
             'JN EMP BR': { investimento: 65000, roas: 0.90 }, 'JN CC BR': { investimento: 100000, roas: 0.90 }, 'JN CC EUA': { investimento: 500000, roas: 0.80 }, 'JN EMP EUA': { investimento: 375000, roas: 0.80 }, 'JN CC UK': { investimento: 25000, roas: 0.70 }, 'JN CC DE': { investimento: 25000, roas: 0.70 }, 'JN CC AU': { investimento: 25000, roas: 0.70 }, 'JN CC FR': { investimento: 25000, roas: 0.70 }, 'JN CC ES': { investimento: 0, roas: 0.70 }, 'ND CC US': { investimento: 25000, roas: 0.70 }, 'ND CC DE': { investimento: 0, roas: 0.65 }, 'ND CC IT': { investimento: 0, roas: 0.65 }, 'MG CC BR': { investimento: 65000, roas: 0.90 }, 'MG EMP BR': { investimento: 100000, roas: 0.90 }, 'MG CC US': { investimento: 250000, roas: 0.80 }, 'MG EMP US': { investimento: 125000, roas: 0.80 }, 'MG CC FR': { investimento: 15000, roas: 0.70 }, 'MG CC DE': { investimento: 15000, roas: 0.70 }, 'CL CC US': { investimento: 250000, roas: 0.80 }, 'GRID 1 CC US': { investimento: 250000, roas: 0.80 }, 'FM CC US': { investimento: 250000, roas: 0.80 }, 'FM CC FR': { investimento: 15000, roas: 0.70 }, 'FM CC UK': { investimento: 15000, roas: 0.70 }
         };
-
-        // --- CONSTANTES PARA A META SPRINT 1M ---
-        const SPRINT_1M_DEADLINE = new Date(Date.UTC(2025, 9, 12)); // Mês 9 = Outubro
+    
+        const SPRINT_1M_DEADLINE = new Date(Date.UTC(2025, 9, 12));
         const SPRINT_1M_GOAL = 1000000;
-        
-        // REGRAS DE NEGÓCIO ATUALIZADAS
         const SPRINT_1M_RULES = {
             'JN CC EUA': { finalTarget: 300000 },
-            'CL CC US':  { target: 10000 },
-            'FM CC US':  { exclude: true },
-            'JN CC BR':  { target: 40000 },
+            'CL CC US': { target: 10000 },
+            'FM CC US': { exclude: true },
+            'JN CC BR': { target: 40000 },
             'MG EMP BR': { target: 25000 },
         };
-        
-        const SPRINT_1M_BASE_OPERATIONS = [
-            'JN CC EUA', 'JN EMP EUA', 'MG CC US', 'MG EMP US', 'JN CC BR', 
-            'GRID 1 CC US', 'JN CC FR', 'JN CC DE', 'MG CC BR', 'MG CC DE', 
-            'MG CC FR', 'MG EMP BR', 'CL CC US', 'ND CC US', 'JN EMP BR'
-        ];
-
+        const SPRINT_1M_BASE_OPERATIONS = ['JN CC EUA', 'JN EMP EUA', 'MG CC US', 'MG EMP US', 'JN CC BR', 'GRID 1 CC US', 'JN CC FR', 'JN CC DE', 'MG CC BR', 'MG CC DE', 'MG CC FR', 'MG EMP BR', 'CL CC US', 'ND CC US', 'JN EMP BR'];
+    
         let rawData = [], filteredData = [], charts = {};
+        let rawDataJn = [], filteredDataJn = [];
+        let rawDataMg = [], filteredDataMg = [];
         let segmentDataCache = {}, tableSortState = {}, metasTableSortState = {};
+        let jnTableSortState = {};
+        let mgTableSortState = {};
+        
+        let jnComparedAccounts = [];
+        let mgComparedAccounts = [];
+        const FANCY_COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#34495e', '#1abc9c', '#e67e22'];
+        const METRIC_COLORS = { spend: '#3498db', cpa: '#e74c3c', cpm: '#f1c40f', ctr: '#2ecc71' };
 
         Chart.register(ChartDataLabels);
-
+    
         // --- UTILITY FUNCTIONS ---
         function hexToRgba(hex, alpha = 1) { if (!/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) return `rgba(200,200,200,${alpha})`; let c = hex.substring(1).split(''); if (c.length === 3) { c = [c[0], c[0], c[1], c[1], c[2], c[2]]; } c = '0x' + c.join(''); return `rgba(${(c >> 16) & 255}, ${(c >> 8) & 255}, ${c & 255}, ${alpha})`; }
-        function parseMonetaryValue(v) { return parseFloat(String(v || '').replace(/[R$\s.]/g, '').replace(',', '.')) || 0; }
+        function parseMonetaryValue(v) { let valueStr = String(v || '0'); valueStr = valueStr.replace(/[R$\s]/g, ''); if (valueStr.lastIndexOf(',') > valueStr.lastIndexOf('.')) { valueStr = valueStr.replace(/\./g, '').replace(',', '.'); } else { valueStr = valueStr.replace(/,/g, ''); } return parseFloat(valueStr) || 0; }
         function parseDate(dateStr) { if (!dateStr || typeof dateStr !== 'string') return null; const parts = dateStr.split('/'); if (parts.length === 3) { return new Date(Date.UTC(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10))); } return null; }
-        function formatDate(dateObj, simple = false) { if(!dateObj) return null; const day = dateObj.getUTCDate().toString().padStart(2, '0'); const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0'); if (simple) return `${day}/${month}`; return `${day}/${month}/${dateObj.getUTCFullYear()}`; }
+        function formatDate(dateObj, simple = false) { if (!dateObj) return null; const day = dateObj.getUTCDate().toString().padStart(2, '0'); const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0'); if (simple) return `${day}/${month}`; return `${day}/${month}/${dateObj.getUTCFullYear()}`; }
         function endsWithTOTAL(text) { return /\bTOTAL\s*$/i.test(text || ''); }
-        function formatCurrency(value) { return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-        function formatKilo(num) { if (Math.abs(num) >= 1000000) return 'R$ ' + (num / 1000000).toFixed(1).replace('.', ',') + 'M'; if (Math.abs(num) >= 1000) return 'R$ ' + (num / 1000).toFixed(1).replace('.', ',') + 'k'; return formatCurrency(num); }
-        
-        // FUNÇÃO ADICIONADA NOVAMENTE
+        function formatCurrency(value, accountName = '') { const isUsd = accountName && accountName.toUpperCase().includes('USD'); const locale = isUsd ? 'en-US' : 'pt-BR'; const currency = isUsd ? 'USD' : 'BRL'; if (isNaN(value) || value === null) { return (0).toLocaleString(locale, { style: 'currency', currency: currency }); } return value.toLocaleString(locale, { style: 'currency', currency: currency }); }
+        function formatKilo(num, accountName = '') { const symbol = (accountName && accountName.toUpperCase().includes('USD')) ? '$' : 'R$'; if (Math.abs(num) >= 1000000) return `${symbol} ` + (num / 1000000).toFixed(1).replace('.', ',') + 'M'; if (Math.abs(num) >= 1000) return `${symbol} ` + (num / 1000).toFixed(1).replace('.', ',') + 'k'; return formatCurrency(num, accountName); }
         function getPlatformFromOperation(opName) { return (opName || '').substring(0, 2).toUpperCase() === 'ND' ? 'Meta Ads' : 'Google Ads'; }
-
-        // CORRIGIDO: Mapeamento de nomes de operações
-        function getGoalKeyFromOperation(opName) {
-            let cleanOp = opName.replace(' TOTAL', '').trim();
-            if (cleanOp.startsWith('GRID US')) return 'GRID 1 CC US';
-            
-            const parts = cleanOp.split(' ');
-            if (parts.length < 3) return cleanOp;
-
-            const company = parts[0];
-            const country = parts[1];
-            const niche = parts.slice(2).join(' ');
-
-            // Tenta o formato [Empresa] [Nicho] [País]
-            let potentialKey = `${company} ${niche} ${country}`;
-            if (GOALS_DATA[potentialKey]) return potentialKey;
-
-            // Tenta com EUA para US
-            if (country === 'US') {
-                const euaKey = `${company} ${niche} EUA`;
-                if (GOALS_DATA[euaKey]) return euaKey;
-            }
-            
-            return potentialKey; // Fallback
-        }
-
+        function getGoalKeyFromOperation(opName) { let cleanOp = opName.replace(' TOTAL', '').trim(); if (cleanOp.startsWith('GRID US')) return 'GRID 1 CC US'; const parts = cleanOp.split(' '); if (parts.length < 3) return cleanOp; const company = parts[0]; const country = parts[1]; const niche = parts.slice(2).join(' '); let potentialKey = `${company} ${niche} ${country}`; if (GOALS_DATA[potentialKey]) return potentialKey; if (country === 'US') { const euaKey = `${company} ${niche} EUA`; if (GOALS_DATA[euaKey]) return euaKey; } return potentialKey; }
+    
         // --- DATA LOADING & CACHING ---
-        async function loadData(forceRefresh = false) {
+        function parseCsv(csvText) { return new Promise((resolve, reject) => { Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: resolve, error: reject }); }); }
+    
+        async function loadAllData(forceRefresh = false) {
             document.getElementById('loader').style.display = 'flex';
             document.getElementById('updateBtn').disabled = true;
-            document.getElementById('status').textContent = '⏳ Carregando...';
+            document.getElementById('status').textContent = '⏳ Carregando dados...';
             try {
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
-                const response = await fetch(csvUrl, { cache: forceRefresh ? 'reload' : 'default' });
-                if (!response.ok) throw new Error(`Network response was not ok`);
-                const csvText = await response.text();
-                Papa.parse(csvText, {
-                    header: true, skipEmptyLines: true,
-                    complete: (results) => {
-                        rawData = results.data.map(row => ({
-                            data: row.DATA,
-                            operacao: row['OPERAÇÃO'],
-                            gasto: parseMonetaryValue(row.GASTO),
-                            receita: parseMonetaryValue(row.RECEITA),
-                            cpa: parseMonetaryValue(row.CPA),
-                            leads: parseInt(row['TOTAL DE LEADS'] || 0),
-                            responsavelAquisicao: row['RESPONSÁVEL AQUISIÇÃO'],
-                            responsavelMonetizacao: row['RESPONSÁVEL MONETIZAÇÃO'] 
-                        })).filter(row => row.operacao && row.operacao.trim() !== '');
-                        processData();
-                    }, error: (error) => { throw error; }
+                const [mainResponse, jnResponse, mgResponse] = await Promise.all([
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`, { cache: forceRefresh ? 'reload' : 'default' }),
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_JN)}`, { cache: forceRefresh ? 'reload' : 'default' }),
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_MG)}`, { cache: forceRefresh ? 'reload' : 'default' })
+                ]);
+    
+                if (!mainResponse.ok || !jnResponse.ok || !mgResponse.ok) throw new Error(`A resposta da rede não foi bem-sucedida.`);
+    
+                const [mainCsvText, jnCsvText, mgCsvText] = await Promise.all([mainResponse.text(), jnResponse.text(), mgResponse.text()]);
+                const [mainResults, jnResults, mgResults] = await Promise.all([parseCsv(mainCsvText), parseCsv(jnCsvText), parseCsv(mgCsvText)]);
+    
+                rawData = mainResults.data.map(row => ({ data: row.DATA, operacao: row['OPERAÇÃO'], gasto: parseMonetaryValue(row.GASTO), receita: parseMonetaryValue(row.RECEITA), cpa: parseMonetaryValue(row.CPA), leads: parseInt(row['TOTAL DE LEADS'] || 0), responsavelAquisicao: row['RESPONSÁVEL AQUISIÇÃO'], responsavelMonetizacao: row['RESPONSÁVEL MONETIZAÇÃO'] })).filter(row => row.operacao && row.operacao.trim() !== '');
+                
+                const mapAccountData = (row) => ({
+                    day: row['Day'],
+                    accountName: row['Account Name'],
+                    impressions: parseInt(String(row['Impressions'] || '0').replace(/,/g, '')),
+                    clicks: parseInt(String(row['Clicks'] || '0').replace(/,/g, '')),
+                    ctr: parseFloat(String(row['CTR'] || '0').replace('%', '').replace(',', '.')),
+                    conversions: parseFloat(String(row['Conversions'] || '0').replace(',', '.')),
+                    convRate: parseFloat(String(row['Conv. rate'] || '0').replace('%', '').replace(',', '.')),
+                    spend: parseMonetaryValue(row['Cost (Spend)'] || row['Cost']),
+                    cpm: parseMonetaryValue(row['Avg. CPM']),
+                    cpc: parseMonetaryValue(row['Avg. CPC']),
+                    cpa: parseMonetaryValue(row['Cost / conv.'])
                 });
-            } catch (error) {
-                document.getElementById('status').textContent = `❌ Erro: ${error.message}`;
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('updateBtn').disabled = false;
-            }
-        }
-        
-        function processData() { filterData(); const allTotalData = rawData.filter(r => endsWithTOTAL(r.operacao)); populateEvolutionFilters(allTotalData); populateCompanyCheckboxes(); document.getElementById('loader').style.display = 'none'; document.getElementById('updateBtn').disabled = false; document.getElementById('status').textContent = `✅ Dados atualizados!`; }
-        function filterData() { const dateStartStr = document.getElementById('dateFilterStart').value; const dateEndStr = document.getElementById('dateFilterEnd').value; let dateStart = null, dateEnd = null; if (dateStartStr) { dateStart = new Date(Date.UTC(...dateStartStr.split('-').map((n, i) => i === 1 ? n - 1 : n))); } if (dateEndStr) { dateEnd = new Date(Date.UTC(...dateEndStr.split('-').map((n, i) => i === 1 ? n - 1 : n))); dateEnd.setUTCHours(23, 59, 59, 999); } filteredData = rawData.filter(row => { const rowDate = parseDate(row.data); if (dateStart && (!rowDate || rowDate < dateStart)) return false; if (dateEnd && (!rowDate || rowDate > dateEnd)) return false; return true; }); updateDashboard(); }
-        function clearFilters() { ['dateFilterStart', 'dateFilterEnd'].forEach(id => document.getElementById(id).value = ''); filterData(); }
-        
-        function updateDashboard() { 
-            const mainContent = document.getElementById('mainContent'); 
-            if (!mainContent) return; 
-            const hasData = filteredData.length > 0; 
-            mainContent.style.display = hasData ? 'block' : 'none'; 
-            
-            const dateStartInput = document.getElementById('dateFilterStart');
-            const dateEndInput = document.getElementById('dateFilterEnd');
-            let dateRangeStr = '';
-            if (dateStartInput.value && dateEndInput.value) {
-                const start = formatDate(new Date(dateStartInput.value + 'T00:00:00Z'), true);
-                const end = formatDate(new Date(dateEndInput.value + 'T00:00:00Z'), true);
-                dateRangeStr = `(${start} a ${end})`;
-            }
-            document.getElementById('general-results-title').textContent = `Resultados Gerais do Período ${dateRangeStr}`;
-            document.getElementById('regional-results-title').textContent = `Resultados do Período por Região ${dateRangeStr}`;
 
-            if (hasData) { 
-                const dataNoTotal = filteredData.filter(r => !endsWithTOTAL(r.operacao)); 
-                const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao)); 
-                updateSummaryCards(dataOnlyTotal); 
-                updateRegionalSummaryCards(dataOnlyTotal); 
-                updateDailyComparison(dataOnlyTotal); 
-                updateProjectionCards(dataOnlyTotal); 
-                updateCharts(dataNoTotal, dataOnlyTotal); 
-            } 
+                rawDataJn = jnResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
+                rawDataMg = mgResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
+
+                processData();
+                processJnData();
+                processMgData();
+    
+            } catch (error) { document.getElementById('status').textContent = `❌ Erro: ${error.message}`; } finally { document.getElementById('loader').style.display = 'none'; document.getElementById('updateBtn').disabled = false; document.getElementById('status').textContent = `✅ Dados atualizados!`; }
         }
-        
+    
+        function processData() { filterData(); const allTotalData = rawData.filter(r => endsWithTOTAL(r.operacao)); populateEvolutionFilters(allTotalData); populateCompanyCheckboxes(); }
+    
+        function filterData() {
+            const dateStartStr = document.getElementById('dateFilterStart').value;
+            const dateEndStr = document.getElementById('dateFilterEnd').value;
+            let dateStart = null, dateEnd = null;
+            if (dateStartStr) { dateStart = new Date(Date.UTC(...dateStartStr.split('-').map((n, i) => i === 1 ? n - 1 : n))); }
+            if (dateEndStr) { dateEnd = new Date(Date.UTC(...dateEndStr.split('-').map((n, i) => i === 1 ? n - 1 : n))); dateEnd.setUTCHours(23, 59, 59, 999); }
+    
+            filteredData = rawData.filter(row => {
+                const rowDate = parseDate(row.data);
+                if (dateStart && (!rowDate || rowDate < dateStart)) return false;
+                if (dateEnd && (!rowDate || rowDate > dateEnd)) return false;
+                return true;
+            });
+            updateDashboard();
+            filterJnData();
+            filterMgData();
+        }
+    
+        function clearFilters() { ['dateFilterStart', 'dateFilterEnd'].forEach(id => document.getElementById(id).value = ''); filterData(); }
+    
+        function updateDashboard() {
+            const hasData = filteredData.length > 0;
+            document.getElementById('mainContent').style.display = hasData ? 'block' : 'none';
+            if (hasData) {
+                const dataNoTotal = filteredData.filter(r => !endsWithTOTAL(r.operacao));
+                const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao));
+                updateSummaryCards(dataOnlyTotal);
+                updateRegionalSummaryCards(dataOnlyTotal);
+                updateDailyComparison(dataOnlyTotal);
+                updateProjectionCards(dataOnlyTotal);
+                updateCharts(dataNoTotal, dataOnlyTotal);
+            }
+        }
+    
         function updateCharts(dataNoTotal, dataOnlyTotal) {
-            updateEvolutionChartWithFilters();
-            updateProportionCharts();
-            renderNicheComparisonCharts(dataOnlyTotal);
-            renderManagerCharts(dataNoTotal);
-            renderAdopsCharts(dataOnlyTotal);
-            renderBusinessSegmentTables(dataOnlyTotal);
-            renderCompanyView(dataOnlyTotal);
-            renderMetasView(dataOnlyTotal, filteredData);
+            updateEvolutionChartWithFilters(); updateProportionCharts(); renderNicheComparisonCharts(dataOnlyTotal); renderManagerCharts(dataNoTotal); renderAdopsCharts(dataOnlyTotal); renderBusinessSegmentTables(dataOnlyTotal); renderCompanyView(dataOnlyTotal); renderMetasView(dataOnlyTotal, filteredData);
         }
         
+        // --- Funções do Dashboard Principal (sem alterações) ---
         function handleRegionSelection(checkbox) { const allCheckbox = document.getElementById('region-all'); const regionCheckboxes = document.querySelectorAll('#region-checkbox-group input:not(#region-all)'); if (checkbox.id === 'region-all' && checkbox.checked) { regionCheckboxes.forEach(cb => cb.checked = false); } else if (checkbox.id !== 'region-all') { if (Array.from(regionCheckboxes).some(cb => cb.checked)) { allCheckbox.checked = false; } } if (!document.querySelector('#region-checkbox-group input:checked')) { allCheckbox.checked = true; } updateEvolutionChartWithFilters(); }
-        
         function updateEvolutionChartWithFilters() { const selectedRegions = Array.from(document.querySelectorAll('#region-checkbox-group input:checked')).map(cb => cb.value); const operationFilter = document.getElementById('evolutionOperationFilter'); const selectedOperation = operationFilter.value; const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao)); const baseData = selectedOperation === 'all' ? dataOnlyTotal : dataOnlyTotal.filter(r => r.operacao === selectedOperation); operationFilter.disabled = selectedRegions.length > 1 && !selectedRegions.includes('all'); const datasetsToRender = []; const allDates = new Set(); selectedRegions.forEach(regionKey => { let regionData; let regionLabel; if (regionKey === 'all') { regionData = baseData; regionLabel = 'Todas'; } else { regionLabel = regionKey.toUpperCase(); regionData = baseData.filter(row => { const op = row.operacao.toUpperCase(); if (regionKey === 'br') return op.includes('BR'); if (regionKey === 'us') return op.includes('US'); if (regionKey === 'eu') return ['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p)); return false; }); } if (regionData && regionData.length > 0) { const dailyData = {}; regionData.forEach(row => { if (row.data) { if (!dailyData[row.data]) dailyData[row.data] = { gasto: 0, receita: 0, leads: 0 }; dailyData[row.data].gasto += row.gasto; dailyData[row.data].receita += row.receita; dailyData[row.data].leads += row.leads; allDates.add(row.data); } }); datasetsToRender.push({ key: regionKey, label: regionLabel, data: dailyData }); } }); const sortedLabels = Array.from(allDates).sort((a, b) => parseDate(a) - parseDate(b)); const finalChartJsDatasets = []; datasetsToRender.forEach(dataset => { const investmentColor = REGION_COLORS[dataset.key]?.investment || '#cccccc'; const roasColor = REGION_COLORS[dataset.key]?.roas || '#aaaaaa'; const leadsColor = REGION_COLORS[dataset.key]?.leads || '#888888'; const gastoData = sortedLabels.map(date => dataset.data[date]?.gasto ?? null); const roasData = sortedLabels.map(date => { const dayData = dataset.data[date]; return (dayData && dayData.gasto > 0) ? (dayData.receita / dayData.gasto) : null; }); const leadsData = sortedLabels.map(date => dataset.data[date]?.leads ?? null); finalChartJsDatasets.push({ label: `Investimento (${dataset.label})`, data: gastoData, yAxisID: 'y', borderColor: investmentColor, backgroundColor: hexToRgba(investmentColor, 0.1), fill: datasetsToRender.length === 1, tension: 0.4 }); finalChartJsDatasets.push({ label: `ROAS (${dataset.label})`, data: roasData, yAxisID: 'y1', borderColor: roasColor, backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.4, fill: false }); finalChartJsDatasets.push({ label: `Leads (${dataset.label})`, data: leadsData, yAxisID: 'y2', borderColor: leadsColor, backgroundColor: 'transparent', borderDash: [2, 2], tension: 0.4, fill: false }); }); createOrUpdateChart('evolucaoCompletaChart', 'line', { labels: sortedLabels, datasets: finalChartJsDatasets }, { scales: { y: { title: { display: true, text: 'Valores (R$)' }, ticks: { callback: (v) => formatKilo(v) } }, y1: { position: 'right', title: { display: true, text: 'ROAS (x)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toFixed(2) } }, y2: { position: 'right', title: { display: true, text: 'Leads' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toLocaleString('pt-BR') } } } }); }
         function updateSummaryCards(data) { const totalGasto = data.reduce((s, r) => s + r.gasto, 0); const totalReceita = data.reduce((s, r) => s + r.receita, 0); const totalLeads = data.reduce((s, r) => s + r.leads, 0); const roasMedio = totalGasto > 0 ? (totalReceita / totalGasto) : 0; const cpaMedio = totalLeads > 0 ? (totalGasto / totalLeads) : 0; const roasDiffFrom1 = (roasMedio - 1) * 100; document.getElementById('summaryCards').innerHTML = createCardHTML({ icon: '💰', title: 'Investimento Total', value: formatCurrency(totalGasto), footerHTML: `<div class="secondary-metrics"><div class="metric-item"><span class="metric-label">Total de Leads</span><span class="metric-value">${totalLeads.toLocaleString('pt-BR')}</span></div><div class="metric-item"><span class="metric-label">CPA Médio</span><span class="metric-value">${formatCurrency(cpaMedio)}</span></div></div>` }) + createCardHTML({ icon: '📈', title: 'Receita Total', value: formatCurrency(totalReceita) }) + createCardHTML({ icon: '🎯', title: 'ROAS Médio', value: `${roasMedio.toFixed(2)}x`, delta: roasDiffFrom1, deltaPositiveOverride: roasDiffFrom1 >= 0 }); }
         function updateRegionalSummaryCards(data) { const regions = [ { key: 'br', containerId: 'summaryCardsBr', filter: (op) => op.includes('BR') }, { key: 'us', containerId: 'summaryCardsUs', filter: (op) => op.includes('US') }, { key: 'eu', containerId: 'summaryCardsEu', filter: (op) => ['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p)) } ]; regions.forEach(region => { const regionalData = data.filter(row => region.filter(row.operacao.toUpperCase())); const totalGasto = regionalData.reduce((s, r) => s + r.gasto, 0); const totalReceita = regionalData.reduce((s, r) => s + r.receita, 0); const totalLeads = regionalData.reduce((s, r) => s + r.leads, 0); const roasMedio = totalGasto > 0 ? (totalReceita / totalGasto) : 0; const cpaMedio = totalLeads > 0 ? (totalGasto / totalLeads) : 0; const roasDiffFrom1 = (roasMedio - 1) * 100; const container = document.getElementById(region.containerId); if(container) { if (totalGasto > 0) { container.parentElement.style.display = 'block'; container.innerHTML = createCardHTML({ icon: '💰', title: 'Investimento Total', value: formatCurrency(totalGasto), footerHTML: `<div class="secondary-metrics"><div class="metric-item"><span class="metric-label">Total de Leads</span><span class="metric-value">${totalLeads.toLocaleString('pt-BR')}</span></div><div class="metric-item"><span class="metric-label">CPA Médio</span><span class="metric-value">${formatCurrency(cpaMedio)}</span></div></div>` }) + createCardHTML({ icon: '📈', title: 'Receita Total', value: formatCurrency(totalReceita) }) + createCardHTML({ icon: '🎯', title: 'ROAS Médio', value: `${roasMedio.toFixed(2)}x`, delta: roasDiffFrom1, deltaPositiveOverride: roasDiffFrom1 >= 0 }); } else { container.parentElement.style.display = 'none'; } } }); }
-        function updateDailyComparison(data) { const allDates = [...new Set(data.map(r => r.data))].map(d => parseDate(d)).sort((a, b) => b - a); if (allDates.length === 0) return; const d1 = allDates[0]; const findDate = (offset) => allDates.find(d => (d1 - d) / (1000*60*60*24) === offset); const dates = { d1: d1, d2: findDate(1), d4: findDate(3), d8: findDate(7) }; const getMetricsForDate = (targetDate, dataset) => { if (!targetDate) return { gasto: 0, receita: 0, leads: 0, roas: 0, cpa: 0, date: null }; const dateStr = formatDate(targetDate); const dataForDate = dataset.filter(r => r.data === dateStr); const gasto = dataForDate.reduce((s, r) => s + r.gasto, 0); const receita = dataForDate.reduce((s, r) => s + r.receita, 0); const leads = dataForDate.reduce((s, r) => s + r.leads, 0); return { gasto, receita, leads, roas: gasto > 0 ? receita / gasto : 0, cpa: leads > 0 ? gasto / leads : 0, date: dateStr }; }; const createComparisonTableHTML = (title, metrics) => { const calcDelta = (v1, v2) => { if (v2 === 0) return v1 > 0 ? Infinity : 0; return ((v1 / v2) - 1) * 100; }; const formatDelta = (delta) => { if (!isFinite(delta) || isNaN(delta)) return `<span class="delta-neutral">-</span>`; const cls = delta >= 0 ? 'delta-positive' : 'delta-negative'; const sign = delta > 0 ? '+' : ''; return `<span class="${cls}">${sign}${delta.toFixed(1)}%</span>`; }; let html = `<h3>${title}</h3><table class="comparison-table"><thead><tr> <th>Métrica</th> <th>Ontem (${metrics.d1.date || 'N/A'})</th> <th>D-2 (${metrics.d2.date || 'N/A'})</th><th>%</th> <th>D-4 (${metrics.d4.date || 'N/A'})</th><th>%</th> <th>D-8 (${metrics.d8.date || 'N/A'})</th><th>%</th> </tr></thead><tbody>`; const rows = [ { label: 'Investimento', format: formatCurrency, key: 'gasto' }, { label: 'Receita', format: formatCurrency, key: 'receita' }, { label: 'Leads', format: (v) => v.toLocaleString('pt-BR'), key: 'leads' }, { label: 'ROAS', format: (v) => `${v.toFixed(2)}x`, key: 'roas' }, { label: 'CPA', format: formatCurrency, key: 'cpa', inverse: true } ]; rows.forEach(r => { const v1 = metrics.d1[r.key], v2 = metrics.d2[r.key], v4 = metrics.d4[r.key], v8 = metrics.d8[r.key]; let d2 = calcDelta(v1, v2), d4 = calcDelta(v1, v4), d8 = calcDelta(v1, v8); if(r.inverse) { d2*=-1; d4*=-1; d8*=-1; } html += `<tr> <td>${r.label}</td> <td>${r.format(v1)}</td> <td>${r.format(v2)}</td><td>${formatDelta(d2)}</td> <td>${r.format(v4)}</td><td>${formatDelta(d4)}</td> <td>${r.format(v8)}</td><td>${formatDelta(d8)}</td> </tr>`; }); return html + '</tbody></table>'; }; const totalMetrics = { d1: getMetricsForDate(dates.d1, data), d2: getMetricsForDate(dates.d2, data), d4: getMetricsForDate(dates.d4, data), d8: getMetricsForDate(dates.d8, data) }; document.getElementById('dailyComparisonTotal').innerHTML = createComparisonTableHTML('📊 Comparativo Total', totalMetrics); const regions = [ { key: 'br', containerId: 'dailyComparisonBr', filter: (op) => op.includes('BR'), title: '🇧🇷 Brasil' }, { key: 'us', containerId: 'dailyComparisonUs', filter: (op) => op.includes('US'), title: '🇺🇸 Estados Unidos' }, { key: 'eu', containerId: 'dailyComparisonEu', filter: (op) => ['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p)), title: '🇪🇺 Europa' } ]; regions.forEach(region => { const regionalData = data.filter(row => region.filter(row.operacao.toUpperCase())); const regionalMetrics = { d1: getMetricsForDate(dates.d1, regionalData), d2: getMetricsForDate(dates.d2, regionalData), d4: getMetricsForDate(dates.d4, regionalData), d8: getMetricsForDate(dates.d8, regionalData) }; const container = document.getElementById(region.containerId); if (regionalMetrics.d1.gasto > 0 || regionalMetrics.d2.gasto > 0) { container.innerHTML = createComparisonTableHTML(region.title, regionalMetrics); container.style.display = 'block'; } else { container.style.display = 'none'; } }); }
+        function updateDailyComparison(data) { const allDates = [...new Set(data.map(r => r.data))].map(d => parseDate(d)).sort((a, b) => b - a); if (allDates.length === 0) return; const d1 = allDates[0]; const findDate = (offset) => allDates.find(d => (d1 - d) / (1000*60*60*24) === offset); const dates = { d1: d1, d2: findDate(1), d4: findDate(3), d8: findDate(7) }; const getMetricsForDate = (targetDate, dataset) => { if (!targetDate) return { gasto: 0, receita: 0, leads: 0, roas: 0, cpa: 0, date: null }; const dateStr = formatDate(targetDate); const dataForDate = dataset.filter(r => r.data === dateStr); const gasto = dataForDate.reduce((s, r) => s + r.gasto, 0); const receita = dataForDate.reduce((s, r) => s + r.receita, 0); const leads = dataForDate.reduce((s, r) => s + r.leads, 0); return { gasto, receita, leads, roas: gasto > 0 ? receita / gasto : 0, cpa: leads > 0 ? gasto / leads : 0, date: dateStr }; }; const createComparisonTableHTML = (title, metrics) => { const calcDelta = (v1, v2) => { if (v2 === 0) return v1 > 0 ? Infinity : 0; return ((v1 / v2) - 1) * 100; }; const formatDelta = (delta) => { if (!isFinite(delta) || isNaN(delta)) return `<span class="delta-neutral">-</span>`; const cls = delta >= 0 ? 'delta-positive' : 'delta-negative'; const sign = delta > 0 ? '+' : ''; return `<span class="${cls}">${sign}${delta.toFixed(1)}%</span>`; }; let html = `<h3>${title}</h3><table class="comparison-table"><thead><tr> <th>Métrica</th> <th>Ontem (${metrics.d1.date || 'N/A'})</th> <th>D-2 (${metrics.d2.date || 'N/A'})</th><th>%</th> <th>D-4 (${metrics.d4.date || 'N/A'})</th><th>%</th> <th>D-8 (${metrics.d8.date || 'N/A'})</th><th>%</th> </tr></thead><tbody>`; const rows = [ { label: 'Investimento', format: (v) => formatCurrency(v), key: 'gasto' }, { label: 'Receita', format: (v) => formatCurrency(v), key: 'receita' }, { label: 'Leads', format: (v) => v.toLocaleString('pt-BR'), key: 'leads' }, { label: 'ROAS', format: (v) => `${v.toFixed(2)}x`, key: 'roas' }, { label: 'CPA', format: (v) => formatCurrency(v), key: 'cpa', inverse: true } ]; rows.forEach(r => { const v1 = metrics.d1[r.key], v2 = metrics.d2[r.key], v4 = metrics.d4[r.key], v8 = metrics.d8[r.key]; let d2 = calcDelta(v1, v2), d4 = calcDelta(v1, v4), d8 = calcDelta(v1, v8); if(r.inverse) { d2*=-1; d4*=-1; d8*=-1; } html += `<tr> <td>${r.label}</td> <td>${r.format(v1)}</td> <td>${r.format(v2)}</td><td>${formatDelta(d2)}</td> <td>${r.format(v4)}</td><td>${formatDelta(d4)}</td> <td>${r.format(v8)}</td><td>${formatDelta(d8)}</td> </tr>`; }); return html + '</tbody></table>'; }; const totalMetrics = { d1: getMetricsForDate(dates.d1, data), d2: getMetricsForDate(dates.d2, data), d4: getMetricsForDate(dates.d4, data), d8: getMetricsForDate(dates.d8, data) }; document.getElementById('dailyComparisonTotal').innerHTML = createComparisonTableHTML('📊 Comparativo Total', totalMetrics); const regions = [ { key: 'br', containerId: 'dailyComparisonBr', filter: (op) => op.includes('BR'), title: '🇧🇷 Brasil' }, { key: 'us', containerId: 'dailyComparisonUs', filter: (op) => op.includes('US'), title: '🇺🇸 Estados Unidos' }, { key: 'eu', containerId: 'dailyComparisonEu', filter: (op) => ['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p)), title: '🇪🇺 Europa' } ]; regions.forEach(region => { const regionalData = data.filter(row => region.filter(row.operacao.toUpperCase())); const regionalMetrics = { d1: getMetricsForDate(dates.d1, regionalData), d2: getMetricsForDate(dates.d2, regionalData), d4: getMetricsForDate(dates.d4, regionalData), d8: getMetricsForDate(dates.d8, regionalData) }; const container = document.getElementById(region.containerId); if (regionalMetrics.d1.gasto > 0 || regionalMetrics.d2.gasto > 0) { container.innerHTML = createComparisonTableHTML(region.title, regionalMetrics); container.style.display = 'block'; } else { container.style.display = 'none'; } }); }
         function updateProjectionCards(data) { const projectionContainer = document.getElementById('projectionCards'); projectionContainer.innerHTML = ''; const dates = [...new Set(data.map(r => r.data))].filter(Boolean); if (dates.length < 1) return; const lastDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0); const lastDateInData = parseDate(dates.sort((a, b) => parseDate(a) - parseDate(b)).pop()); const daysRemaining = Math.max(0, (lastDayOfMonth - lastDateInData) / (1000 * 60 * 60 * 24)); const totalGasto = data.reduce((s, r) => s + r.gasto, 0); const avgDailyGasto = totalGasto / dates.length; const projectedGasto = totalGasto + (avgDailyGasto * daysRemaining); const subtitle = `*Baseado na média de ${dates.length} dia(s) do período`; projectionContainer.innerHTML = createCardHTML({ icon: '🔮', title: 'Projeção de Gasto', value: formatCurrency(projectedGasto), isProjection: true, subtitle: subtitle }); }
         function createCardHTML(config) { const deltaClass = (config.deltaPositiveOverride !== undefined) ? (config.deltaPositiveOverride ? 'positive' : 'negative') : (config.delta > 0 ? 'positive' : 'negative'); const deltaHTML = config.delta ? `<span class="delta ${deltaClass}">${config.delta > 0 ? '▲' : '▼'} ${Math.abs(config.delta).toFixed(1)}%</span>` : ''; const subtitleHTML = config.subtitle ? `<div class="subtitle">${config.subtitle}</div>` : ''; const footerHTML = config.footerHTML ? config.footerHTML : ''; const valueClass = 'value'; return `<div class="card ${config.isProjection ? 'projection' : ''}"><div class="card-header"><h3>${config.icon} ${config.title}</h3>${deltaHTML}</div><div class="${valueClass}">${config.value}</div>${subtitleHTML}${footerHTML}</div>`; }
-        
-        function calculateChartHeight(numBars, minHeight = 250, barHeight = 40) {
-            return Math.max(minHeight, numBars * barHeight + 100);
-        }
-
-        function createOrUpdateChart(canvasId, type, data, customOptions = {}) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) { return; }
-            if (charts[canvasId]) { charts[canvasId].destroy(); }
-
-            if (type === 'bar' && customOptions.indexAxis === 'y') {
-                const numBars = data.labels.length;
-                const newHeight = calculateChartHeight(numBars);
-                ctx.style.height = `${newHeight}px`;
-                if (ctx.parentElement.classList.contains('chart-container')) {
-                    ctx.parentElement.style.height = `${newHeight + 60}px`;
-                }
-            } else {
-                ctx.style.height = '';
-                 if (ctx.parentElement.classList.contains('chart-container')) {
-                    ctx.parentElement.style.height = ''; 
-                 }
-            }
-
-            const defaultOptions = { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } }, 
-                    tooltip: { backgroundColor: '#333', titleFont: { size: 14 }, bodyFont: { size: 12 }, footerFont: { size: 10 }, callbacks: { label: (ctx) => { let label = ctx.dataset.label || '', value = ctx.parsed.y ?? ctx.parsed; const metric = document.querySelector('#metric-toggle .toggle-btn.active')?.dataset.metric || 'gasto'; if (label) { label += ': '; } if (['regionInvestmentPieChart', 'platformInvestmentPieChart', 'nicheBrChart', 'nicheUsChart', 'companyTotalGastoPieChart'].includes(canvasId) || canvasId.startsWith('companyDistribution')) { return `${label}${formatCurrency(value)}`; } if (ctx.dataset.label?.includes('ROAS')) return `${label}${value.toFixed(2)}`; if (ctx.dataset.label?.includes('Leads')) return `${label}${value.toLocaleString('pt-BR')}`; if(canvasId === 'metas-bubble-chart') { const point = ctx.raw; return [ `${point.label}`, `Investimento: ${point.progressoInvest.toFixed(0)}% da Meta`, `ROAS: ${point.diffRoas.toFixed(2)} p.p. vs Meta`, `Gasto: ${formatCurrency(point.gasto)}` ]; } return `${label}${formatCurrency(value)}`; } } }, datalabels: { display: false } 
-                }, 
-                scales: { 
-                    x: { grid: { display: false } }, 
-                    y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: (v) => formatKilo(v) } 
-                } 
-            } }; 
-            charts[canvasId] = new Chart(ctx, { type, data, options: { ...defaultOptions, ...customOptions } }); 
-        }
-
+        function calculateChartHeight(numBars, minHeight = 250, barHeight = 40) { return Math.max(minHeight, numBars * barHeight + 100); }
+        function createOrUpdateChart(canvasId, type, data, customOptions = {}) { const ctx = document.getElementById(canvasId); if (!ctx) { return; } if (charts[canvasId]) { charts[canvasId].destroy(); } if (type === 'bar' && customOptions.indexAxis === 'y') { const numBars = data.labels.length; const newHeight = calculateChartHeight(numBars); ctx.style.height = `${newHeight}px`; if (ctx.parentElement.classList.contains('chart-container')) { ctx.parentElement.style.height = `${newHeight + 60}px`; } } else { ctx.style.height = ''; if (ctx.parentElement.classList.contains('chart-container')) { ctx.parentElement.style.height = ''; } } const defaultOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } }, tooltip: { backgroundColor: '#333', titleFont: { size: 14 }, bodyFont: { size: 12 }, footerFont: { size: 10 }, callbacks: { label: (ctx) => { let label = ctx.dataset.label || '', value = ctx.parsed.y ?? ctx.parsed; const metric = document.querySelector('#metric-toggle .toggle-btn.active')?.dataset.metric || 'gasto'; if (label) { label += ': '; } if (['regionInvestmentPieChart', 'platformInvestmentPieChart', 'nicheBrChart', 'nicheUsChart', 'companyTotalGastoPieChart'].includes(canvasId) || canvasId.startsWith('companyDistribution')) { return `${label}${formatCurrency(value)}`; } if (ctx.dataset.label?.includes('ROAS')) return `${label}${value.toFixed(2)}`; if (ctx.dataset.label?.includes('Leads')) return `${label}${value.toLocaleString('pt-BR')}`; if(canvasId === 'metas-bubble-chart') { const point = ctx.raw; return [ `${point.label}`, `Investimento: ${point.progressoInvest.toFixed(0)}% da Meta`, `ROAS: ${point.diffRoas.toFixed(2)} p.p. vs Meta`, `Gasto: ${formatCurrency(point.gasto)}` ]; } return `${label}${formatCurrency(value)}`; } } }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: (v) => formatKilo(v) } } } }; charts[canvasId] = new Chart(ctx, { type, data, options: { ...defaultOptions, ...customOptions } }); }
         function updateProportionCharts() { const metric = document.querySelector('#metric-toggle .toggle-btn.active').dataset.metric; const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao)); renderRegionSummaryCharts(dataOnlyTotal, metric); renderPlatformSummaryCharts(dataOnlyTotal, metric); renderNicheComparisonCharts(dataOnlyTotal, metric); }
         function renderRegionSummaryCharts(data, metric = 'gasto') { const regionTotals = { europa: 0, brasil: 0, usa: 0 }; data.forEach(row => { const op = row.operacao.toUpperCase(); if (op.includes('BR')) regionTotals.brasil += row[metric]; else if (op.includes('US')) regionTotals.usa += row[metric]; else if (['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p))) regionTotals.europa += row[metric]; }); createOrUpdateChart('regionInvestmentPieChart', 'pie', { labels: ['Europa', 'Brasil', 'USA'], datasets: [{ data: [regionTotals.europa, regionTotals.brasil, regionTotals.usa], backgroundColor: ['#4169E1', '#009739', '#DC143C'] }] }, { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } }); }
         function renderNicheComparisonCharts(data, metric = 'gasto') { const nicheSpending = { us_cc: 0, us_emp: 0, br_cc: 0, br_emp: 0 }; data.forEach(row => { const op = row.operacao.toUpperCase(); if (op.includes('US')) { if (op.includes('CC')) nicheSpending.us_cc += row[metric]; if (op.includes('EMP')) nicheSpending.us_emp += row[metric]; } else if (op.includes('BR')) { if (op.includes('CC')) nicheSpending.br_cc += row[metric]; if (op.includes('EMP')) nicheSpending.br_emp += row[metric]; } }); const pieOptions = { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } }; createOrUpdateChart('nicheUsChart', 'pie', { labels: ['Cartão de Crédito', 'Empréstimo'], datasets: [{ data: [nicheSpending.us_cc, nicheSpending.us_emp], backgroundColor: ['#3498db', '#e67e22'] }] }, pieOptions); createOrUpdateChart('nicheBrChart', 'pie', { labels: ['Cartão de Crédito', 'Empréstimo'], datasets: [{ data: [nicheSpending.br_cc, nicheSpending.br_emp], backgroundColor: ['#2ecc71', '#f1c40f'] }] }, pieOptions); }
         function renderPlatformSummaryCharts(data, metric = 'gasto') { const platformData = { 'Meta Ads': 0, 'Google Ads': 0 }; data.forEach(row => { platformData[getPlatformFromOperation(row.operacao)] += row[metric]; }); createOrUpdateChart('platformInvestmentPieChart', 'pie', { labels: Object.keys(platformData), datasets: [{ data: Object.values(platformData), backgroundColor: ['#3b5998', '#4285F4'] }] }, { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } }); }
+        function renderManagerCharts(data) { const includedData = data.filter(row => row.responsavelAquisicao && !EXCLUDED_MANAGERS.includes(row.responsavelAquisicao.toUpperCase())); const managerSummary = {}; includedData.forEach(row => { const manager = row.responsavelAquisicao; if (!managerSummary[manager]) managerSummary[manager] = { gasto: 0, receita: 0, leads: 0, ops: new Set() }; managerSummary[manager].gasto += row.gasto; managerSummary[manager].receita += row.receita; managerSummary[manager].leads += row.leads; managerSummary[manager].ops.add(row.operacao); }); const managers = Object.keys(managerSummary); const horizontalBarOptions = (formatter) => ({ indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'end', color: '#555', font: { size: 12, weight: '600' }, formatter: formatter, offset: 4 } }, scales: { x: { grid: { display: false }, ticks: { display: false } }, y: { grid: { display: false }, ticks: { font: { size: 14 } } } } }); const sortedByGasto = [...managers].sort((a, b) => managerSummary[b].gasto - managerSummary[a].gasto); createOrUpdateChart('gestorInvestimentoTotalChart', 'bar', { labels: sortedByGasto, datasets: [{ label: 'Investimento Total', data: sortedByGasto.map(m => managerSummary[m].gasto), backgroundColor: '#3498db' }] }, horizontalBarOptions((v) => formatKilo(v))); const sortedByRoas = [...managers].sort((a, b) => (managerSummary[b].gasto > 0 ? managerSummary[b].receita / managerSummary[b].gasto : 0) - (managerSummary[a].gasto > 0 ? managerSummary[a].receita / managerSummary[a].gasto : 0)); createOrUpdateChart('gestorRoasChart', 'bar', { labels: sortedByRoas, datasets: [{ label: 'ROAS Médio', data: sortedByRoas.map(m => managerSummary[m].gasto > 0 ? managerSummary[m].receita / managerSummary[m].gasto : 0), backgroundColor: '#9b59b6' }] }, horizontalBarOptions((v) => v.toFixed(2) + 'x')); const sortedByCPA = [...managers].sort((a, b) => (managerSummary[a].leads > 0 ? managerSummary[a].gasto / managerSummary[a].leads : Infinity) - (managerSummary[b].leads > 0 ? managerSummary[b].gasto / managerSummary[b].leads : Infinity)); createOrUpdateChart('gestorCpaChart', 'bar', { labels: sortedByCPA, datasets: [{ label: 'CPA Médio', data: sortedByCPA.map(m => managerSummary[m].leads > 0 ? managerSummary[m].gasto / managerSummary[m].leads : 0), backgroundColor: '#e67e22' }] }, horizontalBarOptions((v) => formatCurrency(v))); const sortedByOps = [...managers].sort((a, b) => managerSummary[b].ops.size - managerSummary[a].ops.size); createOrUpdateChart('managerOpsCountChart', 'bar', { labels: sortedByOps, datasets: [{ label: 'Nº de Operações', data: sortedByOps.map(m => managerSummary[m].ops.size), backgroundColor: '#1abc9c' }] }, horizontalBarOptions((v) => v)); }
+        function renderAdopsCharts(data) { const adopsSummary = {}; const includedData = data.filter(row => row.responsavelMonetizacao && row.responsavelMonetizacao.trim() !== ""); includedData.forEach(row => { const adops = row.responsavelMonetizacao; if (!adopsSummary[adops]) { adopsSummary[adops] = { gasto: 0, receita: 0, leads: 0, ops: new Set() }; } adopsSummary[adops].gasto += row.gasto; adopsSummary[adops].receita += row.receita; adopsSummary[adops].leads += row.leads; adopsSummary[adops].ops.add(row.operacao); }); const adopsPersonnel = Object.keys(adopsSummary); const horizontalBarOptions = (formatter) => ({ indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'end', color: '#555', font: { size: 12, weight: '600' }, formatter: formatter, offset: 4 } }, scales: { x: { grid: { display: false }, ticks: { display: false } }, y: { grid: { display: false }, ticks: { font: { size: 14 } } } } }); const sortedByRevenue = [...adopsPersonnel].sort((a, b) => adopsSummary[b].receita - adopsSummary[a].receita); createOrUpdateChart('adopsRevenueChart', 'bar', { labels: sortedByRevenue, datasets: [{ label: 'Receita Total', data: sortedByRevenue.map(m => adopsSummary[m].receita), backgroundColor: '#2ecc71' }] }, horizontalBarOptions((v) => formatCurrency(v))); const sortedByInvestment = [...adopsPersonnel].sort((a, b) => adopsSummary[b].gasto - adopsSummary[a].gasto); createOrUpdateChart('adopsInvestmentChart', 'bar', { labels: sortedByInvestment, datasets: [{ label: 'Investimento Gerenciado', data: sortedByInvestment.map(m => adopsSummary[m].gasto), backgroundColor: '#3498db' }] }, horizontalBarOptions((v) => formatCurrency(v))); const sortedByRoas = [...adopsPersonnel].sort((a, b) => (adopsSummary[b].gasto > 0 ? adopsSummary[b].receita / adopsSummary[b].gasto : 0) - (adopsSummary[a].gasto > 0 ? adopsSummary[a].receita / adopsSummary[a].gasto : 0)); createOrUpdateChart('adopsRoasChart', 'bar', { labels: sortedByRoas, datasets: [{ label: 'ROAS Médio', data: sortedByRoas.map(m => adopsSummary[m].gasto > 0 ? adopsSummary[m].receita / adopsSummary[m].gasto : 0), backgroundColor: '#9b59b6' }] }, horizontalBarOptions((v) => v.toFixed(2) + 'x')); const sortedByLeads = [...adopsPersonnel].sort((a, b) => adopsSummary[b].leads - adopsSummary[a].leads); createOrUpdateChart('adopsLeadsChart', 'bar', { labels: sortedByLeads, datasets: [{ label: 'Leads Gerenciados', data: sortedByLeads.map(m => adopsSummary[m].leads), backgroundColor: '#f1c40f' }] }, horizontalBarOptions((v) => v.toLocaleString('pt-BR'))); const sortedByOps = [...adopsPersonnel].sort((a, b) => adopsSummary[b].ops.size - adopsSummary[a].ops.size); createOrUpdateChart('adopsOpsCountChart', 'bar', { labels: sortedByOps, datasets: [{ label: 'Nº de Operações', data: sortedByOps.map(m => adopsSummary[m].ops.size), backgroundColor: '#e74c3c' }] }, horizontalBarOptions((v) => v)); }
+        function renderBusinessSegmentTables(data) { createSegmentTable('segmentUsCcTable', SEGMENT_US_CC, data); createSegmentTable('segmentUsEmpTable', SEGMENT_US_EMP, data); createSegmentTable('segmentBrCcTable', SEGMENT_BR_CC, data); createSegmentTable('segmentBrEmpTable', SEGMENT_BR_EMP, data); createSegmentTable('segmentDeCcTable', SEGMENT_DE_CC, data); createSegmentTable('segmentFrCcTable', SEGMENT_FR_CC, data); }
+        function createSegmentTable(elementId, segmentOperations, allData) { const segmentData = segmentOperations.map(op => { const rows = allData.filter(row => row.operacao === op); const gasto = rows.reduce((s, r) => s + r.gasto, 0); const receita = rows.reduce((s, r) => s + r.receita, 0); const leads = rows.reduce((s, r) => s + r.leads, 0); const roas = gasto > 0 ? receita / gasto : 0; const cpa = leads > 0 ? gasto / leads : 0; const receitaPorLead = leads > 0 ? receita / leads : 0; const perdaPorLead = cpa - receitaPorLead; const roasPercentage = (roas - 1) * 100; return { operacao: op, gasto, receita, leads, cpa, roasPercentage, perdaPorLead }; }); segmentDataCache[elementId] = segmentData; _renderAndAttachSortListeners(elementId, segmentData, tableSortState); }
+        function _renderAndAttachSortListeners(elementId, dataToRender, stateObject) { const container = document.getElementById(elementId); if (!container) return; const currentSort = stateObject[elementId] || {}; const getSortIndicator = (key) => { if (currentSort.key !== key) return '⇅'; return currentSort.order === 'desc' ? '▼' : '▲'; }; const headers = [ { key: 'operacao', label: 'Operação' }, { key: 'gasto', label: 'Gasto' }, { key: 'leads', label: 'Leads' }, { key: 'cpa', label: 'CPA' }, { key: 'roasPercentage', label: 'ROAS' }, { key: 'perdaPorLead', label: 'Perda por Lead' } ]; let tableHtml = `<table class="performance-table"><thead><tr>`; headers.forEach(h => { tableHtml += `<th class="sortable" data-sort="${h.key}">${h.label} <span class="sort-indicator">${getSortIndicator(h.key)}</span></th>`; }); tableHtml += `</tr></thead><tbody>`; dataToRender.forEach(d => { const roasClass = d.roasPercentage >= 0 ? 'delta-positive' : 'delta-negative'; const roasSign = d.roasPercentage >= 0 ? '+' : ''; tableHtml += `<tr> <td>${d.operacao.replace(' TOTAL', '')}</td> <td>${formatCurrency(d.gasto)}</td> <td>${d.leads.toLocaleString('pt-BR')}</td> <td>${formatCurrency(d.cpa)}</td> <td><span class="${roasClass}">${roasSign}${d.roasPercentage.toFixed(0)}%</span></td> <td><span class="${d.perdaPorLead > 0 ? 'delta-negative' : 'delta-positive'}">${formatCurrency(d.perdaPorLead)}</span></td> </tr>`; }); container.innerHTML = tableHtml + `</tbody></table>`; container.querySelectorAll('.sortable').forEach(th => { th.addEventListener('click', () => { sortTable(elementId, th.dataset.sort, segmentDataCache, stateObject, _renderAndAttachSortListeners); }); }); }
+        function sortTable(elementId, sortKey, cacheObject, stateObject, renderFunc) { const data = [...cacheObject[elementId]]; const currentState = stateObject[elementId] || {}; let defaultOrder = 'desc'; if (['cpa', 'perdaPorLead', 'operacao', 'day'].includes(sortKey)) { defaultOrder = 'asc'; } let nextOrder = defaultOrder; if (currentState.key === sortKey) { nextOrder = currentState.order === 'asc' ? 'desc' : 'asc'; } stateObject[elementId] = { key: sortKey, order: nextOrder }; data.sort((a, b) => { const valA = sortKey === 'day' ? new Date(a[sortKey]) : a[sortKey]; const valB = sortKey === 'day' ? new Date(b[sortKey]) : b[sortKey]; if (typeof valA === 'string') { return nextOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA); } else { return nextOrder === 'asc' ? valA - valB : valB - valA; } }); renderFunc(elementId, data, stateObject); }
+        function renderCompanyView(data) { const companySummary = {}; Object.keys(COMPANIES).forEach(prefix => { companySummary[prefix] = { gasto: 0, receita: 0, leads: 0, opsData: [] }; }); data.forEach(row => { const prefix = row.operacao.substring(0, row.operacao.indexOf(' ')).toUpperCase(); if (COMPANIES[prefix]) { companySummary[prefix].gasto += row.gasto; companySummary[prefix].receita += row.receita; companySummary[prefix].leads += row.leads; companySummary[prefix].opsData.push(row); } }); const cardsContainer = document.getElementById('company-cards-wrapper'); cardsContainer.innerHTML = ''; Object.entries(companySummary).forEach(([prefix, summary]) => { if (summary.gasto > 0) { const company = COMPANIES[prefix]; const roas = summary.gasto > 0 ? summary.receita / summary.gasto : 0; const cpa = summary.leads > 0 ? summary.gasto / summary.leads : 0; let companyHTML = `<div class="regional-section"><h3>${company.name}</h3><div class="summary-cards">`; companyHTML += createCardHTML({ icon: '💰', title: 'Investimento Total', value: formatCurrency(summary.gasto) }); companyHTML += createCardHTML({ icon: '🎯', title: 'ROAS Médio', value: `${roas.toFixed(2)}x` }); companyHTML += createCardHTML({ icon: '💸', title: 'CPA Médio', value: formatCurrency(cpa) }); companyHTML += createCardHTML({ icon: '👥', title: 'Total de Leads', value: summary.leads.toLocaleString('pt-BR') }); companyHTML += `</div></div>`; cardsContainer.innerHTML += companyHTML; } }); const totalGastoData = Object.entries(companySummary) .filter(([, summary]) => summary.gasto > 0) .map(([prefix, summary]) => ({ label: COMPANIES[prefix].name, value: summary.gasto, color: COMPANIES[prefix].color })); if (totalGastoData.length > 0) { createOrUpdateChart('companyTotalGastoPieChart', 'pie', { labels: totalGastoData.map(d => d.label), datasets: [{ data: totalGastoData.map(d => d.value), backgroundColor: totalGastoData.map(d => d.color) }] }, { plugins: { datalabels: { display: true, formatter: (value, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (value / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } }); } else { if (charts['companyTotalGastoPieChart']) charts['companyTotalGastoPieChart'].destroy(); const ctx = document.getElementById('companyTotalGastoPieChart').getContext('2d'); if(ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); } updateCompanyEvolutionChart(); const distributionContainer = document.getElementById('companyDistributionCharts'); distributionContainer.innerHTML = ''; Object.entries(companySummary).forEach(([prefix, summary]) => { if (summary.gasto > 0) { const company = COMPANIES[prefix]; const regionalSplit = { br: 0, us: 0, eu: 0 }; summary.opsData.forEach(row => { const op = row.operacao.toUpperCase(); if(op.includes('BR')) regionalSplit.br += row.gasto; else if(op.includes('US')) regionalSplit.us += row.gasto; else if(['DE', 'FR', 'UK', 'AU'].some(c => op.includes(c))) regionalSplit.eu += row.gasto; }); const canvasId = `companyDistribution-${prefix}`; const chartContainerHTML = ` <div class="chart-container"> <h2>Distribuição Regional - ${company.name}</h2> <canvas id="${canvasId}"></canvas> </div>`; distributionContainer.innerHTML += chartContainerHTML; setTimeout(() => { createOrUpdateChart(canvasId, 'pie', { labels: ['Brasil', 'Estados Unidos', 'Europa'], datasets: [{ label: 'Investimento', data: [regionalSplit.br, regionalSplit.us, regionalSplit.eu], backgroundColor: [REGION_COLORS.br.investment, REGION_COLORS.us.investment, REGION_COLORS.eu.investment] }] }, { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff' } } }); }, 0); } }); }
+        function populateCompanyCheckboxes() { const container = document.getElementById('company-checkbox-group'); if (!container) return; container.innerHTML = ''; container.innerHTML += `<input type="checkbox" id="company-all" value="all" onchange="handleCompanySelection(this)" checked><label for="company-all">Todas</label>`; Object.entries(COMPANIES).forEach(([prefix, company]) => { container.innerHTML += ` <input type="checkbox" id="company-${prefix}" value="${prefix}" onchange="handleCompanySelection(this)"> <label for="company-${prefix}">${company.name}</label> `; }); }
+        function handleCompanySelection(checkbox) { const allCheckbox = document.getElementById('company-all'); const companyCheckboxes = document.querySelectorAll('#company-checkbox-group input:not(#company-all)'); if (checkbox.id === 'company-all' && checkbox.checked) { companyCheckboxes.forEach(cb => cb.checked = false); } else if (checkbox.id !== 'company-all') { if (Array.from(companyCheckboxes).some(cb => cb.checked)) { allCheckbox.checked = false; } } if (!document.querySelector('#company-checkbox-group input:checked')) { allCheckbox.checked = true; } updateCompanyEvolutionChart(); }
+        function updateCompanyEvolutionChart() { const selectedCompanyPrefixes = Array.from(document.querySelectorAll('#company-checkbox-group input:checked')).map(cb => cb.value); const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao)); const allDates = [...new Set(dataOnlyTotal.map(r => r.data))].sort((a, b) => parseDate(a) - parseDate(b)); const evolutionDatasets = []; const companiesToDisplay = selectedCompanyPrefixes.includes('all') ? Object.keys(COMPANIES) : selectedCompanyPrefixes; companiesToDisplay.forEach(prefix => { const company = COMPANIES[prefix]; if (!company) return; const dailyData = {}; dataOnlyTotal.filter(row => row.operacao.startsWith(prefix)).forEach(row => { if (!dailyData[row.data]) dailyData[row.data] = 0; dailyData[row.data] += row.gasto; }); const investmentData = allDates.map(date => dailyData[date] || 0); if (selectedCompanyPrefixes.includes('all') && !investmentData.some(val => val > 0)) { return; } evolutionDatasets.push({ label: company.name, data: investmentData, borderColor: company.color, backgroundColor: hexToRgba(company.color, 0.1), fill: false, tension: 0.4 }); }); createOrUpdateChart('companyEvolutionChart', 'line', { labels: allDates, datasets: evolutionDatasets }); }
+        function renderMetasView(data, allFilteredData) { if (data.length === 0) return; const allDates = [...new Set(data.map(d => d.data))].filter(Boolean).sort((a,b) => parseDate(b) - parseDate(a)); const lastDateStr = allDates[0]; const dayBeforeLastDateStr = allDates[1]; const ontemData = data.filter(d => d.data === lastDateStr); const diaAnteriorData = dayBeforeLastDateStr ? data.filter(d => d.data === dayBeforeLastDateStr) : []; const totalPeriodDataByOp = {}; data.forEach(row => { const goalKey = getGoalKeyFromOperation(row.operacao); if (!goalKey) return; if (!totalPeriodDataByOp[goalKey]) totalPeriodDataByOp[goalKey] = { gasto: 0, receita: 0 }; totalPeriodDataByOp[goalKey].gasto += row.gasto; totalPeriodDataByOp[goalKey].receita += row.receita; }); const mergedData = []; const activeGoals = Object.entries(GOALS_DATA).filter(([,goal]) => goal.investimento > 0); activeGoals.forEach(([goalKey, goal]) => { const matchingOpsOntem = ontemData.filter(row => getGoalKeyFromOperation(row.operacao) === goalKey); const gastoOntem = matchingOpsOntem.reduce((sum, r) => sum + r.gasto, 0); const receitaOntem = matchingOpsOntem.reduce((sum, r) => sum + r.receita, 0); const matchingOpsDiaAnterior = diaAnteriorData.filter(row => getGoalKeyFromOperation(row.operacao) === goalKey); const gastoDiaAnterior = matchingOpsDiaAnterior.reduce((sum, r) => sum + r.gasto, 0); const totalData = totalPeriodDataByOp[goalKey] || {gasto: 0, receita: 0}; const roasMedioTotal = totalData.gasto > 0 ? totalData.receita / totalData.gasto : 0; const roasOntem = gastoOntem > 0 ? receitaOntem / gastoOntem : 0; const progressoInvest = (goal.investimento > 0) ? (gastoOntem / goal.investimento) * 100 : 0; const progressoDiaAnterior = (goal.investimento > 0) ? (gastoDiaAnterior / goal.investimento) * 100 : 0; const diffProgresso = progressoInvest - progressoDiaAnterior; mergedData.push({ operacao: goalKey, atualInvestimento: gastoOntem, metaInvestimento: goal.investimento, progressoInvest: progressoInvest, gapInvestimento: goal.investimento - gastoOntem, atualRoas: roasOntem, metaRoas: goal.roas, diffRoas: (roasOntem - goal.roas) * 100, roasMedioTotal: roasMedioTotal, diffProgresso: diffProgresso }); }); segmentDataCache['metas-detailed-table'] = mergedData; const gastoTotalOntem = ontemData.reduce((sum, item) => sum + item.gasto, 0); const totalMeta = mergedData.reduce((sum, item) => sum + item.metaInvestimento, 0); const progressoTotal = totalMeta > 0 ? (gastoTotalOntem / totalMeta) * 100 : 0; document.getElementById('metas-kpi-cards').innerHTML = createCardHTML({ icon: '💰', title: `Progresso Meta Diária (${lastDateStr || 'N/A'})`, value: `${progressoTotal.toFixed(1)}%`, footerHTML: `<div class="progress-bar"><div class="progress-bar-inner" style="width: ${Math.min(progressoTotal, 100)}%;"></div></div> <div style="font-size: 0.9em; color: var(--text-light); margin-top: 5px;">${formatCurrency(gastoTotalOntem)} de ${formatCurrency(totalMeta)}</div>` }); _renderAndAttachSortListenersForMetasTable('metas-detailed-table', mergedData); renderDailyGoalProgressionTable(gastoTotalOntem, mergedData); renderSprint1MCard(allFilteredData, gastoTotalOntem); renderSprint1MTable(allFilteredData, ontemData); }
+        function _renderAndAttachSortListenersForMetasTable(elementId, dataToRender) { const container = document.getElementById(elementId); if (!container) return; const currentSort = metasTableSortState[elementId] || {}; const getSortIndicator = (key) => { if (currentSort.key !== key) return '⇅'; return currentSort.order === 'desc' ? '▼' : '▲'; }; const headers = [ { key: 'operacao', label: 'Operação' }, { key: 'atualInvestimento', label: 'Investimento de Ontem' }, { key: 'metaInvestimento', label: 'Meta Diária' }, { key: 'progressoInvest', label: 'Progresso', style: 'min-width: 180px;' }, { key: 'diffProgresso', label: 'Status Investimento' }, { key: 'gapInvestimento', label: 'Gap (R$)' }, { key: 'atualRoas', label: 'ROAS de Ontem' }, { key: 'roasMedioTotal', label: 'ROAS Médio Total' }, { key: 'metaRoas', label: 'Meta ROAS' }, { key: 'diffRoas', label: 'Status ROAS' } ]; let tableHtml = `<table class="performance-table"><thead><tr>`; headers.forEach(h => { tableHtml += `<th class="sortable" data-sort="${h.key}" style="${h.style || ''}">${h.label} <span class="sort-indicator">${getSortIndicator(h.key)}</span></th>`; }); tableHtml += `</tr></thead><tbody>`; dataToRender.forEach(d => { const progresso = Math.min(d.progressoInvest, 100); const roasClass = d.diffRoas >= 0 ? 'delta-positive' : 'delta-negative'; const roasSign = d.diffRoas >= 0 ? '+' : ''; const statusInvestClass = d.diffProgresso >= 0 ? 'delta-positive' : 'delta-negative'; const statusInvestSign = d.diffProgresso > 0 ? '+' : ''; const statusInvestText = !isNaN(d.diffProgresso) ? `${statusInvestSign}${d.diffProgresso.toFixed(1)} p.p.` : '-'; tableHtml += `<tr> <td>${d.operacao}</td> <td>${formatCurrency(d.atualInvestimento)}</td> <td>${formatCurrency(d.metaInvestimento)}</td> <td> <div class="progress-bar-container"> <div class="progress-bar"> <div class="progress-bar-inner" style="width: ${progresso}%;"></div> </div> <span class="progress-percent">${d.progressoInvest.toFixed(0)}%</span> </div> </td> <td><span class="${statusInvestClass}">${statusInvestText}</span></td> <td>${formatCurrency(d.gapInvestimento)}</td> <td>${(d.atualRoas * 100).toFixed(0)}%</td> <td>${(d.roasMedioTotal * 100).toFixed(0)}%</td> <td>${(d.metaRoas * 100).toFixed(0)}%</td> <td><span class="${roasClass}">${roasSign}${d.diffRoas.toFixed(1)} p.p.</span></td> </tr>`; }); container.innerHTML = tableHtml + `</tbody></table>`; container.querySelectorAll('.sortable').forEach(th => { th.addEventListener('click', () => { sortTable(elementId, th.dataset.sort, segmentDataCache, metasTableSortState, _renderAndAttachSortListenersForMetasTable); }); }); }
+        function renderDailyGoalProgressionTable(gastoTotalOntem, metasData) { const container = document.getElementById('metas-acceleration-table'); if (!container) return; const totalMetaDiariaOriginal = metasData.reduce((sum, item) => sum + item.metaInvestimento, 0); const cenarios = [ { label: 'Cenário 1M/dia', target: 1000000 }, { label: 'Cenário 1.5M/dia', target: 1500000 }, { label: 'Cenário 2M/dia', target: 2000000 }, { label: 'Cenário 2.5M/dia', target: 2500000 } ]; let tableHTML = `<table class="performance-table acceleration-table">`; tableHTML += `<thead><tr> <th rowspan="2" style="min-width: 200px;">Operação</th> <th rowspan="2">Gasto de Ontem</th> <th rowspan="2">Meta Original</th>`; cenarios.forEach((c, index) => { tableHTML += `<th colspan="2" class="${index === 0 ? 'scenario-group-start' : ''}">${c.label}</th>`; }); tableHTML += `</tr>`; tableHTML += `<tr>`; cenarios.forEach((c, index) => { tableHTML += `<th class="${index === 0 ? 'scenario-group-start' : ''}">Gasto Alvo</th><th>Acréscimo</th>`; }); tableHTML += `</tr></thead>`; tableHTML += `<tbody>`; metasData.forEach(op => { tableHTML += `<tr> <td>${op.operacao}</td> <td>${formatCurrency(op.atualInvestimento)}</td> <td>${formatCurrency(op.metaInvestimento)}</td>`; cenarios.forEach((c, index) => { const gapGlobal = c.target - gastoTotalOntem; const groupClass = index === 0 ? 'scenario-group-start' : ''; if (gapGlobal <= 0) { tableHTML += `<td class="delta-positive ${groupClass}">Atingido</td><td>-</td>`; } else { const peso = (totalMetaDiariaOriginal > 0) ? op.metaInvestimento / totalMetaDiariaOriginal : 0; const acrescimo = gapGlobal * peso; const gastoAlvo = op.atualInvestimento + acrescimo; tableHTML += `<td class="${groupClass}">${formatCurrency(gastoAlvo)}</td> <td class="delta-negative acrescimo-cell"><span>+${formatCurrency(acrescimo)}</span></td>`; } }); tableHTML += `</tr>`; }); container.innerHTML = tableHTML + '</tbody></table>'; }
+        function renderSprint1MCard(allFilteredData, gastoTotalOntem) { const container = document.getElementById('sprint-kpi-cards'); if (!container) return; const progress = SPRINT_1M_GOAL > 0 ? (gastoTotalOntem / SPRINT_1M_GOAL) * 100 : 0; container.innerHTML = createCardHTML({ icon: '🚀', title: `Progresso Sprint 1M (até ${formatDate(SPRINT_1M_DEADLINE, true)})`, value: `${progress.toFixed(1)}%`, footerHTML: `<div class="progress-bar"><div class="progress-bar-inner" style="width: ${Math.min(progress, 100)}%;"></div></div> <div style="font-size: 0.9em; color: var(--text-light); margin-top: 5px;">${formatCurrency(gastoTotalOntem)} de ${formatCurrency(SPRINT_1M_GOAL)}</div>` }); }
+        function renderSprint1MTable(allFilteredData, ontemData) { const container = document.getElementById('sprint-1m-table'); if (!container) return; const today = new Date(); today.setUTCHours(0,0,0,0); const daysRemaining = Math.max(1, (SPRINT_1M_DEADLINE.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) + 1); const opMetrics = {}; const sprintOperations = SPRINT_1M_BASE_OPERATIONS.filter(opKey => !SPRINT_1M_RULES[opKey]?.exclude); sprintOperations.forEach(opKey => { const opData = allFilteredData.filter(row => getGoalKeyFromOperation(row.operacao) === opKey); const totalGasto = opData.reduce((sum, r) => sum + r.gasto, 0); const totalReceita = opData.reduce((sum, r) => sum + r.receita, 0); const gastoOntem = ontemData.filter(row => getGoalKeyFromOperation(row.operacao) === opKey).reduce((sum, r) => sum + r.gasto, 0); opMetrics[opKey] = { roas: totalGasto > 0 ? totalReceita / totalGasto : 0, gastoOntem: gastoOntem }; }); const gastoTotalOntem = ontemData.reduce((sum, r) => sum + r.gasto, 0); let totalGapParaAcelerar = SPRINT_1M_GOAL - gastoTotalOntem; const tableData = []; let totalIncrementoFixo = 0; sprintOperations.forEach(opKey => { const rule = SPRINT_1M_RULES[opKey]; if (rule) { let incrementoDiario = 0; let metaDiariaFinal = 0; if (rule.finalTarget) { metaDiariaFinal = rule.finalTarget; const gap = metaDiariaFinal - opMetrics[opKey].gastoOntem; incrementoDiario = gap / daysRemaining; } else if (rule.target) { metaDiariaFinal = rule.target; const gap = metaDiariaFinal - opMetrics[opKey].gastoOntem; incrementoDiario = gap > 0 ? gap / daysRemaining : 0; } totalIncrementoFixo += incrementoDiario; tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal, incrementoDiario }); } }); const gapParaDistribuir = (totalGapParaAcelerar / daysRemaining) - totalIncrementoFixo; const opsParaDistribuir = sprintOperations.filter(opKey => !SPRINT_1M_RULES[opKey] && opMetrics[opKey].roas > 0.9); const pesoTotal = opsParaDistribuir.reduce((sum, opKey) => sum + (GOALS_DATA[opKey]?.investimento || 50000), 0); opsParaDistribuir.forEach(opKey => { const peso = (GOALS_DATA[opKey]?.investimento || 50000) / pesoTotal; const incrementoDiario = gapParaDistribuir > 0 ? gapParaDistribuir * peso : 0; const metaDiariaFinal = opMetrics[opKey].gastoOntem + (incrementoDiario * daysRemaining); tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal, incrementoDiario }); }); sprintOperations.forEach(opKey => { if (!tableData.find(d => d.operacao === opKey)) { tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal: opMetrics[opKey].gastoOntem, incrementoDiario: 0 }); } }); const dateHeaders = Array.from({ length: daysRemaining }, (_, i) => { const d = new Date(today); d.setUTCDate(today.getUTCDate() + i); return d; }); const dailySpendByOp = allFilteredData.reduce((acc, row) => { const key = getGoalKeyFromOperation(row.operacao); if (key) { if (!acc[key]) acc[key] = {}; acc[key][row.data] = (acc[key][row.data] || 0) + row.gasto; } return acc; }, {}); let tableHTML = `<table class="performance-table sprint-table"><thead><tr> <th>Operação</th><th>Gasto Ontem</th><th>Meta Diária Final</th><th>Gap p/ Meta</th><th>Incremento Diário</th>`; dateHeaders.forEach(d => tableHTML += `<th>${formatDate(d, true)}</th>`); tableHTML += `</tr></thead><tbody>`; tableData.sort((a, b) => sprintOperations.indexOf(a.operacao) - sprintOperations.indexOf(b.operacao)); tableData.forEach(d => { const gap = d.metaDiariaFinal - d.gastoOntem; tableHTML += `<tr> <td>${d.operacao}</td><td>${formatCurrency(d.gastoOntem)}</td> <td style="font-weight:bold;">${formatCurrency(d.metaDiariaFinal)}</td> <td class="${gap >= 0 ? 'delta-negative' : 'delta-positive'}">${formatCurrency(gap)}</td> <td style="font-style: italic; color: ${d.incrementoDiario >= 0 ? 'var(--color-negative)' : 'var(--color-positive)'};">${d.incrementoDiario >= 0 ? '+' : ''}${formatCurrency(d.incrementoDiario)}</td>`; dateHeaders.forEach((date, i) => { const plannedSpend = d.gastoOntem + (d.incrementoDiario * (i + 1)); const actualSpend = dailySpendByOp[d.operacao]?.[formatDate(date)]; if (actualSpend !== undefined) { const performanceClass = actualSpend >= plannedSpend ? 'delta-positive' : 'delta-negative'; const progressPct = plannedSpend > 0.01 ? (actualSpend / plannedSpend * 100).toFixed(0) : 100; tableHTML += `<td> <div class="daily-cell ${performanceClass}"> <div>Real: ${formatCurrency(actualSpend)} (${progressPct}%)</div> <div>Planj: ${formatCurrency(plannedSpend)}</div> </div></td>`; } else { tableHTML += `<td><div class="daily-cell"><div>Planj: ${formatCurrency(plannedSpend)}</div></div></td>`; } }); tableHTML += `</tr>`; }); tableHTML += `</tbody><tfoot><tr><td>Total</td>`; const footerTotals = { gastoOntem: tableData.reduce((s, d) => s + d.gastoOntem, 0), metaDiariaFinal: tableData.reduce((s, d) => s + d.metaDiariaFinal, 0), gap: tableData.reduce((s, d) => s + (d.metaDiariaFinal - d.gastoOntem), 0), incrementoDiario: tableData.reduce((s, d) => s + d.incrementoDiario, 0) }; tableHTML += `<td>${formatCurrency(footerTotals.gastoOntem)}</td> <td>${formatCurrency(footerTotals.metaDiariaFinal)}</td> <td>${formatCurrency(footerTotals.gap)}</td> <td>+${formatCurrency(footerTotals.incrementoDiario)}</td>`; dateHeaders.forEach((date, i) => { const totalPlanned = tableData.reduce((s, d) => s + (d.gastoOntem + (d.incrementoDiario * (i + 1))), 0); const totalActual = sprintOperations.reduce((s, opKey) => s + (dailySpendByOp[opKey]?.[formatDate(date)] || 0), 0); if (totalActual > 0) { tableHTML += `<td>${formatCurrency(totalActual)}</td>`; } else { tableHTML += `<td>${formatCurrency(totalPlanned)}</td>`; } }); tableHTML += `</tr></tfoot>`; container.innerHTML = tableHTML + `</table>`; }
         
-        function renderManagerCharts(data) {
-            const includedData = data.filter(row => row.responsavelAquisicao && !EXCLUDED_MANAGERS.includes(row.responsavelAquisicao.toUpperCase()));
-            const managerSummary = {};
-            includedData.forEach(row => {
-                const manager = row.responsavelAquisicao;
-                if (!managerSummary[manager]) managerSummary[manager] = { gasto: 0, receita: 0, leads: 0, ops: new Set() };
-                managerSummary[manager].gasto += row.gasto;
-                managerSummary[manager].receita += row.receita;
-                managerSummary[manager].leads += row.leads;
-                managerSummary[manager].ops.add(row.operacao);
+        // --- INÍCIO DAS FUNÇÕES PARA A ABA "ANÁLISE DE CONTAS JN" ---
+    
+        function processJnData() {
+            populateJnAccountFilter();
+            filterJnData();
+        }
+    
+        function filterJnData() {
+            const dateStartStr = document.getElementById('dateFilterStart').value;
+            const dateEndStr = document.getElementById('dateFilterEnd').value;
+            let dateStart = null, dateEnd = null;
+    
+            if (dateStartStr) { dateStart = new Date(dateStartStr + 'T00:00:00Z'); }
+            if (dateEndStr) { dateEnd = new Date(dateEndStr + 'T23:59:59Z'); }
+    
+            filteredDataJn = rawDataJn.filter(row => {
+                if (!row.day) return false;
+                try {
+                    const rowDate = new Date(row.day + 'T00:00:00Z');
+                    if (dateStart && rowDate < dateStart) return false;
+                    if (dateEnd && rowDate > dateEnd) return false;
+                } catch (e) { return false; }
+                return true;
             });
-
-            const managers = Object.keys(managerSummary);
-            const horizontalBarOptions = (formatter) => ({
-                indexAxis: 'y',
-                plugins: {
-                    legend: { display: false },
-                    datalabels: { display: true, anchor: 'end', align: 'end', color: '#555', font: { size: 12, weight: '600' }, formatter: formatter, offset: 4 }
-                },
-                scales: {
-                    x: { grid: { display: false }, ticks: { display: false } },
-                    y: { grid: { display: false }, ticks: { font: { size: 14 } } }
-                }
+    
+            renderJnAnalysisView();
+        }
+    
+        function populateJnAccountFilter() {
+            const select = document.getElementById('jnAccountFilter');
+            if (!select || rawDataJn.length === 0) return;
+            const accounts = [...new Set(rawDataJn.map(r => r.accountName))].sort();
+            select.innerHTML = '<option value="">Selecione uma conta...</option>';
+            accounts.forEach(acc => {
+                select.innerHTML += `<option value="${acc}">${acc}</option>`;
             });
+        }
 
-            const sortedByGasto = [...managers].sort((a, b) => managerSummary[b].gasto - managerSummary[a].gasto);
-            createOrUpdateChart('gestorInvestimentoTotalChart', 'bar', {
-                labels: sortedByGasto,
-                datasets: [{ label: 'Investimento Total', data: sortedByGasto.map(m => managerSummary[m].gasto), backgroundColor: '#3498db' }]
-            }, horizontalBarOptions((v) => formatKilo(v)));
+        function toggleJnViewMode(mode) {
+            const singleControls = document.getElementById('jn-single-view-controls');
+            const compareControls = document.getElementById('jn-compare-view-controls');
+            if (mode === 'single') {
+                singleControls.style.display = 'flex';
+                compareControls.style.display = 'none';
+                clearJnComparison();
+            } else {
+                singleControls.style.display = 'none';
+                compareControls.style.display = 'flex';
+                document.getElementById('jnAccountFilter').value = '';
+                renderJnAnalysisView();
+            }
+        }
 
-            const sortedByRoas = [...managers].sort((a, b) => (managerSummary[b].gasto > 0 ? managerSummary[b].receita / managerSummary[b].gasto : 0) - (managerSummary[a].gasto > 0 ? managerSummary[a].receita / managerSummary[a].gasto : 0));
-            createOrUpdateChart('gestorRoasChart', 'bar', {
-                labels: sortedByRoas,
-                datasets: [{ label: 'ROAS Médio', data: sortedByRoas.map(m => managerSummary[m].gasto > 0 ? managerSummary[m].receita / managerSummary[m].gasto : 0), backgroundColor: '#9b59b6' }]
-            }, horizontalBarOptions((v) => v.toFixed(2) + 'x'));
-
-            const sortedByCPA = [...managers].sort((a, b) => (managerSummary[a].leads > 0 ? managerSummary[a].gasto / managerSummary[a].leads : Infinity) - (managerSummary[b].leads > 0 ? managerSummary[b].gasto / managerSummary[b].leads : Infinity));
-            createOrUpdateChart('gestorCpaChart', 'bar', {
-                labels: sortedByCPA,
-                datasets: [{ label: 'CPA Médio', data: sortedByCPA.map(m => managerSummary[m].leads > 0 ? managerSummary[m].gasto / managerSummary[m].leads : 0), backgroundColor: '#e67e22' }]
-            }, horizontalBarOptions((v) => formatCurrency(v)));
+        function handleJnAccountSearch() {
+            const searchTerm = document.getElementById('jnAccountSearch').value.toLowerCase();
+            const resultsContainer = document.getElementById('jnSearchResults');
+            if (!searchTerm) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+            const allAccounts = [...new Set(rawDataJn.map(r => r.accountName))].sort();
+            const filteredAccounts = allAccounts.filter(acc => 
+                acc.toLowerCase().includes(searchTerm) && !jnComparedAccounts.includes(acc)
+            );
             
-            const sortedByOps = [...managers].sort((a, b) => managerSummary[b].ops.size - managerSummary[a].ops.size);
-            createOrUpdateChart('managerOpsCountChart', 'bar', {
-                labels: sortedByOps,
-                datasets: [{ label: 'Nº de Operações', data: sortedByOps.map(m => managerSummary[m].ops.size), backgroundColor: '#1abc9c' }]
-            }, horizontalBarOptions((v) => v));
+            resultsContainer.innerHTML = filteredAccounts.map(acc => 
+                `<div class="search-result-item" onclick="addJnAccountToComparison('${acc.replace(/'/g, "\\'")}')">${acc}</div>`
+            ).join('');
         }
         
-        function renderAdopsCharts(data) {
-            const adopsSummary = {};
-            const includedData = data.filter(row => row.responsavelMonetizacao && row.responsavelMonetizacao.trim() !== "");
-            includedData.forEach(row => {
-                const adops = row.responsavelMonetizacao;
-                if (!adopsSummary[adops]) {
-                    adopsSummary[adops] = { gasto: 0, receita: 0, leads: 0, ops: new Set() };
-                }
-                adopsSummary[adops].gasto += row.gasto;
-                adopsSummary[adops].receita += row.receita;
-                adopsSummary[adops].leads += row.leads;
-                adopsSummary[adops].ops.add(row.operacao); 
-            });
-            const adopsPersonnel = Object.keys(adopsSummary);
+        function addJnAccountToComparison(accountName) {
+            if (!jnComparedAccounts.includes(accountName)) {
+                jnComparedAccounts.push(accountName);
+                renderJnSelectedAccounts();
+                renderJnAnalysisView();
+            }
+            document.getElementById('jnAccountSearch').value = '';
+            document.getElementById('jnSearchResults').innerHTML = '';
+        }
 
-            const horizontalBarOptions = (formatter) => ({
-                indexAxis: 'y',
-                plugins: {
-                    legend: { display: false },
-                    datalabels: { display: true, anchor: 'end', align: 'end', color: '#555', font: { size: 12, weight: '600' }, formatter: formatter, offset: 4 }
-                },
-                scales: {
-                    x: { grid: { display: false }, ticks: { display: false } },
-                    y: { grid: { display: false }, ticks: { font: { size: 14 } } }
-                }
-            });
+        function removeJnAccountFromComparison(accountName) {
+            jnComparedAccounts = jnComparedAccounts.filter(acc => acc !== accountName);
+            renderJnSelectedAccounts();
+            renderJnAnalysisView();
+        }
 
-            const sortedByRevenue = [...adopsPersonnel].sort((a, b) => adopsSummary[b].receita - adopsSummary[a].receita);
-            createOrUpdateChart('adopsRevenueChart', 'bar', {
-                labels: sortedByRevenue,
-                datasets: [{ label: 'Receita Total', data: sortedByRevenue.map(m => adopsSummary[m].receita), backgroundColor: '#2ecc71' }]
-            }, horizontalBarOptions(formatCurrency));
+        function renderJnSelectedAccounts() {
+            const container = document.getElementById('jnSelectedAccounts');
+            container.innerHTML = jnComparedAccounts.map((acc, index) => 
+                `<span class="account-pill" style="background-color: ${FANCY_COLORS[index % FANCY_COLORS.length]}">
+                    ${acc}
+                    <span class="remove-pill" onclick="removeJnAccountFromComparison('${acc.replace(/'/g, "\\'")}')">&times;</span>
+                </span>`
+            ).join('');
+        }
 
-            const sortedByInvestment = [...adopsPersonnel].sort((a, b) => adopsSummary[b].gasto - adopsSummary[a].gasto);
-            createOrUpdateChart('adopsInvestmentChart', 'bar', {
-                labels: sortedByInvestment,
-                datasets: [{ label: 'Investimento Gerenciado', data: sortedByInvestment.map(m => adopsSummary[m].gasto), backgroundColor: '#3498db' }]
-            }, horizontalBarOptions(formatCurrency));
-
-            const sortedByRoas = [...adopsPersonnel].sort((a, b) => (adopsSummary[b].gasto > 0 ? adopsSummary[b].receita / adopsSummary[b].gasto : 0) - (adopsSummary[a].gasto > 0 ? adopsSummary[a].receita / adopsSummary[a].gasto : 0));
-            createOrUpdateChart('adopsRoasChart', 'bar', {
-                labels: sortedByRoas,
-                datasets: [{ label: 'ROAS Médio', data: sortedByRoas.map(m => adopsSummary[m].gasto > 0 ? adopsSummary[m].receita / adopsSummary[m].gasto : 0), backgroundColor: '#9b59b6' }]
-            }, horizontalBarOptions((v) => v.toFixed(2) + 'x'));
-
-            const sortedByLeads = [...adopsPersonnel].sort((a, b) => adopsSummary[b].leads - adopsSummary[a].leads);
-            createOrUpdateChart('adopsLeadsChart', 'bar', {
-                labels: sortedByLeads,
-                datasets: [{ label: 'Leads Gerenciados', data: sortedByLeads.map(m => adopsSummary[m].leads), backgroundColor: '#f1c40f' }]
-            }, horizontalBarOptions((v) => v.toLocaleString('pt-BR')));
+        function clearJnComparison() {
+            jnComparedAccounts = [];
+            renderJnSelectedAccounts();
+            renderJnAnalysisView();
+        }
+    
+        function renderJnAnalysisView() {
+            renderJnEvolutionChart();
             
-            const sortedByOps = [...adopsPersonnel].sort((a, b) => adopsSummary[b].ops.size - adopsSummary[a].ops.size);
-            createOrUpdateChart('adopsOpsCountChart', 'bar', {
-                labels: sortedByOps,
-                datasets: [{ label: 'Nº de Operações', data: sortedByOps.map(m => adopsSummary[m].ops.size), backgroundColor: '#e74c3c' }]
-            }, horizontalBarOptions((v) => v));
+            const mode = document.querySelector('input[name="jn-view-mode"]:checked').value;
+            let accountsForTable = [];
+            if (mode === 'single') {
+                const selectedAccount = document.getElementById('jnAccountFilter').value;
+                if (selectedAccount) {
+                    accountsForTable.push(selectedAccount);
+                }
+            } else {
+                accountsForTable = [...jnComparedAccounts];
+            }
+
+            let aggregatedData = [];
+            if (accountsForTable.length > 0) {
+                const dataToAggregate = filteredDataJn.filter(r => accountsForTable.includes(r.accountName));
+                
+                const dailySums = dataToAggregate.reduce((acc, row) => {
+                    if (!acc[row.day]) {
+                        acc[row.day] = { day: row.day, spend: 0, impressions: 0, clicks: 0, conversions: 0 };
+                    }
+                    acc[row.day].spend += row.spend;
+                    acc[row.day].impressions += row.impressions;
+                    acc[row.day].clicks += row.clicks;
+                    acc[row.day].conversions += row.conversions;
+                    return acc;
+                }, {});
+
+                aggregatedData = Object.values(dailySums).map(day => ({
+                    day: day.day,
+                    spend: day.spend,
+                    impressions: day.impressions,
+                    clicks: day.clicks,
+                    conversions: day.conversions,
+                    ctr: day.impressions > 0 ? (day.clicks / day.impressions) * 100 : 0,
+                    convRate: day.clicks > 0 ? (day.conversions / day.clicks) * 100 : 0,
+                    cpa: day.conversions > 0 ? day.spend / day.conversions : 0,
+                    cpm: day.impressions > 0 ? (day.spend / day.impressions) * 1000 : 0,
+                    cpc: day.clicks > 0 ? day.spend / day.clicks : 0
+                }));
+            }
+            
+            _renderAndAttachSortListenersForJnTable('jn-daily-table', aggregatedData, accountsForTable);
         }
-
-        function renderBusinessSegmentTables(data) {
-            createSegmentTable('segmentUsCcTable', SEGMENT_US_CC, data);
-            createSegmentTable('segmentUsEmpTable', SEGMENT_US_EMP, data);
-            createSegmentTable('segmentBrCcTable', SEGMENT_BR_CC, data);
-            createSegmentTable('segmentBrEmpTable', SEGMENT_BR_EMP, data);
-            createSegmentTable('segmentDeCcTable', SEGMENT_DE_CC, data);
-            createSegmentTable('segmentFrCcTable', SEGMENT_FR_CC, data);
-        }
-
-        function createSegmentTable(elementId, segmentOperations, allData) {
-            const segmentData = segmentOperations.map(op => {
-                const rows = allData.filter(row => row.operacao === op);
-                const gasto = rows.reduce((s, r) => s + r.gasto, 0);
-                const receita = rows.reduce((s, r) => s + r.receita, 0);
-                const leads = rows.reduce((s, r) => s + r.leads, 0);
-
-                const roas = gasto > 0 ? receita / gasto : 0;
-                const cpa = leads > 0 ? gasto / leads : 0;
-                const receitaPorLead = leads > 0 ? receita / leads : 0;
-                const perdaPorLead = cpa - receitaPorLead;
-                const roasPercentage = (roas - 1) * 100;
-
-                return { operacao: op, gasto, receita, leads, cpa, roasPercentage, perdaPorLead };
-            });
-
-            segmentDataCache[elementId] = segmentData;
-            _renderAndAttachSortListeners(elementId, segmentData, tableSortState);
-        }
-
-        function _renderAndAttachSortListeners(elementId, dataToRender, stateObject) {
+    
+        function _renderAndAttachSortListenersForJnTable(elementId, data, accounts) {
             const container = document.getElementById(elementId);
             if (!container) return;
 
-            const currentSort = stateObject[elementId] || {};
+            if (!data || data.length === 0) {
+                container.innerHTML = (accounts && accounts.length > 0) ?
+                    '<p style="padding: 20px; text-align: center;">Nenhum dado encontrado para a(s) conta(s) no período selecionado.</p>' :
+                    '<p style="padding: 20px; text-align: center;">Selecione uma ou mais contas para ver os dados diários agregados.</p>';
+                return;
+            }
+    
+            const currentSort = jnTableSortState[elementId] || { key: 'day', order: 'desc' };
             const getSortIndicator = (key) => {
                 if (currentSort.key !== key) return '⇅';
                 return currentSort.order === 'desc' ? '▼' : '▲';
             };
-            
+    
+            const sortedData = [...data].sort((a, b) => {
+                const valA = currentSort.key === 'day' ? new Date(a[currentSort.key]) : a[currentSort.key];
+                const valB = currentSort.key === 'day' ? new Date(b[currentSort.key]) : b[currentSort.key];
+                if (typeof valA === 'string') {
+                    return currentSort.order === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+                return currentSort.order === 'asc' ? valA - valB : valB - valA;
+            });
+    
+            const currencyReferenceAccount = accounts.length > 0 ? accounts[0] : '';
+    
             const headers = [
-                { key: 'operacao', label: 'Operação' },
-                { key: 'gasto', label: 'Gasto' },
-                { key: 'leads', label: 'Leads' },
-                { key: 'cpa', label: 'CPA' },
-                { key: 'roasPercentage', label: 'ROAS' },
-                { key: 'perdaPorLead', label: 'Perda por Lead' }
+                { key: 'day', label: 'Dia' }, { key: 'spend', label: 'Gasto' }, { key: 'impressions', label: 'Impressões' },
+                { key: 'clicks', label: 'Cliques' }, { key: 'ctr', label: 'CTR' }, { key: 'conversions', label: 'Conversões' },
+                { key: 'convRate', label: 'Tx. Conv.' }, { key: 'cpa', label: 'CPA' }, { key: 'cpm', label: 'CPM' },
+                { key: 'cpc', label: 'CPC' }
             ];
-
+    
             let tableHtml = `<table class="performance-table"><thead><tr>`;
             headers.forEach(h => {
                 tableHtml += `<th class="sortable" data-sort="${h.key}">${h.label} <span class="sort-indicator">${getSortIndicator(h.key)}</span></th>`;
             });
             tableHtml += `</tr></thead><tbody>`;
-
-            dataToRender.forEach(d => {
-                const roasClass = d.roasPercentage >= 0 ? 'delta-positive' : 'delta-negative';
-                const roasSign = d.roasPercentage >= 0 ? '+' : '';
+    
+            sortedData.forEach(row => {
                 tableHtml += `<tr>
-                    <td>${d.operacao.replace(' TOTAL', '')}</td>
-                    <td>${formatCurrency(d.gasto)}</td>
-                    <td>${d.leads.toLocaleString('pt-BR')}</td>
-                    <td>${formatCurrency(d.cpa)}</td>
-                    <td><span class="${roasClass}">${roasSign}${d.roasPercentage.toFixed(0)}%</span></td>
-                    <td><span class="${d.perdaPorLead > 0 ? 'delta-negative' : 'delta-positive'}">${formatCurrency(d.perdaPorLead)}</span></td>
+                    <td>${formatDate(new Date(row.day + 'T00:00:00Z'))}</td>
+                    <td>${formatCurrency(row.spend, currencyReferenceAccount)}</td>
+                    <td>${row.impressions.toLocaleString('pt-BR')}</td>
+                    <td>${row.clicks.toLocaleString('pt-BR')}</td>
+                    <td>${(row.ctr).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</td>
+                    <td>${row.conversions.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td>${(row.convRate).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</td>
+                    <td>${formatCurrency(row.cpa, currencyReferenceAccount)}</td>
+                    <td>${formatCurrency(row.cpm, currencyReferenceAccount)}</td>
+                    <td>${formatCurrency(row.cpc, currencyReferenceAccount)}</td>
                 </tr>`;
             });
-            
-            container.innerHTML = tableHtml + `</tbody></table>`;
-            
+            tableHtml += `</tbody>`;
+    
+            const totals = data.reduce((acc, row) => {
+                acc.spend += row.spend;
+                acc.impressions += row.impressions;
+                acc.clicks += row.clicks;
+                acc.conversions += row.conversions;
+                return acc;
+            }, { spend: 0, impressions: 0, clicks: 0, conversions: 0 });
+    
+            const weightedAvg = {
+                ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
+                convRate: totals.clicks > 0 ? (totals.conversions / totals.clicks) * 100 : 0,
+                cpa: totals.conversions > 0 ? totals.spend / totals.conversions : 0,
+                cpm: totals.impressions > 0 ? (totals.spend / totals.impressions) * 1000 : 0,
+                cpc: totals.clicks > 0 ? totals.spend / totals.clicks : 0,
+            };
+    
+            tableHtml += `<tfoot><tr>
+                <td>Total / Média</td>
+                <td>${formatCurrency(totals.spend, currencyReferenceAccount)}</td>
+                <td>${totals.impressions.toLocaleString('pt-BR')}</td>
+                <td>${totals.clicks.toLocaleString('pt-BR')}</td>
+                <td>${(weightedAvg.ctr).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</td>
+                <td>${totals.conversions.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td>${(weightedAvg.convRate).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</td>
+                <td>${formatCurrency(weightedAvg.cpa, currencyReferenceAccount)}</td>
+                <td>${formatCurrency(weightedAvg.cpm, currencyReferenceAccount)}</td>
+                <td>${formatCurrency(weightedAvg.cpc, currencyReferenceAccount)}</td>
+            </tr></tfoot></table>`;
+    
+            container.innerHTML = tableHtml;
+    
             container.querySelectorAll('.sortable').forEach(th => {
                 th.addEventListener('click', () => {
-                    sortTable(elementId, th.dataset.sort, segmentDataCache, stateObject, _renderAndAttachSortListeners);
+                    const sortKey = th.dataset.sort;
+                    const currentState = jnTableSortState[elementId] || {};
+                    const nextOrder = (currentState.key === sortKey && currentState.order === 'asc') ? 'desc' : 'asc';
+                    jnTableSortState[elementId] = { key: sortKey, order: nextOrder };
+                    _renderAndAttachSortListenersForJnTable(elementId, data, accounts);
                 });
             });
         }
-
-        function sortTable(elementId, sortKey, cacheObject, stateObject, renderFunc) {
-            const data = [...cacheObject[elementId]];
-            const currentState = stateObject[elementId] || {};
+    
+        function renderJnEvolutionChart() {
+            const canvasId = 'jnEvolutionChart';
+            const mode = document.querySelector('input[name="jn-view-mode"]:checked').value;
             
-            let defaultOrder = 'desc';
-            if (['cpa', 'perdaPorLead', 'operacao'].includes(sortKey)) {
-                defaultOrder = 'asc';
-            }
-
-            let nextOrder = defaultOrder;
-            if (currentState.key === sortKey) {
-                nextOrder = currentState.order === 'asc' ? 'desc' : 'asc';
-            }
-
-            stateObject[elementId] = { key: sortKey, order: nextOrder };
-
-            data.sort((a, b) => {
-                const valA = a[sortKey];
-                const valB = b[sortKey];
-
-                if (typeof valA === 'string') {
-                    return nextOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-                } else {
-                    return nextOrder === 'asc' ? valA - valB : valB - valA;
-                }
-            });
-
-            renderFunc(elementId, data, stateObject);
-        }
-
-        function renderCompanyView(data) {
-            const companySummary = {};
-            Object.keys(COMPANIES).forEach(prefix => {
-                companySummary[prefix] = { gasto: 0, receita: 0, leads: 0, opsData: [] };
-            });
-
-            data.forEach(row => {
-                const prefix = row.operacao.substring(0, row.operacao.indexOf(' ')).toUpperCase();
-                if (COMPANIES[prefix]) {
-                    companySummary[prefix].gasto += row.gasto;
-                    companySummary[prefix].receita += row.receita;
-                    companySummary[prefix].leads += row.leads;
-                    companySummary[prefix].opsData.push(row);
-                }
-            });
-
-            const cardsContainer = document.getElementById('company-cards-wrapper');
-            cardsContainer.innerHTML = '';
-            Object.entries(companySummary).forEach(([prefix, summary]) => {
-                if (summary.gasto > 0) {
-                    const company = COMPANIES[prefix];
-                    const roas = summary.gasto > 0 ? summary.receita / summary.gasto : 0;
-                    const cpa = summary.leads > 0 ? summary.gasto / summary.leads : 0;
-                    
-                    let companyHTML = `<div class="regional-section"><h3>${company.name}</h3><div class="summary-cards">`;
-                    companyHTML += createCardHTML({ icon: '💰', title: 'Investimento Total', value: formatCurrency(summary.gasto) });
-                    companyHTML += createCardHTML({ icon: '🎯', title: 'ROAS Médio', value: `${roas.toFixed(2)}x` });
-                    companyHTML += createCardHTML({ icon: '💸', title: 'CPA Médio', value: formatCurrency(cpa) });
-                    companyHTML += createCardHTML({ icon: '👥', title: 'Total de Leads', value: summary.leads.toLocaleString('pt-BR') });
-                    companyHTML += `</div></div>`;
-                    cardsContainer.innerHTML += companyHTML;
-                }
-            });
-
-            const totalGastoData = Object.entries(companySummary)
-                .filter(([, summary]) => summary.gasto > 0)
-                .map(([prefix, summary]) => ({
-                    label: COMPANIES[prefix].name,
-                    value: summary.gasto,
-                    color: COMPANIES[prefix].color
-                }));
-
-            if (totalGastoData.length > 0) {
-                createOrUpdateChart('companyTotalGastoPieChart', 'pie', {
-                    labels: totalGastoData.map(d => d.label),
-                    datasets: [{
-                        data: totalGastoData.map(d => d.value),
-                        backgroundColor: totalGastoData.map(d => d.color)
-                    }]
-                }, {
-                    plugins: {
-                        datalabels: {
-                            display: true,
-                            formatter: (value, ctx) => {
-                                const total = ctx.chart.getDatasetMeta(0).total;
-                                return total > 0 ? (value / total * 100).toFixed(1) + '%' : '0%';
-                            },
-                            color: '#fff',
-                            font: { weight: 'bold', size: 14 }
-                        }
-                    }
-                });
+            let accountsToRender = [];
+            if (mode === 'single') {
+                const selectedAccount = document.getElementById('jnAccountFilter').value;
+                if(selectedAccount) accountsToRender.push(selectedAccount);
             } else {
-                if (charts['companyTotalGastoPieChart']) charts['companyTotalGastoPieChart'].destroy();
-                const ctx = document.getElementById('companyTotalGastoPieChart').getContext('2d');
-                if(ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                accountsToRender = [...jnComparedAccounts];
             }
 
-            updateCompanyEvolutionChart(); 
+            // Currency mismatch warning
+            const warningDiv = document.getElementById('jn-currency-warning');
+            if (mode === 'compare' && accountsToRender.length > 1) {
+                const currencies = new Set(accountsToRender.map(acc => {
+                    if (acc.toUpperCase().includes('USD')) return 'USD';
+                    if (acc.toUpperCase().includes('BRL')) return 'BRL';
+                    return 'Outra';
+                }));
+                if (currencies.size > 1) {
+                    warningDiv.innerHTML = `⚠️ <strong>Atenção:</strong> Você está comparando contas com moedas diferentes (${[...currencies].join(', ')}). Os valores nos eixos monetários podem não ser diretamente comparáveis.`;
+                    warningDiv.style.display = 'block';
+                } else {
+                    warningDiv.style.display = 'none';
+                }
+            } else {
+                warningDiv.style.display = 'none';
+            }
 
-            const distributionContainer = document.getElementById('companyDistributionCharts');
-            distributionContainer.innerHTML = '';
-            Object.entries(companySummary).forEach(([prefix, summary]) => {
-                 if (summary.gasto > 0) {
-                    const company = COMPANIES[prefix];
-                    const regionalSplit = { br: 0, us: 0, eu: 0 };
-                    summary.opsData.forEach(row => {
-                        const op = row.operacao.toUpperCase();
-                        if(op.includes('BR')) regionalSplit.br += row.gasto;
-                        else if(op.includes('US')) regionalSplit.us += row.gasto;
-                        else if(['DE', 'FR', 'UK', 'AU'].some(c => op.includes(c))) regionalSplit.eu += row.gasto;
-                    });
-                    
-                    const canvasId = `companyDistribution-${prefix}`;
-                    const chartContainerHTML = `
-                        <div class="chart-container">
-                            <h2>Distribuição Regional - ${company.name}</h2>
-                            <canvas id="${canvasId}"></canvas>
-                        </div>`;
-                    distributionContainer.innerHTML += chartContainerHTML;
-                    
-                    setTimeout(() => {
-                        createOrUpdateChart(canvasId, 'pie', {
-                            labels: ['Brasil', 'Estados Unidos', 'Europa'],
-                            datasets: [{
-                                label: 'Investimento',
-                                data: [regionalSplit.br, regionalSplit.us, regionalSplit.eu],
-                                backgroundColor: [REGION_COLORS.br.investment, REGION_COLORS.us.investment, REGION_COLORS.eu.investment]
-                            }]
-                        }, { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff' } } });
-                    }, 0);
-                 }
+            if (accountsToRender.length === 0) {
+                if (charts[canvasId]) charts[canvasId].destroy();
+                const canvas = document.getElementById(canvasId);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.font = "16px Arial";
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = "#6c757d";
+                    ctx.fillText("Selecione uma ou mais contas para visualizar o gráfico.", canvas.width / 2, canvas.height / 2 - 20);
+                }
+                return;
+            }
+
+            const selectedMetrics = Array.from(document.querySelectorAll('#jn-metric-checkbox-group input:checked')).map(cb => cb.value);
+            const allDatasets = [];
+            const allDates = new Set();
+            
+            accountsToRender.forEach(accountName => {
+                filteredDataJn.filter(r => r.accountName === accountName).forEach(r => allDates.add(r.day));
+            });
+            const sortedLabelsFull = [...allDates].sort((a,b) => new Date(a) - new Date(b));
+            const sortedLabels = sortedLabelsFull.map(d => formatDate(new Date(d + 'T00:00:00Z'), true));
+
+            accountsToRender.forEach((accountName, index) => {
+                const accountData = filteredDataJn.filter(r => r.accountName === accountName);
+                const color = FANCY_COLORS[index % FANCY_COLORS.length];
+
+                const mapDataToLabels = (metric) => {
+                    const dataMap = new Map(accountData.map(r => [r.day, r[metric]]));
+                    return sortedLabelsFull.map(date => dataMap.get(date) ?? null);
+                };
+
+                if (selectedMetrics.includes('gasto')) { allDatasets.push({ label: mode === 'single' ? `Gasto` : `Gasto - ${accountName}`, data: mapDataToLabels('spend'), yAxisID: 'y', borderColor: mode === 'single' ? METRIC_COLORS.spend : color, tension: 0.4, backgroundColor: 'transparent' }); }
+                if (selectedMetrics.includes('cpm')) { allDatasets.push({ label: mode === 'single' ? `CPM` : `CPM - ${accountName}`, data: mapDataToLabels('cpm'), yAxisID: 'y', borderColor: mode === 'single' ? METRIC_COLORS.cpm : color, borderDash: [2, 2], tension: 0.4, backgroundColor: 'transparent' }); }
+                if (selectedMetrics.includes('cpa')) { allDatasets.push({ label: mode === 'single' ? `CPA` : `CPA - ${accountName}`, data: mapDataToLabels('cpa'), yAxisID: 'y2', borderColor: mode === 'single' ? METRIC_COLORS.cpa : color, borderDash: [5, 5], tension: 0.4, backgroundColor: 'transparent' }); }
+                if (selectedMetrics.includes('ctr')) { allDatasets.push({ label: mode === 'single' ? `CTR` : `CTR - ${accountName}`, data: mapDataToLabels('ctr'), yAxisID: 'y1', borderColor: mode === 'single' ? METRIC_COLORS.ctr : color, tension: 0.4, backgroundColor: 'transparent' }); }
+            });
+            
+            const options = {
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { display: selectedMetrics.some(m => ['gasto', 'cpm'].includes(m)), position: 'left', title: { display: true, text: `Gasto / CPM` }, ticks: { callback: (v) => formatCurrency(v) } },
+                    y1: { display: selectedMetrics.includes('ctr'), position: 'right', title: { display: true, text: 'CTR (%)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toFixed(2) + '%' } },
+                    y2: { display: selectedMetrics.includes('cpa'), position: 'right', title: { display: true, text: `CPA` }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => formatCurrency(v) } }
+                }
+            };
+            createOrUpdateChart(canvasId, 'line', { labels: sortedLabels, datasets: allDatasets }, options);
+        }
+    
+        // --- INÍCIO DAS FUNÇÕES PARA A NOVA ABA "ANÁLISE DE CONTAS MG" ---
+    
+        function processMgData() {
+            populateMgAccountFilter();
+            filterMgData();
+        }
+    
+        function filterMgData() {
+            const dateStartStr = document.getElementById('dateFilterStart').value;
+            const dateEndStr = document.getElementById('dateFilterEnd').value;
+            let dateStart = null, dateEnd = null;
+    
+            if (dateStartStr) { dateStart = new Date(dateStartStr + 'T00:00:00Z'); }
+            if (dateEndStr) { dateEnd = new Date(dateEndStr + 'T23:59:59Z'); }
+    
+            filteredDataMg = rawDataMg.filter(row => {
+                if (!row.day) return false;
+                try {
+                    const rowDate = new Date(row.day + 'T00:00:00Z');
+                    if (dateStart && rowDate < dateStart) return false;
+                    if (dateEnd && rowDate > dateEnd) return false;
+                } catch (e) { return false; }
+                return true;
+            });
+    
+            renderMgAnalysisView();
+        }
+    
+        function populateMgAccountFilter() {
+            const select = document.getElementById('mgAccountFilter');
+            if (!select || rawDataMg.length === 0) return;
+            const accounts = [...new Set(rawDataMg.map(r => r.accountName))].sort();
+            select.innerHTML = '<option value="">Selecione uma conta...</option>';
+            accounts.forEach(acc => {
+                select.innerHTML += `<option value="${acc}">${acc}</option>`;
             });
         }
         
-        function populateCompanyCheckboxes() {
-            const container = document.getElementById('company-checkbox-group');
-            if (!container) return;
+        function toggleMgViewMode(mode) {
+            const singleControls = document.getElementById('mg-single-view-controls');
+            const compareControls = document.getElementById('mg-compare-view-controls');
+            if (mode === 'single') {
+                singleControls.style.display = 'flex';
+                compareControls.style.display = 'none';
+                clearMgComparison();
+            } else {
+                singleControls.style.display = 'none';
+                compareControls.style.display = 'flex';
+                document.getElementById('mgAccountFilter').value = '';
+                renderMgAnalysisView();
+            }
+        }
 
-            container.innerHTML = '';
-            
-            container.innerHTML += `<input type="checkbox" id="company-all" value="all" onchange="handleCompanySelection(this)" checked><label for="company-all">Todas</label>`;
-
-            Object.entries(COMPANIES).forEach(([prefix, company]) => {
-                container.innerHTML += `
-                    <input type="checkbox" id="company-${prefix}" value="${prefix}" onchange="handleCompanySelection(this)">
-                    <label for="company-${prefix}">${company.name}</label>
-                `;
-            });
+        function handleMgAccountSearch() {
+            const searchTerm = document.getElementById('mgAccountSearch').value.toLowerCase();
+            const resultsContainer = document.getElementById('mgSearchResults');
+            if (!searchTerm) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+            const allAccounts = [...new Set(rawDataMg.map(r => r.accountName))].sort();
+            const filteredAccounts = allAccounts.filter(acc => 
+                acc.toLowerCase().includes(searchTerm) && !mgComparedAccounts.includes(acc)
+            );
+            resultsContainer.innerHTML = filteredAccounts.map(acc => 
+                `<div class="search-result-item" onclick="addMgAccountToComparison('${acc.replace(/'/g, "\\'")}')">${acc}</div>`
+            ).join('');
         }
         
-        function handleCompanySelection(checkbox) {
-            const allCheckbox = document.getElementById('company-all');
-            const companyCheckboxes = document.querySelectorAll('#company-checkbox-group input:not(#company-all)');
-
-            if (checkbox.id === 'company-all' && checkbox.checked) {
-                companyCheckboxes.forEach(cb => cb.checked = false);
-            } else if (checkbox.id !== 'company-all') {
-                if (Array.from(companyCheckboxes).some(cb => cb.checked)) {
-                    allCheckbox.checked = false;
-                }
+        function addMgAccountToComparison(accountName) {
+            if (!mgComparedAccounts.includes(accountName)) {
+                mgComparedAccounts.push(accountName);
+                renderMgSelectedAccounts();
+                renderMgAnalysisView();
             }
-            
-            if (!document.querySelector('#company-checkbox-group input:checked')) {
-                allCheckbox.checked = true;
-            }
-
-            updateCompanyEvolutionChart();
+            document.getElementById('mgAccountSearch').value = '';
+            document.getElementById('mgSearchResults').innerHTML = '';
         }
 
-        function updateCompanyEvolutionChart() {
-            const selectedCompanyPrefixes = Array.from(document.querySelectorAll('#company-checkbox-group input:checked')).map(cb => cb.value);
-            const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao));
+        function removeMgAccountFromComparison(accountName) {
+            mgComparedAccounts = mgComparedAccounts.filter(acc => acc !== accountName);
+            renderMgSelectedAccounts();
+            renderMgAnalysisView();
+        }
 
-            const allDates = [...new Set(dataOnlyTotal.map(r => r.data))].sort((a, b) => parseDate(a) - parseDate(b));
-            
-            const evolutionDatasets = [];
-            const companiesToDisplay = selectedCompanyPrefixes.includes('all') ? Object.keys(COMPANIES) : selectedCompanyPrefixes;
+        function renderMgSelectedAccounts() {
+            const container = document.getElementById('mgSelectedAccounts');
+            container.innerHTML = mgComparedAccounts.map((acc, index) => 
+                `<span class="account-pill" style="background-color: ${FANCY_COLORS[index % FANCY_COLORS.length]}">
+                    ${acc}
+                    <span class="remove-pill" onclick="removeMgAccountFromComparison('${acc.replace(/'/g, "\\'")}')">&times;</span>
+                </span>`
+            ).join('');
+        }
 
-            companiesToDisplay.forEach(prefix => {
-                const company = COMPANIES[prefix];
-                if (!company) return;
+        function clearMgComparison() {
+            mgComparedAccounts = [];
+            renderMgSelectedAccounts();
+            renderMgAnalysisView();
+        }
 
-                const dailyData = {};
-                dataOnlyTotal.filter(row => row.operacao.startsWith(prefix)).forEach(row => {
-                    if (!dailyData[row.data]) dailyData[row.data] = 0;
-                    dailyData[row.data] += row.gasto;
-                });
-
-                const investmentData = allDates.map(date => dailyData[date] || 0);
-
-                if (selectedCompanyPrefixes.includes('all') && !investmentData.some(val => val > 0)) {
-                    return;
+        function renderMgAnalysisView() {
+            renderMgEvolutionChart();
+            const mode = document.querySelector('input[name="mg-view-mode"]:checked').value;
+            let accountsForTable = [];
+            if (mode === 'single') {
+                const selectedAccount = document.getElementById('mgAccountFilter').value;
+                 if (selectedAccount) {
+                    accountsForTable.push(selectedAccount);
                 }
+            } else {
+                accountsForTable = [...mgComparedAccounts];
+            }
+             let aggregatedData = [];
+            if (accountsForTable.length > 0) {
+                const dataToAggregate = filteredDataMg.filter(r => accountsForTable.includes(r.accountName));
                 
-                evolutionDatasets.push({
-                    label: company.name,
-                    data: investmentData,
-                    borderColor: company.color,
-                    backgroundColor: hexToRgba(company.color, 0.1),
-                    fill: false,
-                    tension: 0.4
-                });
-            });
-            
-            createOrUpdateChart('companyEvolutionChart', 'line', { labels: allDates, datasets: evolutionDatasets });
+                const dailySums = dataToAggregate.reduce((acc, row) => {
+                    if (!acc[row.day]) {
+                        acc[row.day] = { day: row.day, spend: 0, impressions: 0, clicks: 0, conversions: 0 };
+                    }
+                    acc[row.day].spend += row.spend;
+                    acc[row.day].impressions += row.impressions;
+                    acc[row.day].clicks += row.clicks;
+                    acc[row.day].conversions += row.conversions;
+                    return acc;
+                }, {});
+
+                aggregatedData = Object.values(dailySums).map(day => ({
+                    day: day.day,
+                    spend: day.spend,
+                    impressions: day.impressions,
+                    clicks: day.clicks,
+                    conversions: day.conversions,
+                    ctr: day.impressions > 0 ? (day.clicks / day.impressions) * 100 : 0,
+                    convRate: day.clicks > 0 ? (day.conversions / day.clicks) * 100 : 0,
+                    cpa: day.conversions > 0 ? day.spend / day.conversions : 0,
+                    cpm: day.impressions > 0 ? (day.spend / day.impressions) * 1000 : 0,
+                    cpc: day.clicks > 0 ? day.spend / day.clicks : 0
+                }));
+            }
+
+            _renderAndAttachSortListenersForMgTable('mg-daily-table', aggregatedData, accountsForTable);
         }
 
-
-        // --- Funções para a aba de Metas (ATUALIZADAS) ---
-        
-        function renderMetasView(data, allFilteredData) {
-            if (data.length === 0) return;
-            
-            const allDates = [...new Set(data.map(d => d.data))].filter(Boolean).sort((a,b) => parseDate(b) - parseDate(a));
-            const lastDateStr = allDates[0];
-            const dayBeforeLastDateStr = allDates[1];
-
-            const ontemData = data.filter(d => d.data === lastDateStr);
-            const diaAnteriorData = dayBeforeLastDateStr ? data.filter(d => d.data === dayBeforeLastDateStr) : [];
-
-            const totalPeriodDataByOp = {};
-             data.forEach(row => {
-                const goalKey = getGoalKeyFromOperation(row.operacao);
-                if (!goalKey) return;
-                if (!totalPeriodDataByOp[goalKey]) totalPeriodDataByOp[goalKey] = { gasto: 0, receita: 0 };
-                totalPeriodDataByOp[goalKey].gasto += row.gasto;
-                totalPeriodDataByOp[goalKey].receita += row.receita;
-            });
-            
-            const mergedData = [];
-            const activeGoals = Object.entries(GOALS_DATA).filter(([,goal]) => goal.investimento > 0);
-
-            activeGoals.forEach(([goalKey, goal]) => {
-                const matchingOpsOntem = ontemData.filter(row => getGoalKeyFromOperation(row.operacao) === goalKey);
-                const gastoOntem = matchingOpsOntem.reduce((sum, r) => sum + r.gasto, 0);
-                const receitaOntem = matchingOpsOntem.reduce((sum, r) => sum + r.receita, 0);
-
-                const matchingOpsDiaAnterior = diaAnteriorData.filter(row => getGoalKeyFromOperation(row.operacao) === goalKey);
-                const gastoDiaAnterior = matchingOpsDiaAnterior.reduce((sum, r) => sum + r.gasto, 0);
-
-                const totalData = totalPeriodDataByOp[goalKey] || {gasto: 0, receita: 0};
-                const roasMedioTotal = totalData.gasto > 0 ? totalData.receita / totalData.gasto : 0;
-                const roasOntem = gastoOntem > 0 ? receitaOntem / gastoOntem : 0;
-
-                const progressoInvest = (goal.investimento > 0) ? (gastoOntem / goal.investimento) * 100 : 0;
-                const progressoDiaAnterior = (goal.investimento > 0) ? (gastoDiaAnterior / goal.investimento) * 100 : 0;
-                const diffProgresso = progressoInvest - progressoDiaAnterior;
-
-                mergedData.push({
-                    operacao: goalKey,
-                    atualInvestimento: gastoOntem,
-                    metaInvestimento: goal.investimento,
-                    progressoInvest: progressoInvest,
-                    gapInvestimento: goal.investimento - gastoOntem,
-                    atualRoas: roasOntem,
-                    metaRoas: goal.roas,
-                    diffRoas: (roasOntem - goal.roas) * 100,
-                    roasMedioTotal: roasMedioTotal,
-                    diffProgresso: diffProgresso
-                });
-            });
-            
-            segmentDataCache['metas-detailed-table'] = mergedData;
-            
-            const gastoTotalOntem = ontemData.reduce((sum, item) => sum + item.gasto, 0);
-            const totalMeta = mergedData.reduce((sum, item) => sum + item.metaInvestimento, 0);
-            const progressoTotal = totalMeta > 0 ? (gastoTotalOntem / totalMeta) * 100 : 0;
-            
-            document.getElementById('metas-kpi-cards').innerHTML = createCardHTML({
-                icon: '💰', title: `Progresso Meta Diária (${lastDateStr || 'N/A'})`, value: `${progressoTotal.toFixed(1)}%`,
-                footerHTML: `<div class="progress-bar"><div class="progress-bar-inner" style="width: ${Math.min(progressoTotal, 100)}%;"></div></div> 
-                               <div style="font-size: 0.9em; color: var(--text-light); margin-top: 5px;">${formatCurrency(gastoTotalOntem)} de ${formatCurrency(totalMeta)}</div>`
-            });
-
-            _renderAndAttachSortListenersForMetasTable('metas-detailed-table', mergedData);
-
-            renderDailyGoalProgressionTable(gastoTotalOntem, mergedData);
-            
-            renderSprint1MCard(allFilteredData, gastoTotalOntem);
-            renderSprint1MTable(allFilteredData, ontemData);
-        }
-        
-        function _renderAndAttachSortListenersForMetasTable(elementId, dataToRender) {
-             const container = document.getElementById(elementId);
+        function _renderAndAttachSortListenersForMgTable(elementId, data, accounts) {
+            const container = document.getElementById(elementId);
             if (!container) return;
-
-            const currentSort = metasTableSortState[elementId] || {};
+    
+            if (!data || data.length === 0) {
+                container.innerHTML = (accounts && accounts.length > 0) ?
+                    '<p style="padding: 20px; text-align: center;">Nenhum dado encontrado para a(s) conta(s) no período selecionado.</p>' :
+                    '<p style="padding: 20px; text-align: center;">Selecione uma ou mais contas para ver os dados diários agregados.</p>';
+                return;
+            }
+    
+            const currentSort = mgTableSortState[elementId] || { key: 'day', order: 'desc' };
             const getSortIndicator = (key) => {
                 if (currentSort.key !== key) return '⇅';
                 return currentSort.order === 'desc' ? '▼' : '▲';
             };
-            
+    
+            const sortedData = [...data].sort((a, b) => {
+                const valA = currentSort.key === 'day' ? new Date(a[currentSort.key]) : a[currentSort.key];
+                const valB = currentSort.key === 'day' ? new Date(b[currentSort.key]) : b[currentSort.key];
+                if (typeof valA === 'string') {
+                    return currentSort.order === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+                return currentSort.order === 'asc' ? valA - valB : valB - valA;
+            });
+    
+            const currencyReferenceAccount = accounts.length > 0 ? accounts[0] : '';
+    
             const headers = [
-                { key: 'operacao', label: 'Operação' },
-                { key: 'atualInvestimento', label: 'Investimento de Ontem' },
-                { key: 'metaInvestimento', label: 'Meta Diária' },
-                { key: 'progressoInvest', label: 'Progresso', style: 'min-width: 180px;' },
-                { key: 'diffProgresso', label: 'Status Investimento' },
-                { key: 'gapInvestimento', label: 'Gap (R$)' },
-                { key: 'atualRoas', label: 'ROAS de Ontem' },
-                { key: 'roasMedioTotal', label: 'ROAS Médio Total' },
-                { key: 'metaRoas', label: 'Meta ROAS' },
-                { key: 'diffRoas', label: 'Status ROAS' }
+                { key: 'day', label: 'Dia' }, { key: 'spend', label: 'Gasto' }, { key: 'impressions', label: 'Impressões' },
+                { key: 'clicks', label: 'Cliques' }, { key: 'ctr', label: 'CTR' }, { key: 'conversions', label: 'Conversões' },
+                { key: 'convRate', label: 'Tx. Conv.' }, { key: 'cpa', label: 'CPA' }, { key: 'cpm', label: 'CPM' },
+                { key: 'cpc', label: 'CPC' }
             ];
-
+    
             let tableHtml = `<table class="performance-table"><thead><tr>`;
             headers.forEach(h => {
-                tableHtml += `<th class="sortable" data-sort="${h.key}" style="${h.style || ''}">${h.label} <span class="sort-indicator">${getSortIndicator(h.key)}</span></th>`;
+                tableHtml += `<th class="sortable" data-sort="${h.key}">${h.label} <span class="sort-indicator">${getSortIndicator(h.key)}</span></th>`;
             });
             tableHtml += `</tr></thead><tbody>`;
-
-            dataToRender.forEach(d => {
-                const progresso = Math.min(d.progressoInvest, 100);
-                const roasClass = d.diffRoas >= 0 ? 'delta-positive' : 'delta-negative';
-                const roasSign = d.diffRoas >= 0 ? '+' : '';
-
-                const statusInvestClass = d.diffProgresso >= 0 ? 'delta-positive' : 'delta-negative';
-                const statusInvestSign = d.diffProgresso > 0 ? '+' : '';
-                const statusInvestText = !isNaN(d.diffProgresso) ? `${statusInvestSign}${d.diffProgresso.toFixed(1)} p.p.` : '-';
-
-
+    
+            sortedData.forEach(row => {
                 tableHtml += `<tr>
-                    <td>${d.operacao}</td>
-                    <td>${formatCurrency(d.atualInvestimento)}</td>
-                    <td>${formatCurrency(d.metaInvestimento)}</td>
-                    <td>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar">
-                                <div class="progress-bar-inner" style="width: ${progresso}%;"></div>
-                            </div>
-                            <span class="progress-percent">${d.progressoInvest.toFixed(0)}%</span>
-                        </div>
-                    </td>
-                    <td><span class="${statusInvestClass}">${statusInvestText}</span></td>
-                    <td>${formatCurrency(d.gapInvestimento)}</td>
-                    <td>${(d.atualRoas * 100).toFixed(0)}%</td>
-                    <td>${(d.roasMedioTotal * 100).toFixed(0)}%</td>
-                    <td>${(d.metaRoas * 100).toFixed(0)}%</td>
-                    <td><span class="${roasClass}">${roasSign}${d.diffRoas.toFixed(1)} p.p.</span></td>
+                    <td>${formatDate(new Date(row.day + 'T00:00:00Z'))}</td>
+                    <td>${formatCurrency(row.spend, currencyReferenceAccount)}</td>
+                    <td>${row.impressions.toLocaleString('pt-BR')}</td>
+                    <td>${row.clicks.toLocaleString('pt-BR')}</td>
+                    <td>${(row.ctr).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</td>
+                    <td>${row.conversions.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td>${(row.convRate).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</td>
+                    <td>${formatCurrency(row.cpa, currencyReferenceAccount)}</td>
+                    <td>${formatCurrency(row.cpm, currencyReferenceAccount)}</td>
+                    <td>${formatCurrency(row.cpc, currencyReferenceAccount)}</td>
                 </tr>`;
             });
-            
-            container.innerHTML = tableHtml + `</tbody></table>`;
-            
+            tableHtml += `</tbody>`;
+    
+            const totals = data.reduce((acc, row) => {
+                acc.spend += row.spend;
+                acc.impressions += row.impressions;
+                acc.clicks += row.clicks;
+                acc.conversions += row.conversions;
+                return acc;
+            }, { spend: 0, impressions: 0, clicks: 0, conversions: 0 });
+    
+            const weightedAvg = {
+                ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
+                convRate: totals.clicks > 0 ? (totals.conversions / totals.clicks) * 100 : 0,
+                cpa: totals.conversions > 0 ? totals.spend / totals.conversions : 0,
+                cpm: totals.impressions > 0 ? (totals.spend / totals.impressions) * 1000 : 0,
+                cpc: totals.clicks > 0 ? totals.spend / totals.clicks : 0,
+            };
+    
+            tableHtml += `<tfoot><tr>
+                <td>Total / Média</td>
+                <td>${formatCurrency(totals.spend, currencyReferenceAccount)}</td>
+                <td>${totals.impressions.toLocaleString('pt-BR')}</td>
+                <td>${totals.clicks.toLocaleString('pt-BR')}</td>
+                <td>${(weightedAvg.ctr).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</td>
+                <td>${totals.conversions.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td>${(weightedAvg.convRate).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</td>
+                <td>${formatCurrency(weightedAvg.cpa, currencyReferenceAccount)}</td>
+                <td>${formatCurrency(weightedAvg.cpm, currencyReferenceAccount)}</td>
+                <td>${formatCurrency(weightedAvg.cpc, currencyReferenceAccount)}</td>
+            </tr></tfoot></table>`;
+    
+            container.innerHTML = tableHtml;
+    
             container.querySelectorAll('.sortable').forEach(th => {
                 th.addEventListener('click', () => {
-                    sortTable(elementId, th.dataset.sort, segmentDataCache, metasTableSortState, _renderAndAttachSortListenersForMetasTable);
+                    const sortKey = th.dataset.sort;
+                    const currentState = mgTableSortState[elementId] || {};
+                    const nextOrder = (currentState.key === sortKey && currentState.order === 'asc') ? 'desc' : 'asc';
+                    mgTableSortState[elementId] = { key: sortKey, order: nextOrder };
+                     _renderAndAttachSortListenersForMgTable(elementId, data, accounts);
                 });
             });
         }
-        
-        function renderDailyGoalProgressionTable(gastoTotalOntem, metasData) {
-            const container = document.getElementById('metas-acceleration-table');
-            if (!container) return;
 
-            const totalMetaDiariaOriginal = metasData.reduce((sum, item) => sum + item.metaInvestimento, 0);
-
-            const cenarios = [
-                { label: 'Cenário 1M/dia', target: 1000000 },
-                { label: 'Cenário 1.5M/dia', target: 1500000 },
-                { label: 'Cenário 2M/dia', target: 2000000 },
-                { label: 'Cenário 2.5M/dia', target: 2500000 }
-            ];
-
-            let tableHTML = `<table class="performance-table acceleration-table">`;
+        function renderMgEvolutionChart() {
+            const canvasId = 'mgEvolutionChart';
+            const mode = document.querySelector('input[name="mg-view-mode"]:checked').value;
             
-            tableHTML += `<thead><tr>
-                <th rowspan="2" style="min-width: 200px;">Operação</th>
-                <th rowspan="2">Gasto de Ontem</th>
-                <th rowspan="2">Meta Original</th>`;
-            cenarios.forEach((c, index) => {
-                tableHTML += `<th colspan="2" class="${index === 0 ? 'scenario-group-start' : ''}">${c.label}</th>`;
-            });
-            tableHTML += `</tr>`;
+            let accountsToRender = [];
+            if (mode === 'single') {
+                const selectedAccount = document.getElementById('mgAccountFilter').value;
+                if(selectedAccount) accountsToRender.push(selectedAccount);
+            } else {
+                accountsToRender = [...mgComparedAccounts];
+            }
 
-            tableHTML += `<tr>`;
-            cenarios.forEach((c, index) => {
-                tableHTML += `<th class="${index === 0 ? 'scenario-group-start' : ''}">Gasto Alvo</th><th>Acréscimo</th>`;
-            });
-            tableHTML += `</tr></thead>`;
-
-            tableHTML += `<tbody>`;
-            metasData.forEach(op => {
-                tableHTML += `<tr>
-                    <td>${op.operacao}</td>
-                    <td>${formatCurrency(op.atualInvestimento)}</td>
-                    <td>${formatCurrency(op.metaInvestimento)}</td>`;
-                
-                cenarios.forEach((c, index) => {
-                    const gapGlobal = c.target - gastoTotalOntem;
-                    const groupClass = index === 0 ? 'scenario-group-start' : '';
-
-                    if (gapGlobal <= 0) {
-                        tableHTML += `<td class="delta-positive ${groupClass}">Atingido</td><td>-</td>`;
-                    } else {
-                        const peso = (totalMetaDiariaOriginal > 0) ? op.metaInvestimento / totalMetaDiariaOriginal : 0;
-                        const acrescimo = gapGlobal * peso;
-                        const gastoAlvo = op.atualInvestimento + acrescimo;
-                        tableHTML += `<td class="${groupClass}">${formatCurrency(gastoAlvo)}</td>
-                                      <td class="delta-negative acrescimo-cell"><span>+${formatCurrency(acrescimo)}</span></td>`;
-                    }
-                });
-                tableHTML += `</tr>`;
-            });
-
-            container.innerHTML = tableHTML + '</tbody></table>';
-        }
-
-        // --- FUNÇÕES DA META SPRINT 1M (LÓGICA CORRIGIDA E REFINADA) ---
-
-        function renderSprint1MCard(allFilteredData, gastoTotalOntem) {
-            const container = document.getElementById('sprint-kpi-cards');
-            if (!container) return;
-
-            const progress = SPRINT_1M_GOAL > 0 ? (gastoTotalOntem / SPRINT_1M_GOAL) * 100 : 0;
-            
-            container.innerHTML = createCardHTML({
-                icon: '🚀', title: `Progresso Sprint 1M (até ${formatDate(SPRINT_1M_DEADLINE, true)})`, value: `${progress.toFixed(1)}%`,
-                footerHTML: `<div class="progress-bar"><div class="progress-bar-inner" style="width: ${Math.min(progress, 100)}%;"></div></div> 
-                               <div style="font-size: 0.9em; color: var(--text-light); margin-top: 5px;">${formatCurrency(gastoTotalOntem)} de ${formatCurrency(SPRINT_1M_GOAL)}</div>`
-            });
-        }
-
-        function renderSprint1MTable(allFilteredData, ontemData) {
-            const container = document.getElementById('sprint-1m-table');
-            if (!container) return;
-            
-            const today = new Date();
-            today.setUTCHours(0,0,0,0);
-            const daysRemaining = Math.max(1, (SPRINT_1M_DEADLINE.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) + 1);
-
-            const opMetrics = {};
-            const sprintOperations = SPRINT_1M_BASE_OPERATIONS.filter(opKey => !SPRINT_1M_RULES[opKey]?.exclude);
-            
-            sprintOperations.forEach(opKey => {
-                const opData = allFilteredData.filter(row => getGoalKeyFromOperation(row.operacao) === opKey);
-                const totalGasto = opData.reduce((sum, r) => sum + r.gasto, 0);
-                const totalReceita = opData.reduce((sum, r) => sum + r.receita, 0);
-                const gastoOntem = ontemData.filter(row => getGoalKeyFromOperation(row.operacao) === opKey).reduce((sum, r) => sum + r.gasto, 0);
-                opMetrics[opKey] = { roas: totalGasto > 0 ? totalReceita / totalGasto : 0, gastoOntem: gastoOntem };
-            });
-
-            const gastoTotalOntem = ontemData.reduce((sum, r) => sum + r.gasto, 0);
-            let totalGapParaAcelerar = SPRINT_1M_GOAL - gastoTotalOntem;
-            
-            const tableData = [];
-            let totalIncrementoFixo = 0;
-
-            sprintOperations.forEach(opKey => {
-                const rule = SPRINT_1M_RULES[opKey];
-                if (rule) {
-                    let incrementoDiario = 0;
-                    let metaDiariaFinal = 0;
-                    if (rule.finalTarget) {
-                        metaDiariaFinal = rule.finalTarget;
-                        const gap = metaDiariaFinal - opMetrics[opKey].gastoOntem;
-                        incrementoDiario = gap / daysRemaining;
-                    } else if (rule.target) {
-                        metaDiariaFinal = rule.target;
-                        const gap = metaDiariaFinal - opMetrics[opKey].gastoOntem;
-                        incrementoDiario = gap > 0 ? gap / daysRemaining : 0;
-                    }
-                    totalIncrementoFixo += incrementoDiario;
-                    tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal, incrementoDiario });
+            // Currency mismatch warning
+            const warningDiv = document.getElementById('mg-currency-warning');
+            if (mode === 'compare' && accountsToRender.length > 1) {
+                const currencies = new Set(accountsToRender.map(acc => {
+                    if (acc.toUpperCase().includes('USD')) return 'USD';
+                    if (acc.toUpperCase().includes('BRL')) return 'BRL';
+                    return 'Outra';
+                }));
+                if (currencies.size > 1) {
+                    warningDiv.innerHTML = `⚠️ <strong>Atenção:</strong> Você está comparando contas com moedas diferentes (${[...currencies].join(', ')}). Os valores nos eixos monetários podem não ser diretamente comparáveis.`;
+                    warningDiv.style.display = 'block';
+                } else {
+                    warningDiv.style.display = 'none';
                 }
-            });
-            
-            const gapParaDistribuir = (totalGapParaAcelerar / daysRemaining) - totalIncrementoFixo;
-            const opsParaDistribuir = sprintOperations.filter(opKey => !SPRINT_1M_RULES[opKey] && opMetrics[opKey].roas > 0.9);
-            const pesoTotal = opsParaDistribuir.reduce((sum, opKey) => sum + (GOALS_DATA[opKey]?.investimento || 50000), 0);
+            } else {
+                warningDiv.style.display = 'none';
+            }
 
-            opsParaDistribuir.forEach(opKey => {
-                const peso = (GOALS_DATA[opKey]?.investimento || 50000) / pesoTotal;
-                const incrementoDiario = gapParaDistribuir > 0 ? gapParaDistribuir * peso : 0;
-                const metaDiariaFinal = opMetrics[opKey].gastoOntem + (incrementoDiario * daysRemaining);
-                tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal, incrementoDiario });
-            });
-            
-            sprintOperations.forEach(opKey => {
-                if (!tableData.find(d => d.operacao === opKey)) {
-                     tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal: opMetrics[opKey].gastoOntem, incrementoDiario: 0 });
+            if (accountsToRender.length === 0) {
+                if (charts[canvasId]) charts[canvasId].destroy();
+                const canvas = document.getElementById(canvasId);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.font = "16px Arial";
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = "#6c757d";
+                    ctx.fillText("Selecione uma ou mais contas para visualizar o gráfico.", canvas.width / 2, canvas.height / 2 - 20);
                 }
+                return;
+            }
+
+            const selectedMetrics = Array.from(document.querySelectorAll('#mg-metric-checkbox-group input:checked')).map(cb => cb.value);
+            const allDatasets = [];
+            const allDates = new Set();
+            
+            accountsToRender.forEach(accountName => {
+                filteredDataMg.filter(r => r.accountName === accountName).forEach(r => allDates.add(r.day));
             });
+            const sortedLabelsFull = [...allDates].sort((a,b) => new Date(a) - new Date(b));
+            const sortedLabels = sortedLabelsFull.map(d => formatDate(new Date(d + 'T00:00:00Z'), true));
 
-            const dateHeaders = Array.from({ length: daysRemaining }, (_, i) => { const d = new Date(today); d.setUTCDate(today.getUTCDate() + i); return d; });
-            const dailySpendByOp = allFilteredData.reduce((acc, row) => { const key = getGoalKeyFromOperation(row.operacao); if (key) { if (!acc[key]) acc[key] = {}; acc[key][row.data] = (acc[key][row.data] || 0) + row.gasto; } return acc; }, {});
-
-            let tableHTML = `<table class="performance-table sprint-table"><thead><tr>
-                <th>Operação</th><th>Gasto Ontem</th><th>Meta Diária Final</th><th>Gap p/ Meta</th><th>Incremento Diário</th>`;
-            dateHeaders.forEach(d => tableHTML += `<th>${formatDate(d, true)}</th>`);
-            tableHTML += `</tr></thead><tbody>`;
-
-            tableData.sort((a, b) => sprintOperations.indexOf(a.operacao) - sprintOperations.indexOf(b.operacao));
-
-            tableData.forEach(d => {
-                const gap = d.metaDiariaFinal - d.gastoOntem;
-                tableHTML += `<tr>
-                    <td>${d.operacao}</td><td>${formatCurrency(d.gastoOntem)}</td>
-                    <td style="font-weight:bold;">${formatCurrency(d.metaDiariaFinal)}</td>
-                    <td class="${gap >= 0 ? 'delta-negative' : 'delta-positive'}">${formatCurrency(gap)}</td>
-                    <td style="font-style: italic; color: ${d.incrementoDiario >= 0 ? 'var(--color-negative)' : 'var(--color-positive)'};">${d.incrementoDiario >= 0 ? '+' : ''}${formatCurrency(d.incrementoDiario)}</td>`;
+            accountsToRender.forEach((accountName, index) => {
+                const accountData = filteredDataMg.filter(r => r.accountName === accountName);
+                const color = FANCY_COLORS[index % FANCY_COLORS.length];
                 
-                dateHeaders.forEach((date, i) => {
-                    const plannedSpend = d.gastoOntem + (d.incrementoDiario * (i + 1));
-                    const actualSpend = dailySpendByOp[d.operacao]?.[formatDate(date)];
-                    
-                    if (actualSpend !== undefined) {
-                        const performanceClass = actualSpend >= plannedSpend ? 'delta-positive' : 'delta-negative';
-                        const progressPct = plannedSpend > 0.01 ? (actualSpend / plannedSpend * 100).toFixed(0) : 100;
-                        tableHTML += `<td>
-                            <div class="daily-cell ${performanceClass}">
-                                <div>Real: ${formatCurrency(actualSpend)} (${progressPct}%)</div>
-                                <div>Planj: ${formatCurrency(plannedSpend)}</div>
-                            </div></td>`;
-                    } else {
-                        tableHTML += `<td><div class="daily-cell"><div>Planj: ${formatCurrency(plannedSpend)}</div></div></td>`;
-                    }
-                });
-                tableHTML += `</tr>`;
-            });
+                const mapDataToLabels = (metric) => {
+                    const dataMap = new Map(accountData.map(r => [r.day, r[metric]]));
+                    return sortedLabelsFull.map(date => dataMap.get(date) ?? null);
+                };
 
-            tableHTML += `</tbody><tfoot><tr><td>Total</td>`;
-            const footerTotals = {
-                gastoOntem: tableData.reduce((s, d) => s + d.gastoOntem, 0),
-                metaDiariaFinal: tableData.reduce((s, d) => s + d.metaDiariaFinal, 0),
-                gap: tableData.reduce((s, d) => s + (d.metaDiariaFinal - d.gastoOntem), 0),
-                incrementoDiario: tableData.reduce((s, d) => s + d.incrementoDiario, 0)
+                if (selectedMetrics.includes('gasto')) { allDatasets.push({ label: mode === 'single' ? `Gasto` : `Gasto - ${accountName}`, data: mapDataToLabels('spend'), yAxisID: 'y', borderColor: mode === 'single' ? METRIC_COLORS.spend : color, tension: 0.4, backgroundColor: 'transparent' }); }
+                if (selectedMetrics.includes('cpm')) { allDatasets.push({ label: mode === 'single' ? `CPM` : `CPM - ${accountName}`, data: mapDataToLabels('cpm'), yAxisID: 'y', borderColor: mode === 'single' ? METRIC_COLORS.cpm : color, borderDash: [2, 2], tension: 0.4, backgroundColor: 'transparent' }); }
+                if (selectedMetrics.includes('cpa')) { allDatasets.push({ label: mode === 'single' ? `CPA` : `CPA - ${accountName}`, data: mapDataToLabels('cpa'), yAxisID: 'y2', borderColor: mode === 'single' ? METRIC_COLORS.cpa : color, borderDash: [5, 5], tension: 0.4, backgroundColor: 'transparent' }); }
+                if (selectedMetrics.includes('ctr')) { allDatasets.push({ label: mode === 'single' ? `CTR` : `CTR - ${accountName}`, data: mapDataToLabels('ctr'), yAxisID: 'y1', borderColor: mode === 'single' ? METRIC_COLORS.ctr : color, tension: 0.4, backgroundColor: 'transparent' }); }
+            });
+            
+            const options = {
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { display: selectedMetrics.some(m => ['gasto', 'cpm'].includes(m)), position: 'left', title: { display: true, text: `Gasto / CPM` }, ticks: { callback: (v) => formatCurrency(v) } },
+                    y1: { display: selectedMetrics.includes('ctr'), position: 'right', title: { display: true, text: 'CTR (%)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toFixed(2) + '%' } },
+                    y2: { display: selectedMetrics.includes('cpa'), position: 'right', title: { display: true, text: `CPA` }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => formatCurrency(v) } }
+                }
             };
-            tableHTML += `<td>${formatCurrency(footerTotals.gastoOntem)}</td>
-                          <td>${formatCurrency(footerTotals.metaDiariaFinal)}</td>
-                          <td>${formatCurrency(footerTotals.gap)}</td>
-                          <td>+${formatCurrency(footerTotals.incrementoDiario)}</td>`;
-            
-            dateHeaders.forEach((date, i) => {
-                const totalPlanned = tableData.reduce((s, d) => s + (d.gastoOntem + (d.incrementoDiario * (i + 1))), 0);
-                const totalActual = sprintOperations.reduce((s, opKey) => s + (dailySpendByOp[opKey]?.[formatDate(date)] || 0), 0);
-                 if (totalActual > 0) {
-                     tableHTML += `<td>${formatCurrency(totalActual)}</td>`;
-                 } else {
-                     tableHTML += `<td>${formatCurrency(totalPlanned)}</td>`;
-                 }
-            });
-            tableHTML += `</tr></tfoot>`;
-
-            container.innerHTML = tableHTML + `</table>`;
+            createOrUpdateChart(canvasId, 'line', { labels: sortedLabels, datasets: allDatasets }, options);
         }
-
-
+    
         function setupMetricToggle() { const toggleButtons = document.querySelectorAll('#metric-toggle .toggle-btn'); toggleButtons.forEach(btn => { btn.addEventListener('click', function () { if (this.classList.contains('active')) return; toggleButtons.forEach(b => b.classList.remove('active')); this.classList.add('active'); updateProportionCharts(); }); }); }
         function populateEvolutionFilters(data, selectedValue = 'all') { const operationFilter = document.getElementById('evolutionOperationFilter'); if (!operationFilter) return; const currentSelection = selectedValue || operationFilter.value; const operations = [...new Set(data.map(r => r.operacao))].sort(); operationFilter.innerHTML = '<option value="all">Todas as Operações</option>'; operations.forEach(op => { const option = document.createElement('option'); option.value = op; option.textContent = op.replace(' TOTAL', ''); operationFilter.appendChild(option); }); if (operations.includes(currentSelection)) { operationFilter.value = currentSelection; } else { operationFilter.value = 'all'; } }
-        function setupNavbar() { const navButtons = document.querySelectorAll('.nav-btn'); const viewSections = document.querySelectorAll('.view-section'); navButtons.forEach(button => { button.addEventListener('click', () => { const targetId = button.dataset.target; const targetSection = document.getElementById(targetId); navButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); viewSections.forEach(section => { section.classList.toggle('active', section.id === targetId); }); 
-                if (targetSection && targetSection.classList.contains('active')) {
-                    setTimeout(() => {
-                        const canvases = targetSection.querySelectorAll('canvas');
-                        canvases.forEach(canvas => {
-                            const chartInstance = charts[canvas.id];
-                            if (chartInstance) {
-                                chartInstance.resize();
-                            }
-                        });
-                    }, 10);
-                }
-            }); 
-        }); }
-
+        function setupNavbar() { const navButtons = document.querySelectorAll('.nav-btn'); const viewSections = document.querySelectorAll('.view-section'); navButtons.forEach(button => { button.addEventListener('click', () => { const targetId = button.dataset.target; const targetSection = document.getElementById(targetId); navButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); viewSections.forEach(section => { section.classList.toggle('active', section.id === targetId); }); if (targetSection && targetSection.classList.contains('active')) { setTimeout(() => { const canvases = targetSection.querySelectorAll('canvas'); canvases.forEach(canvas => { const chartInstance = charts[canvas.id]; if (chartInstance) { chartInstance.resize(); } }); }, 10); } }); }); }
+    
         window.addEventListener('load', () => {
-            loadData();
+            loadAllData();
             setupMetricToggle();
             setupNavbar();
         });
