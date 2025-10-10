@@ -907,71 +907,275 @@
             color: var(--color-negative);
         }
 
-/* --- NOVOS ESTILOS PARA O FUNIL DE CONVERSÃO (COM SVG) --- */
-.funnel-wrapper {
-    background: var(--bg-light);
-    border: 1px solid var(--border-color);
-    padding: 30px 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        /* --- NOVOS ESTILOS PARA O FUNIL DE CONVERSÃO (COM SVG) --- */
+        .funnel-wrapper {
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            padding: 30px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.funnel-wrapper h3 {
-    font-size: 1.5em;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--text-color);
-    text-align: center;
-}
+        .funnel-wrapper h3 {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            text-align: center;
+        }
 
-.funnel-svg {
-    width: 100%;
-    max-width: 600px; /* Limita a largura máxima do funil */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
+        .funnel-svg {
+            width: 100%;
+            max-width: 600px;
+            /* Limita a largura máxima do funil */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
 
-.funnel-section-group {
-    cursor: pointer;
-}
+        .funnel-section-group {
+            cursor: pointer;
+        }
 
-.funnel-section-group .funnel-polygon {
-    transition: filter 0.2s ease-in-out;
-}
+        .funnel-section-group .funnel-polygon {
+            transition: filter 0.2s ease-in-out;
+        }
 
-.funnel-section-group:hover .funnel-polygon {
-    filter: brightness(1.15);
-}
+        .funnel-section-group:hover .funnel-polygon {
+            filter: brightness(1.15);
+        }
 
-.funnel-label {
-    fill: white;
-    font-size: 14px;
-    font-weight: 500;
-    text-anchor: middle;
-    text-transform: uppercase;
-    opacity: 0.8;
-}
+        .funnel-label {
+            fill: white;
+            font-size: 14px;
+            font-weight: 500;
+            text-anchor: middle;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
 
-.funnel-value {
-    fill: white;
-    font-size: 32px;
-    font-weight: 700;
-    text-anchor: middle;
-}
+        .funnel-value {
+            fill: white;
+            font-size: 32px;
+            font-weight: 700;
+            text-anchor: middle;
+        }
 
-.funnel-loss-arrow {
-    stroke: #adb5bd;
-    stroke-width: 2;
-    fill: none;
-}
+        .funnel-loss-arrow {
+            stroke: #adb5bd;
+            stroke-width: 2;
+            fill: none;
+        }
 
-.funnel-loss-text {
-    fill: var(--text-light);
-    font-size: 15px;
-    font-weight: 600;
-}
+        .funnel-loss-text {
+            fill: var(--text-light);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        *==========================================================*/
+        /* --- ESTILOS PARA O NOVO LAYOUT COM SIDEBAR --- */
+        /* ========================================================== */
+
+        body {
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar-nav {
+            width: 280px;
+            /* Largura da barra expandida */
+            background-color: var(--bg-light);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            transition: width 0.3s ease-in-out;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.6em;
+            padding: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-menu {
+            flex-grow: 1;
+            margin-top: 15px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .main-nav {
+            display: none;
+        }
+
+        /* Esconde a navbar antiga */
+
+        .sidebar-nav .nav-btn {
+            flex-grow: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            padding: 14px 18px;
+            font-size: 0.95em;
+        }
+
+        .nav-icon {
+            font-size: 1.2em;
+        }
+
+        /* --- Estilos dos Submenus --- */
+        .menu-group {
+            margin: 20px 0;
+        }
+
+        .menu-group-title {
+            font-size: 0.75em;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            padding: 0 18px 8px 18px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        #sidebar-toggle {
+            width: 100%;
+            background: #f1f3f5;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        #sidebar-toggle:hover {
+            background-color: #e9ecef;
+            color: var(--text-color);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 25px;
+            width: calc(100% - 280px);
+            /* Ajuste de largura */
+            transition: width 0.3s ease-in-out;
+            overflow-y: auto;
+        }
+
+        .header h1 {
+            white-space: nowrap;
+        }
+
+        /* --- Estilos para o Sidebar Minimizado --- */
+        .sidebar-minimized .sidebar-nav {
+            width: 88px;
+            /* Largura da barra minimizada */
+        }
+
+        .sidebar-minimized .main-content {
+            width: calc(100% - 88px);
+        }
+
+        .sidebar-minimized .sidebar-header h1,
+        .sidebar-minimized .nav-btn span:last-child,
+        .sidebar-minimized #sidebar-toggle span:last-child,
+        .sidebar-minimized .menu-group-title {
+            opacity: 0;
+            width: 0;
+            display: none;
+        }
+
+        .sidebar-minimized .nav-btn,
+        .sidebar-minimized #sidebar-toggle {
+            justify-content: center;
+            padding: 14px 10px;
+        }
+
+        .sidebar-minimized .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .sidebar-minimized [data-tooltip] {
+            position: relative;
+        }
+
+        .sidebar-minimized [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 15px;
+            background-color: #343a40;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- ESTILOS PARA CAIXA DE EXPLICAÇÃO --- */
+        .explanation-box {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px 25px;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .explanation-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .explanation-box p {
+            margin-bottom: 10px;
+            color: var(--text-light);
+        }
+
+        .explanation-box strong {
+            color: var(--text-color);
+        }
+
+        .explanation-box i {
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -980,428 +1184,479 @@
         <div class="loader"></div>
     </div>
 
-    <div class="container">
-        <div class="header">
-            <h1>📊 Dashboard de Operações</h1>
-            <div class="controls">
-                <div id="status" class="status">Pronto para carregar.</div>
-                <button id="updateBtn" onclick="loadAllData(true)">🔄 Atualizar Dados</button>
+    <div class="dashboard-layout">
+        <nav class="sidebar-nav">
+            <div class="sidebar-header">
+                <h1>📊 Dashboard</h1>
             </div>
-        </div>
+            <div class="sidebar-menu">
+                <button class="nav-btn active" data-target="view-general" data-tooltip="Visão Geral">
+                    <span class="nav-icon">👁️</span> <span>Visão Geral</span>
+                </button>
+                <button class="nav-btn" data-target="view-operational" data-tooltip="Visão Operacional">
+                    <span class="nav-icon">⚙️</span> <span>Visão Operacional</span>
+                </button>
+                <button class="nav-btn" data-target="view-proportion" data-tooltip="Análise de Proporção">
+                    <span class="nav-icon">📊</span> <span>Análise de Proporção</span>
+                </button>
+                <button class="nav-btn" data-target="view-segments" data-tooltip="Segmentos de Negócio">
+                    <span class="nav-icon">🧩</span> <span>Segmentos de Negócio</span>
+                </button>
+                <button class="nav-btn" data-target="view-companies" data-tooltip="Performance por Empresa">
+                    <span class="nav-icon">🏢</span> <span>Performance por Empresa</span>
+                </button>
+                <button class="nav-btn" data-target="view-metas" data-tooltip="Metas">
+                    <span class="nav-icon">🎯</span> <span>Metas</span>
+                </button>
 
-        <div class="filters">
-            <div class="filter-group"><label for="dateFilterStart">Data de Início:</label><input type="date"
-                    id="dateFilterStart" onchange="filterData()"></div>
-            <div class="filter-group"><label for="dateFilterEnd">Data Final:</label><input type="date"
-                    id="dateFilterEnd" onchange="filterData()"></div>
-            <button onclick="clearFilters()" style="background: #6c757d; margin-left: auto;">Limpar Filtros</button>
-        </div>
+                <div class="menu-group">
+                    <div class="menu-group-title">Performance</div>
+                    <button class="nav-btn" data-target="view-managers" data-tooltip="Performance por Gestor">
+                        <span class="nav-icon">👨‍💼</span> <span>Por Gestor</span>
+                    </button>
+                    <button class="nav-btn" data-target="view-adops" data-tooltip="Performance por AdOps">
+                        <span class="nav-icon">👩‍💻</span> <span>Por AdOps</span>
+                    </button>
+                </div>
+                <div class="menu-group">
+                    <div class="menu-group-title">Análise Avançada</div>
+                    <button class="nav-btn" data-target="view-correlation" data-tooltip="Análise de Correlação">
+                        <span class="nav-icon">🔗</span> <span>Correlação</span>
+                    </button>
+                    <button class="nav-btn" data-target="view-forecast" data-tooltip="Previsão Avançada">
+                        <span class="nav-icon">🔮</span> <span>Previsão Avançada</span>
+                    </button>
+                </div>
 
-        <nav class="main-nav">
-            <button class="nav-btn active" data-target="view-general">Visão Geral</button>
-            <button class="nav-btn" data-target="view-operational">Visão Operacional</button>
-            <button class="nav-btn" data-target="view-proportion">Análise de Proporção</button>
-            <button class="nav-btn" data-target="view-managers">Performance por Gestor</button>
-            <button class="nav-btn" data-target="view-adops">Performance por AdOps</button>
-            <button class="nav-btn" data-target="view-segments">Segmentos de Negócio</button>
-            <button class="nav-btn" data-target="view-companies">Performance por Empresa</button>
-            <button class="nav-btn" data-target="view-metas">Metas</button>
-            <button class="nav-btn" data-target="view-jn-analysis">Análise de Contas JN</button>
-            <button class="nav-btn" data-target="view-mg-analysis">Análise de Contas MG</button>
+
+                <div class="menu-group">
+                    <div class="menu-group-title">Análise de Contas</div>
+                    <button class="nav-btn" data-target="view-jn-analysis" data-tooltip="Análise de Contas JN">
+                        <span class="nav-icon">📈</span> <span>Contas JN</span>
+                    </button>
+                    <button class="nav-btn" data-target="view-mg-analysis" data-tooltip="Análise de Contas MG">
+                        <span class="nav-icon">📉</span> <span>Contas MG</span>
+                    </button>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <button id="sidebar-toggle" data-tooltip="Minimizar Menu">
+                    <span class="nav-icon toggle-icon">«</span> <span>Minimizar</span>
+                </button>
+            </div>
         </nav>
 
-        <div class="content-wrapper" id="mainContent">
-
-            <div id="view-general" class="view-section active">
-                <div class="section-header">
-                    <h2 class="section-title" id="general-results-title">Resultados Gerais do Período</h2>
-                </div>
-                <div class="summary-cards" id="summaryCards"></div>
-
-                <div class="section-header">
-                    <h2 class="section-title" id="regional-results-title">Resultados do Período por Região</h2>
-                </div>
-                <div class="regional-cards-wrapper">
-                    <div class="regional-section" id="regional-br">
-                        <h3>🇧🇷 Brasil</h3>
-                        <div class="summary-cards" id="summaryCardsBr"></div>
-                    </div>
-                    <div class="regional-section" id="regional-us">
-                        <h3>🇺🇸 Estados Unidos</h3>
-                        <div class="summary-cards" id="summaryCardsUs"></div>
-                    </div>
-                    <div class="regional-section" id="regional-eu">
-                        <h3>🇪🇺 Europa</h3>
-                        <div class="summary-cards" id="summaryCardsEu"></div>
+        <main class="main-content">
+            <div class="container">
+                <div class="header">
+                    <h1 id="main-title">Visão Geral</h1>
+                    <div class="controls">
+                        <div id="status" class="status">Pronto para carregar.</div>
+                        <button id="updateBtn" onclick="loadAllData(true)">🔄 Atualizar Dados</button>
                     </div>
                 </div>
 
-                <div class="section-header">
-                    <h2 class="section-title">Evolução Diária</h2>
+                <div class="filters">
+                    <div class="filter-group"><label for="dateFilterStart">Data de Início:</label><input type="date"
+                            id="dateFilterStart" onchange="filterAndRenderAll()"></div>
+                    <div class="filter-group"><label for="dateFilterEnd">Data Final:</label><input type="date"
+                            id="dateFilterEnd" onchange="filterAndRenderAll()"></div>
+                    <button onclick="clearFilters()" style="background: #6c757d; margin-left: auto;">Limpar
+                        Filtros</button>
                 </div>
-                <div class="chart-filters-container">
-                    <div class="filter-group">
-                        <label>Comparar Regiões:</label>
-                        <div id="region-checkbox-group" class="checkbox-wrapper">
-                            <input type="checkbox" id="region-all" value="all" onchange="handleRegionSelection(this)"
-                                checked><label for="region-all">Todas</label>
-                            <input type="checkbox" id="region-br" value="br"
-                                onchange="handleRegionSelection(this)"><label for="region-br">Brasil</label>
-                            <input type="checkbox" id="region-us" value="us"
-                                onchange="handleRegionSelection(this)"><label for="region-us">USA</label>
-                            <input type="checkbox" id="region-eu" value="eu"
-                                onchange="handleRegionSelection(this)"><label for="region-eu">Europa</label>
+
+                <div class="content-wrapper" id="mainContent">
+                    <div id="view-general" class="view-section active">
+                        <div class="section-header">
+                            <h2 class="section-title" id="general-results-title">Resultados Gerais do Período</h2>
                         </div>
-                    </div>
-                    <div class="filter-group">
-                        <label for="evolutionOperationFilter">Filtrar por Operação:</label>
-                        <select id="evolutionOperationFilter" onchange="updateEvolutionChartWithFilters()">
-                            <option value="all" selected>Todas as Operações</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-container chart-full">
-                        <canvas id="evolucaoCompletaChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="section-header">
-                    <h2 class="section-title">Análise Comparativa Diária</h2>
-                </div>
-                <div id="dailyComparisonContainer">
-                    <div class="comparison-container" id="dailyComparisonTotal"></div>
-                    <div class="comparison-container" id="dailyComparisonBr"></div>
-                    <div class="comparison-container" id="dailyComparisonUs"></div>
-                    <div class="comparison-container" id="dailyComparisonEu"></div>
-                </div>
-
-                <div class="section-header">
-                    <h2 class="section-title">Projeção para o Fim do Mês</h2>
-                </div>
-                <div class="summary-cards" id="projectionCards"></div>
-            </div>
-
-            <div id="view-operational" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Análise Consolidada por Operação</h2>
-                </div>
-                <div id="operational-view-container">
-                    <p style="padding: 20px; text-align: center;">Carregando dados operacionais...</p>
-                </div>
-            </div>
-
-            <div id="view-proportion" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Proporção de Investimento / Leads</h2>
-                    <div class="metric-selector-container">
-                        <div id="metric-toggle" class="metric-toggle">
-                            <button class="toggle-btn active" data-metric="gasto">📊 Investimento</button>
-                            <button class="toggle-btn" data-metric="leads">👥 Leads</button>
+                        <div class="summary-cards" id="summaryCards"></div>
+                        <div class="section-header">
+                            <h2 class="section-title" id="regional-results-title">Resultados do Período por Região</h2>
                         </div>
-                    </div>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-container">
-                        <h2>🌍 Por Região</h2><canvas id="regionInvestmentPieChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>💻 Por Plataforma</h2><canvas id="platformInvestmentPieChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>📊 Por Nicho (BR)</h2><canvas id="nicheBrChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>📊 Por Nicho (US)</h2><canvas id="nicheUsChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-managers" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Análise de Performance por Gestor (Aquisição)</h2>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-container">
-                        <h2>📈 Operações por Gestor</h2><canvas id="managerOpsCountChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>💸 CPA Médio por Gestor</h2><canvas id="gestorCpaChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>💰 Maior Investimento</h2><canvas id="gestorInvestimentoTotalChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>🎯 Melhor ROAS</h2><canvas id="gestorRoasChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-adops" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Análise de Performance por AdOps (Monetização)</h2>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-container">
-                        <h2>📈 Receita Total por AdOps</h2><canvas id="adopsRevenueChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>💰 Investimento Gerenciado</h2><canvas id="adopsInvestmentChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>🎯 ROAS Médio por AdOps</h2><canvas id="adopsRoasChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>👥 Leads Gerenciados</h2><canvas id="adopsLeadsChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h2>📋 Operações por AdOps</h2><canvas id="adopsOpsCountChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-segments" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Análise Comparativa por Segmento de Negócio</h2>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-container">
-                        <h2>🇺🇸 Cartão de Crédito (US)</h2>
-                        <div id="segmentUsCcTable"></div>
-                    </div>
-                    <div class="chart-container">
-                        <h2>🇺🇸 Empréstimo (US)</h2>
-                        <div id="segmentUsEmpTable"></div>
-                    </div>
-                    <div class="chart-container">
-                        <h2>🇧🇷 Cartão de Crédito (BR)</h2>
-                        <div id="segmentBrCcTable"></div>
-                    </div>
-                    <div class="chart-container">
-                        <h2>🇧🇷 Empréstimo (BR)</h2>
-                        <div id="segmentBrEmpTable"></div>
-                    </div>
-                    <div class="chart-container">
-                        <h2>🇩🇪 Cartão de Crédito (DE)</h2>
-                        <div id="segmentDeCcTable"></div>
-                    </div>
-                    <div class="chart-container">
-                        <h2>🇫🇷 Cartão de Crédito (FR)</h2>
-                        <div id="segmentFrCcTable"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-companies" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Resultados Consolidados por Empresa</h2>
-                </div>
-                <div class="regional-cards-wrapper" id="company-cards-wrapper">
-                </div>
-
-                <div class="section-header">
-                    <h2 class="section-title">Distribuição do Gasto Total por Empresa</h2>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-container">
-                        <canvas id="companyTotalGastoPieChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="section-header">
-                    <h2 class="section-title">Evolução do Investimento por Empresa</h2>
-                </div>
-                <div class="chart-filters-container">
-                    <div class="filter-group">
-                        <label>Selecionar Empresas:</label>
-                        <div id="company-checkbox-group" class="checkbox-wrapper">
-                        </div>
-                    </div>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-container chart-full">
-                        <canvas id="companyEvolutionChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="section-header">
-                    <h2 class="section-title">Distribuição Regional do Investimento por Empresa</h2>
-                </div>
-                <div class="charts-grid" id="companyDistributionCharts">
-                </div>
-            </div>
-
-            <div id="view-metas" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Visão Geral das Metas Diárias</h2>
-                </div>
-                <div class="summary-cards" style="grid-template-columns: 1fr 1fr; align-items: stretch;">
-                    <div id="metas-kpi-cards"></div>
-                    <div id="sprint-kpi-cards"></div>
-                </div>
-
-                <div class="section-header">
-                    <h2 class="section-title">🚀 Sprint 1M - Plano de Aceleração Diária (até 12/10)</h2>
-                </div>
-                <div class="chart-container chart-full" style="height: auto; padding: 25px;">
-                    <div id="sprint-1m-table" style="overflow-x: auto;"></div>
-                </div>
-
-                <div class="section-header">
-                    <h2 class="section-title">Performance Detalhada vs. Metas Diárias</h2>
-                </div>
-                <div class="chart-container chart-full" style="height: auto; padding: 0;">
-                    <div id="metas-detailed-table"></div>
-                </div>
-
-                <div class="section-header">
-                    <h2 class="section-title">Simulador de Aceleração para Metas Gerais</h2>
-                </div>
-                <div class="chart-container chart-full" style="height: auto; padding: 25px;">
-                    <div id="metas-acceleration-table" style="overflow-x: auto;"></div>
-                </div>
-            </div>
-
-            <div id="view-jn-analysis" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Análise de Performance por Conta (JN)</h2>
-                </div>
-    
-                <div class="chart-filters-container">
-                    <div class="filter-group">
-                        <label>Modo de Visualização:</label>
-                        <div class="checkbox-wrapper">
-                            <input type="radio" id="jn-mode-single" name="jn-view-mode" value="single" onchange="toggleJnViewMode('single')" checked><label for="jn-mode-single">Visão Única</label>
-                            <input type="radio" id="jn-mode-compare" name="jn-view-mode" value="compare" onchange="toggleJnViewMode('compare')"><label for="jn-mode-compare">Modo de Comparação</label>
-                        </div>
-                    </div>
-                    <div class="filter-group">
-                        <label>Métricas do Gráfico:</label>
-                        <div id="jn-metric-checkbox-group" class="checkbox-wrapper">
-                            <input type="checkbox" id="jn-metric-gasto" value="gasto" onchange="renderJnAnalysisView()" checked><label for="jn-metric-gasto">Gasto</label>
-                            <input type="checkbox" id="jn-metric-cpa" value="cpa" onchange="renderJnAnalysisView()" checked><label for="jn-metric-cpa">CPA</label>
-                            <input type="checkbox" id="jn-metric-cpm" value="cpm" onchange="renderJnAnalysisView()"><label for="jn-metric-cpm">CPM</label>
-                            <input type="checkbox" id="jn-metric-ctr" value="ctr" onchange="renderJnAnalysisView()"><label for="jn-metric-ctr">CTR</label>
-                        </div>
-                    </div>
-                </div>
-    
-                <div id="jn-single-view-controls" class="chart-filters-container">
-                    <div class="filter-group">
-                        <label for="jnAccountFilter">Selecione uma Conta:</label>
-                        <select id="jnAccountFilter" onchange="renderJnAnalysisView()" style="width: 450px;">
-                            <option value="">-- Carregando contas --</option>
-                        </select>
-                    </div>
-                </div>
-                <div id="jn-compare-view-controls" class="chart-filters-container" style="display: none;">
-                    <div class="comparison-controls-wrapper">
-                        <div class="search-container">
-                            <div class="filter-group">
-                                <label for="jnAccountSearch">Buscar conta por palavra-chave:</label>
-                                <input type="search" id="jnAccountSearch" onkeyup="handleJnAccountSearch()" placeholder="Digite para buscar..." style="width: 100%;">
-                                <div id="jnSearchResults" class="search-results"></div>
+                        <div class="regional-cards-wrapper">
+                            <div class="regional-section" id="regional-br">
+                                <h3>🇧🇷 Brasil</h3>
+                                <div class="summary-cards" id="summaryCardsBr"></div>
+                            </div>
+                            <div class="regional-section" id="regional-us">
+                                <h3>🇺🇸 Estados Unidos</h3>
+                                <div class="summary-cards" id="summaryCardsUs"></div>
+                            </div>
+                            <div class="regional-section" id="regional-eu">
+                                <h3>🇪🇺 Europa</h3>
+                                <div class="summary-cards" id="summaryCardsEu"></div>
                             </div>
                         </div>
-                        <div class="selected-accounts-container">
-                            <label>Contas em comparação:</label>
-                            <div id="jnSelectedAccounts" class="selected-accounts-list"></div>
-                            <button onclick="clearJnComparison()" style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar Seleção</button>
+                        <div class="section-header">
+                            <h2 class="section-title">Evolução Diária</h2>
+                        </div>
+                        <div class="chart-filters-container">
+                            <div class="filter-group"><label>Comparar Regiões:</label>
+                                <div id="region-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
+                                        id="region-all" value="all" onchange="handleRegionSelection(this)"
+                                        checked><label for="region-all">Todas</label><input type="checkbox"
+                                        id="region-br" value="br" onchange="handleRegionSelection(this)"><label
+                                        for="region-br">Brasil</label><input type="checkbox" id="region-us" value="us"
+                                        onchange="handleRegionSelection(this)"><label for="region-us">USA</label><input
+                                        type="checkbox" id="region-eu" value="eu"
+                                        onchange="handleRegionSelection(this)"><label for="region-eu">Europa</label>
+                                </div>
+                            </div>
+                            <div class="filter-group"><label for="evolutionOperationFilter">Filtrar por
+                                    Operação:</label><select id="evolutionOperationFilter"
+                                    onchange="updateEvolutionChartWithFilters()">
+                                    <option value="all" selected>Todas as Operações</option>
+                                </select></div>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container chart-full"><canvas id="evolucaoCompletaChart"></canvas></div>
+                        </div>
+                        <div class="section-header">
+                            <h2 class="section-title">Análise Comparativa Diária</h2>
+                        </div>
+                        <div id="dailyComparisonContainer">
+                            <div class="comparison-container" id="dailyComparisonTotal"></div>
+                            <div class="comparison-container" id="dailyComparisonBr"></div>
+                            <div class="comparison-container" id="dailyComparisonUs"></div>
+                            <div class="comparison-container" id="dailyComparisonEu"></div>
+                        </div>
+                        <div class="section-header">
+                            <h2 class="section-title">Projeção para o Fim do Mês</h2>
+                        </div>
+                        <div class="summary-cards" id="projectionCards"></div>
+                    </div>
+                    <div id="view-operational" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise Consolidada por Operação</h2>
+                        </div>
+                        <div id="operational-view-container">
+                            <p style="padding: 20px; text-align: center;">Carregando dados operacionais...</p>
                         </div>
                     </div>
-                </div>
-    
-                <div class="charts-grid">
-                    <div class="chart-container chart-full">
-                        <div id="jn-currency-warning" class="currency-warning-box"></div>
-                        <canvas id="jnEvolutionChart"></canvas>
-                    </div>
-                </div>
-                
-                <div id="jn-funnel-container" style="display: none; margin-top: 25px;">
-                </div>
-    
-                <div class="section-header" style="margin-top: 20px;">
-                    <h2 class="section-title">Dados Diários Agregados</h2>
-                </div>
-                <div class="chart-container chart-full" style="height: auto; padding: 0;">
-                    <div id="jn-daily-table" style="overflow-x: auto;"></div>
-                </div>
-            </div>
-
-            <div id="view-mg-analysis" class="view-section">
-                <div class="section-header">
-                    <h2 class="section-title">Análise de Performance por Conta (MG)</h2>
-                </div>
-
-                <div class="chart-filters-container">
-                    <div class="filter-group">
-                        <label>Modo de Visualização:</label>
-                        <div class="checkbox-wrapper">
-                            <input type="radio" id="mg-mode-single" name="mg-view-mode" value="single" onchange="toggleMgViewMode('single')" checked><label for="mg-mode-single">Visão Única</label>
-                            <input type="radio" id="mg-mode-compare" name="mg-view-mode" value="compare" onchange="toggleMgViewMode('compare')"><label for="mg-mode-compare">Modo de Comparação</label>
-                        </div>
-                    </div>
-                    <div class="filter-group">
-                        <label>Métricas do Gráfico:</label>
-                        <div id="mg-metric-checkbox-group" class="checkbox-wrapper">
-                            <input type="checkbox" id="mg-metric-gasto" value="gasto" onchange="renderMgAnalysisView()" checked><label for="mg-metric-gasto">Gasto</label>
-                            <input type="checkbox" id="mg-metric-cpa" value="cpa" onchange="renderMgAnalysisView()" checked><label for="mg-metric-cpa">CPA</label>
-                            <input type="checkbox" id="mg-metric-cpm" value="cpm" onchange="renderMgAnalysisView()"><label for="mg-metric-cpm">CPM</label>
-                            <input type="checkbox" id="mg-metric-ctr" value="ctr" onchange="renderMgAnalysisView()"><label for="mg-metric-ctr">CTR</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="mg-single-view-controls" class="chart-filters-container">
-                    <div class="filter-group">
-                        <label for="mgAccountFilter">Selecione uma Conta:</label>
-                        <select id="mgAccountFilter" onchange="renderMgAnalysisView()" style="width: 450px;">
-                            <option value="">-- Carregando contas --</option>
-                        </select>
-                    </div>
-                </div>
-                <div id="mg-compare-view-controls" class="chart-filters-container" style="display: none;">
-                    <div class="comparison-controls-wrapper">
-                        <div class="search-container">
-                            <div class="filter-group">
-                                <label for="mgAccountSearch">Buscar conta por palavra-chave:</label>
-                                <input type="search" id="mgAccountSearch" onkeyup="handleMgAccountSearch()" placeholder="Digite para buscar..." style="width: 100%;">
-                                <div id="mgSearchResults" class="search-results"></div>
+                    <div id="view-proportion" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Proporção de Investimento / Leads</h2>
+                            <div class="metric-selector-container">
+                                <div id="metric-toggle" class="metric-toggle"><button class="toggle-btn active"
+                                        data-metric="gasto">📊 Investimento</button><button class="toggle-btn"
+                                        data-metric="leads">👥 Leads</button></div>
                             </div>
                         </div>
-                        <div class="selected-accounts-container">
-                            <label>Contas em comparação:</label>
-                            <div id="mgSelectedAccounts" class="selected-accounts-list"></div>
-                            <button onclick="clearMgComparison()" style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar Seleção</button>
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h2>🌍 Por Região</h2><canvas id="regionInvestmentPieChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>💻 Por Plataforma</h2><canvas id="platformInvestmentPieChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>📊 Por Nicho (BR)</h2><canvas id="nicheBrChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>📊 Por Nicho (US)</h2><canvas id="nicheUsChart"></canvas>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div id="view-managers" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise de Performance por Gestor (Aquisição)</h2>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h2>📈 Operações por Gestor</h2><canvas id="managerOpsCountChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>💸 CPA Médio por Gestor</h2><canvas id="gestorCpaChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>💰 Maior Investimento</h2><canvas id="gestorInvestimentoTotalChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🎯 Melhor ROAS</h2><canvas id="gestorRoasChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="view-adops" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise de Performance por AdOps (Monetização)</h2>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h2>📈 Receita Total por AdOps</h2><canvas id="adopsRevenueChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>💰 Investimento Gerenciado</h2><canvas id="adopsInvestmentChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🎯 ROAS Médio por AdOps</h2><canvas id="adopsRoasChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>👥 Leads Gerenciados</h2><canvas id="adopsLeadsChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>📋 Operações por AdOps</h2><canvas id="adopsOpsCountChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="view-segments" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise Comparativa por Segmento de Negócio</h2>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h2>🇺🇸 Cartão de Crédito (US)</h2>
+                                <div id="segmentUsCcTable"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🇺🇸 Empréstimo (US)</h2>
+                                <div id="segmentUsEmpTable"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🇧🇷 Cartão de Crédito (BR)</h2>
+                                <div id="segmentBrCcTable"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🇧🇷 Empréstimo (BR)</h2>
+                                <div id="segmentBrEmpTable"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🇩🇪 Cartão de Crédito (DE)</h2>
+                                <div id="segmentDeCcTable"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🇫🇷 Cartão de Crédito (FR)</h2>
+                                <div id="segmentFrCcTable"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="view-companies" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Resultados Consolidados por Empresa</h2>
+                        </div>
+                        <div class="regional-cards-wrapper" id="company-cards-wrapper"></div>
+                        <div class="section-header">
+                            <h2 class="section-title">Distribuição do Gasto Total por Empresa</h2>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container"><canvas id="companyTotalGastoPieChart"></canvas></div>
+                        </div>
+                        <div class="section-header">
+                            <h2 class="section-title">Evolução do Investimento por Empresa</h2>
+                        </div>
+                        <div class="chart-filters-container">
+                            <div class="filter-group"><label>Selecionar Empresas:</label>
+                                <div id="company-checkbox-group" class="checkbox-wrapper"></div>
+                            </div>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container chart-full"><canvas id="companyEvolutionChart"></canvas></div>
+                        </div>
+                        <div class="section-header">
+                            <h2 class="section-title">Distribuição Regional do Investimento por Empresa</h2>
+                        </div>
+                        <div class="charts-grid" id="companyDistributionCharts"></div>
+                    </div>
+                    <div id="view-metas" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Visão Geral das Metas Diárias</h2>
+                        </div>
+                        <div class="summary-cards" style="grid-template-columns: 1fr 1fr; align-items: stretch;">
+                            <div id="metas-kpi-cards"></div>
+                            <div id="sprint-kpi-cards"></div>
+                        </div>
+                        <div class="section-header">
+                            <h2 class="section-title">🚀 Sprint 1M - Plano de Aceleração Diária (até 12/10)</h2>
+                        </div>
+                        <div class="chart-container chart-full" style="height: auto; padding: 25px;">
+                            <div id="sprint-1m-table" style="overflow-x: auto;"></div>
+                        </div>
+                        <div class="section-header">
+                            <h2 class="section-title">Performance Detalhada vs. Metas Diárias</h2>
+                        </div>
+                        <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                            <div id="metas-detailed-table"></div>
+                        </div>
+                        <div class="section-header">
+                            <h2 class="section-title">Simulador de Aceleração para Metas Gerais</h2>
+                        </div>
+                        <div class="chart-container chart-full" style="height: auto; padding: 25px;">
+                            <div id="metas-acceleration-table" style="overflow-x: auto;"></div>
+                        </div>
+                    </div>
+                    <div id="view-correlation" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">🔗 Análise de Correlação entre Métricas</h2>
+                        </div>
+                    
+                        <div class="chart-filters-container">
+                            <div class="filter-group">
+                                <label for="correlationAccountFilter">Selecione a Conta:</label>
+                                <select id="correlationAccountFilter" onchange="renderCorrelationChart()" style="width: 350px;"></select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="correlationMetricX">Métrica do Eixo X:</label>
+                                <select id="correlationMetricX" onchange="renderCorrelationChart()"></select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="correlationMetricY">Métrica do Eixo Y:</label>
+                                <select id="correlationMetricY" onchange="renderCorrelationChart()"></select>
+                            </div>
+                        </div>
+                    
+                        <div class="chart-container chart-full">
+                            <h3 id="correlation-result-text" style="text-align:center; margin-bottom: 15px;">Selecione uma conta e as métricas.</h3>
+                            <canvas id="correlationChart"></canvas>
+                        </div>
+                    
+                        <div id="correlation-explanation-box" class="explanation-box" style="display: none; margin-top: 25px;">
+                            </div>
+                    </div>
 
-                <div class="charts-grid">
-                    <div class="chart-container chart-full">
-                        <div id="mg-currency-warning" class="currency-warning-box"></div>
-                        <canvas id="mgEvolutionChart"></canvas>
+                    <div id="view-forecast" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">🔮 Previsão Avançada de Performance</h2>
+                        </div>
+                        <div class="chart-container chart-full" style="height: 600px;">
+                             <canvas id="advancedForecastChart"></canvas>
+                        </div>
+                    
+                        <div id="forecast-text-analysis" class="explanation-box" style="display: none; margin-top: 25px;">
+                            </div>
+                    </div>
+
+                </div>
+                <div id="view-jn-analysis" class="view-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Análise de Performance por Conta (JN)</h2>
+                    </div>
+                    <div class="chart-filters-container">
+                        <div class="filter-group"><label>Modo de Visualização:</label>
+                            <div class="checkbox-wrapper"><input type="radio" id="jn-mode-single" name="jn-view-mode"
+                                    value="single" onchange="toggleJnViewMode('single')" checked><label
+                                    for="jn-mode-single">Visão Única</label><input type="radio" id="jn-mode-compare"
+                                    name="jn-view-mode" value="compare" onchange="toggleJnViewMode('compare')"><label
+                                    for="jn-mode-compare">Modo de Comparação</label></div>
+                        </div>
+                        <div class="filter-group"><label>Métricas do Gráfico:</label>
+                            <div id="jn-metric-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
+                                    id="jn-metric-gasto" value="gasto" onchange="renderJnAnalysisView()" checked><label
+                                    for="jn-metric-gasto">Gasto</label><input type="checkbox" id="jn-metric-cpa"
+                                    value="cpa" onchange="renderJnAnalysisView()" checked><label
+                                    for="jn-metric-cpa">CPA</label><input type="checkbox" id="jn-metric-cpm" value="cpm"
+                                    onchange="renderJnAnalysisView()"><label for="jn-metric-cpm">CPM</label><input
+                                    type="checkbox" id="jn-metric-ctr" value="ctr"
+                                    onchange="renderJnAnalysisView()"><label for="jn-metric-ctr">CTR</label></div>
+                        </div>
+                    </div>
+                    <div id="jn-single-view-controls" class="chart-filters-container">
+                        <div class="filter-group"><label for="jnAccountFilter">Selecione uma Conta:</label><select
+                                id="jnAccountFilter" onchange="renderJnAnalysisView()" style="width: 450px;">
+                                <option value="">-- Carregando contas --</option>
+                            </select></div>
+                    </div>
+                    <div id="jn-compare-view-controls" class="chart-filters-container" style="display: none;">
+                        <div class="comparison-controls-wrapper">
+                            <div class="search-container">
+                                <div class="filter-group"><label for="jnAccountSearch">Buscar conta por
+                                        palavra-chave:</label><input type="search" id="jnAccountSearch"
+                                        onkeyup="handleJnAccountSearch()" placeholder="Digite para buscar..."
+                                        style="width: 100%;">
+                                    <div id="jnSearchResults" class="search-results"></div>
+                                </div>
+                            </div>
+                            <div class="selected-accounts-container"><label>Contas em comparação:</label>
+                                <div id="jnSelectedAccounts" class="selected-accounts-list"></div><button
+                                    onclick="clearJnComparison()"
+                                    style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar
+                                    Seleção</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-container chart-full">
+                            <div id="jn-currency-warning" class="currency-warning-box"></div><canvas
+                                id="jnEvolutionChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="jn-funnel-container" style="display: none; margin-top: 25px;"></div>
+                    <div class="section-header" style="margin-top: 20px;">
+                        <h2 class="section-title">Dados Diários Agregados</h2>
+                    </div>
+                    <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                        <div id="jn-daily-table" style="overflow-x: auto;"></div>
                     </div>
                 </div>
-
-                <div id="mg-funnel-container" style="display: none; margin-top: 25px;">
-                </div>
-
-                <div class="section-header" style="margin-top: 20px;">
-                    <h2 class="section-title">Dados Diários Agregados</h2>
-                </div>
-                <div class="chart-container chart-full" style="height: auto; padding: 0;">
-                    <div id="mg-daily-table" style="overflow-x: auto;"></div>
+                <div id="view-mg-analysis" class="view-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Análise de Performance por Conta (MG)</h2>
+                    </div>
+                    <div class="chart-filters-container">
+                        <div class="filter-group"><label>Modo de Visualização:</label>
+                            <div class="checkbox-wrapper"><input type="radio" id="mg-mode-single" name="mg-view-mode"
+                                    value="single" onchange="toggleMgViewMode('single')" checked><label
+                                    for="mg-mode-single">Visão Única</label><input type="radio" id="mg-mode-compare"
+                                    name="mg-view-mode" value="compare" onchange="toggleMgViewMode('compare')"><label
+                                    for="mg-mode-compare">Modo de Comparação</label></div>
+                        </div>
+                        <div class="filter-group"><label>Métricas do Gráfico:</label>
+                            <div id="mg-metric-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
+                                    id="mg-metric-gasto" value="gasto" onchange="renderMgAnalysisView()" checked><label
+                                    for="mg-metric-gasto">Gasto</label><input type="checkbox" id="mg-metric-cpa"
+                                    value="cpa" onchange="renderMgAnalysisView()" checked><label
+                                    for="mg-metric-cpa">CPA</label><input type="checkbox" id="mg-metric-cpm" value="cpm"
+                                    onchange="renderMgAnalysisView()"><label for="mg-metric-cpm">CPM</label><input
+                                    type="checkbox" id="mg-metric-ctr" value="ctr"
+                                    onchange="renderMgAnalysisView()"><label for="mg-metric-ctr">CTR</label></div>
+                        </div>
+                    </div>
+                    <div id="mg-single-view-controls" class="chart-filters-container">
+                        <div class="filter-group"><label for="mgAccountFilter">Selecione uma Conta:</label><select
+                                id="mgAccountFilter" onchange="renderMgAnalysisView()" style="width: 450px;">
+                                <option value="">-- Carregando contas --</option>
+                            </select></div>
+                    </div>
+                    <div id="mg-compare-view-controls" class="chart-filters-container" style="display: none;">
+                        <div class="comparison-controls-wrapper">
+                            <div class="search-container">
+                                <div class="filter-group"><label for="mgAccountSearch">Buscar conta por
+                                        palavra-chave:</label><input type="search" id="mgAccountSearch"
+                                        onkeyup="handleMgAccountSearch()" placeholder="Digite para buscar..."
+                                        style="width: 100%;">
+                                    <div id="mgSearchResults" class="search-results"></div>
+                                </div>
+                            </div>
+                            <div class="selected-accounts-container"><label>Contas em comparação:</label>
+                                <div id="mgSelectedAccounts" class="selected-accounts-list"></div><button
+                                    onclick="clearMgComparison()"
+                                    style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar
+                                    Seleção</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-container chart-full">
+                            <div id="mg-currency-warning" class="currency-warning-box"></div><canvas
+                                id="mgEvolutionChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="mg-funnel-container" style="display: none; margin-top: 25px;"></div>
+                    <div class="section-header" style="margin-top: 20px;">
+                        <h2 class="section-title">Dados Diários Agregados</h2>
+                    </div>
+                    <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                        <div id="mg-daily-table" style="overflow-x: auto;"></div>
+                    </div>
                 </div>
             </div>
-
-        </div>
+        </main>
+    </div>
     </div>
 
     <script>
         const SHEET_ID = '1iMEXFAfdB--bCzNYF8DkyTbzxjRARAHXaUX2_KBUvpc';
         const SHEET_NAME = 'Controle_diario';
+        const SHEET_NAME_FORECAST = 'Previsoes_Avancadas'; // ADICIONE ESTA LINHA
         const SHEET_NAME_JN = 'EXTRAÇAO JN';
         const SHEET_NAME_MG = 'EXTRAÇAO MG';
         const EXCLUDED_MANAGERS = ['NICOLE', 'MARCELO', 'AMANDA'];
@@ -1496,6 +1751,7 @@
         let rawData = [], filteredData = [], charts = {};
         let rawDataJn = [], filteredDataJn = [];
         let rawDataMg = [], filteredDataMg = [];
+        let rawDataForecast = [];
         let segmentDataCache = {}, tableSortState = {}, metasTableSortState = {};
         let jnTableSortState = {};
         let mgTableSortState = {};
@@ -1522,44 +1778,52 @@
         function parseCsv(csvText) { return new Promise((resolve, reject) => { Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: resolve, error: reject }); }); }
 
         async function loadAllData(forceRefresh = false) {
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('updateBtn').disabled = true;
-            document.getElementById('status').textContent = '⏳ Carregando dados...';
-            try {
-                const [mainResponse, jnResponse, mgResponse] = await Promise.all([
-                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`, { cache: forceRefresh ? 'reload' : 'default' }),
-                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_JN)}`, { cache: forceRefresh ? 'reload' : 'default' }),
-                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_MG)}`, { cache: forceRefresh ? 'reload' : 'default' })
-                ]);
+        document.getElementById('loader').style.display = 'flex';
+        document.getElementById('updateBtn').disabled = true;
+        document.getElementById('status').textContent = '⏳ Carregando dados...';
+        try {
+            // CORREÇÃO: Linhas de busca de dados (fetch) ajustadas
+            const [mainResponse, jnResponse, mgResponse, forecastResponse] = await Promise.all([
+                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`, { cache: forceRefresh ? 'reload' : 'default' }),
+                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_JN)}`, { cache: forceRefresh ? 'reload' : 'default' }),
+                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_MG)}`, { cache: forceRefresh ? 'reload' : 'default' }),
+                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_FORECAST)}`, { cache: forceRefresh ? 'reload' : 'default' })
+            ]);
 
-                if (!mainResponse.ok || !jnResponse.ok || !mgResponse.ok) throw new Error(`A resposta da rede não foi bem-sucedida.`);
+            if (!mainResponse.ok || !jnResponse.ok || !mgResponse.ok || !forecastResponse.ok) throw new Error(`A resposta da rede não foi bem-sucedida.`);
 
-                const [mainCsvText, jnCsvText, mgCsvText] = await Promise.all([mainResponse.text(), jnResponse.text(), mgResponse.text()]);
-                const [mainResults, jnResults, mgResults] = await Promise.all([parseCsv(mainCsvText), parseCsv(jnCsvText), parseCsv(mgCsvText)]);
+            const [mainCsvText, jnCsvText, mgCsvText, forecastCsvText] = await Promise.all([mainResponse.text(), jnResponse.text(), mgResponse.text(), forecastResponse.text()]);
+            
+            // CORREÇÃO: Lista de processamento (parseCsv) ajustada
+            const [mainResults, jnResults, mgResults, forecastResults] = await Promise.all([parseCsv(mainCsvText), parseCsv(jnCsvText), parseCsv(mgCsvText), parseCsv(forecastCsvText)]);
 
-                rawData = mainResults.data.map(row => ({ data: row.DATA, operacao: row['OPERAÇÃO'], gasto: parseMonetaryValue(row.GASTO), receita: parseMonetaryValue(row.RECEITA), cpa: parseMonetaryValue(row.CPA), leads: parseInt(row['TOTAL DE LEADS'] || 0), responsavelAquisicao: row['RESPONSÁVEL AQUISIÇÃO'], responsavelMonetizacao: row['RESPONSÁVEL MONETIZAÇÃO'] })).filter(row => row.operacao && row.operacao.trim() !== '');
+            rawData = mainResults.data.map(row => ({ data: row.DATA, operacao: row['OPERAÇÃO'], gasto: parseMonetaryValue(row.GASTO), receita: parseMonetaryValue(row.RECEITA), cpa: parseMonetaryValue(row.CPA), leads: parseInt(row['TOTAL DE LEADS'] || 0), responsavelAquisicao: row['RESPONSÁVEL AQUISIÇÃO'], responsavelMonetizacao: row['RESPONSÁVEL MONETIZAÇÃO'] })).filter(row => row.operacao && row.operacao.trim() !== '');
+            
+            const mapAccountData = (row) => ({ day: row['Day'] ? String(row['Day']).trim() : null, accountName: row['Account Name'] ? String(row['Account Name']).trim() : null, impressions: parseInt(String(row['Impressions'] || '0').replace(/,/g, '')), clicks: parseInt(String(row['Clicks'] || '0').replace(/,/g, '')), ctr: parseFloat(String(row['CTR'] || '0').replace('%', '').replace(',', '.')), conversions: parseFloat(String(row['Conversions'] || '0').replace(',', '.')), convRate: parseFloat(String(row['Conv. rate'] || '0').replace('%', '').replace(',', '.')), spend: parseMonetaryValue(row['Cost (Spend)'] || row['Cost']), cpm: parseMonetaryValue(row['Avg. CPM']), cpc: parseMonetaryValue(row['Avg. CPC']), cpa: parseMonetaryValue(row['Cost / conv.']) });
+            
+            rawDataJn = jnResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
+            rawDataMg = mgResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
+            
+            rawDataForecast = forecastResults.data.map(row => ({
+                data: new Date(row.Data),
+                gasto: parseFloat(row.Previsao_Gasto),
+                receita: parseFloat(row.Previsao_Receita)
+            }));
 
-                const mapAccountData = (row) => ({
-                    day: row['Day'] ? String(row['Day']).trim() : null,
-                    accountName: row['Account Name'] ? String(row['Account Name']).trim() : null,
-                    impressions: parseInt(String(row['Impressions'] || '0').replace(/,/g, '')),
-                    clicks: parseInt(String(row['Clicks'] || '0').replace(/,/g, '')),
-                    ctr: parseFloat(String(row['CTR'] || '0').replace('%', '').replace(',', '.')),
-                    conversions: parseFloat(String(row['Conversions'] || '0').replace(',', '.')),
-                    convRate: parseFloat(String(row['Conv. rate'] || '0').replace('%', '').replace(',', '.')),
-                    spend: parseMonetaryValue(row['Cost (Spend)'] || row['Cost']),
-                    cpm: parseMonetaryValue(row['Avg. CPM']),
-                    cpc: parseMonetaryValue(row['Avg. CPC']),
-                    cpa: parseMonetaryValue(row['Cost / conv.'])
-                });
+            initializeDashboard();
 
-                rawDataJn = jnResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
-                rawDataMg = mgResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
-
-                initializeDashboard();
-
-            } catch (error) { document.getElementById('status').textContent = `❌ Erro: ${error.message}`; } finally { document.getElementById('loader').style.display = 'none'; document.getElementById('updateBtn').disabled = false; document.getElementById('status').textContent = `✅ Dados atualizados!`; }
+        } catch (error) {
+            document.getElementById('status').textContent = `❌ Erro no carregamento: ${error.message}`;
+            console.error("Erro detalhado:", error);
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('updateBtn').disabled = false;
+            // A mensagem de "Dados atualizados!" foi movida para dentro do 'try' para aparecer apenas em caso de sucesso.
+            if (!document.getElementById('status').textContent.includes('Erro')) {
+                 document.getElementById('status').textContent = `✅ Dados atualizados!`;
+            }
         }
+    }
 
         function initializeDashboard() {
             buildOperationalGoals();
@@ -1568,6 +1832,7 @@
             const allTotalData = rawData.filter(r => endsWithTOTAL(r.operacao));
             populateEvolutionFilters(allTotalData);
             populateCompanyCheckboxes();
+            populateCorrelationFilters(); // ADICIONE ESTA LINHA
             filterAndRenderAll();
         }
 
@@ -1644,6 +1909,7 @@
             renderBusinessSegmentTables(dataOnlyTotal);
             renderCompanyView(dataOnlyTotal);
             renderMetasView(dataOnlyTotal, filteredData);
+            renderAdvancedForecastChart(); // ADICIONE ESTA LINHA
         }
 
         // --- Funções do Dashboard Principal ---
@@ -2329,8 +2595,42 @@
 
         function setupMetricToggle() { const toggleButtons = document.querySelectorAll('#metric-toggle .toggle-btn'); toggleButtons.forEach(btn => { btn.addEventListener('click', function () { if (this.classList.contains('active')) return; toggleButtons.forEach(b => b.classList.remove('active')); this.classList.add('active'); updateProportionCharts(); }); }); }
         function populateEvolutionFilters(data, selectedValue = 'all') { const operationFilter = document.getElementById('evolutionOperationFilter'); if (!operationFilter) return; const currentSelection = selectedValue || operationFilter.value; const operations = [...new Set(data.map(r => r.operacao))].sort(); operationFilter.innerHTML = '<option value="all">Todas as Operações</option>'; operations.forEach(op => { const option = document.createElement('option'); option.value = op; option.textContent = op.replace(' TOTAL', ''); operationFilter.appendChild(option); }); if (operations.includes(currentSelection)) { operationFilter.value = currentSelection; } else { operationFilter.value = 'all'; } }
-        function setupNavbar() { const navButtons = document.querySelectorAll('.nav-btn'); const viewSections = document.querySelectorAll('.view-section'); navButtons.forEach(button => { button.addEventListener('click', () => { const targetId = button.dataset.target; const targetSection = document.getElementById(targetId); navButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); viewSections.forEach(section => { section.classList.toggle('active', section.id === targetId); }); if (targetSection && targetSection.classList.contains('active')) { setTimeout(() => { const canvases = targetSection.querySelectorAll('canvas'); canvases.forEach(canvas => { const chartInstance = charts[canvas.id]; if (chartInstance) { chartInstance.resize(); } }); }, 10); } }); }); }
+        function setupNavbar() {
+            // SUBSTITUA a sua função setupNavbar por esta:
+            const navButtons = document.querySelectorAll('.sidebar-nav .nav-btn'); // Mude o seletor aqui
+            const viewSections = document.querySelectorAll('.view-section');
+            const mainTitle = document.getElementById('main-title');
 
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    viewSections.forEach(section => {
+                        section.classList.toggle('active', section.id === targetId);
+                    });
+
+                    // Atualiza o título principal
+                    if (mainTitle) {
+                        mainTitle.textContent = button.querySelector('span:last-child').textContent.trim();
+                    }
+
+                    // Redimensiona gráficos na aba ativa
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection && targetSection.classList.contains('active')) {
+                        setTimeout(() => {
+                            const canvases = targetSection.querySelectorAll('canvas');
+                            canvases.forEach(canvas => {
+                                const chartInstance = charts[canvas.id];
+                                if (chartInstance) { chartInstance.resize(); }
+                            });
+                        }, 10);
+                    }
+                });
+            });
+        }
         // --- NOVA FUNÇÃO PARA A VISÃO OPERACIONAL ---
         function renderOperationalView() {
             const container = document.getElementById('operational-view-container');
@@ -2510,58 +2810,58 @@
             setupNavbar();
         });
         // --- INÍCIO DA NOVA FUNÇÃO PARA RENDERIZAR O FUNIL ---
-// --- INÍCIO DA NOVA FUNÇÃO PARA RENDERIZAR O FUNIL (VERSÃO FINAL COM SVG) ---
-// --- INÍCIO DA FUNÇÃO DO FUNIL CORRIGIDA (VERSÃO 4 - TAXAS CORRETAS) ---
-// --- INÍCIO DA FUNÇÃO DO FUNIL CORRIGIDA (VERSÃO 5 - COM SÍMBOLO %) ---
-function renderAccountFunnel(containerId, sourceData, accountName) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+        // --- INÍCIO DA NOVA FUNÇÃO PARA RENDERIZAR O FUNIL (VERSÃO FINAL COM SVG) ---
+        // --- INÍCIO DA FUNÇÃO DO FUNIL CORRIGIDA (VERSÃO 4 - TAXAS CORRETAS) ---
+        // --- INÍCIO DA FUNÇÃO DO FUNIL CORRIGIDA (VERSÃO 5 - COM SÍMBOLO %) ---
+        function renderAccountFunnel(containerId, sourceData, accountName) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
 
-    if (!accountName) {
-        container.style.display = 'none';
-        container.innerHTML = '';
-        return;
-    }
+            if (!accountName) {
+                container.style.display = 'none';
+                container.innerHTML = '';
+                return;
+            }
 
-    const accountData = sourceData.filter(r => r.accountName === accountName);
+            const accountData = sourceData.filter(r => r.accountName === accountName);
 
-    if (accountData.length === 0) {
-        container.style.display = 'none';
-        container.innerHTML = '';
-        return;
-    }
+            if (accountData.length === 0) {
+                container.style.display = 'none';
+                container.innerHTML = '';
+                return;
+            }
 
-    const totals = accountData.reduce((acc, row) => {
-        acc.impressions += row.impressions;
-        acc.clicks += row.clicks;
-        acc.conversions += row.conversions;
-        return acc;
-    }, { impressions: 0, clicks: 0, conversions: 0 });
+            const totals = accountData.reduce((acc, row) => {
+                acc.impressions += row.impressions;
+                acc.clicks += row.clicks;
+                acc.conversions += row.conversions;
+                return acc;
+            }, { impressions: 0, clicks: 0, conversions: 0 });
 
-    const ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
-    const cvr = totals.clicks > 0 ? (totals.conversions / totals.clicks) * 100 : 0;
+            const ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
+            const cvr = totals.clicks > 0 ? (totals.conversions / totals.clicks) * 100 : 0;
 
-    // --- Lógica de Desenho do SVG ---
-    const svgWidth = 500;
-    const svgHeight = 240;
-    const sectionHeight = svgHeight / 3;
+            // --- Lógica de Desenho do SVG ---
+            const svgWidth = 500;
+            const svgHeight = 240;
+            const sectionHeight = svgHeight / 3;
 
-    const funnelTopWidth = svgWidth;
-    const funnelBottomWidth = svgWidth * 0.3; 
-    
-    const topX = 0;
-    const topRightX = funnelTopWidth;
-    
-    const mid1_LeftX = (funnelTopWidth - (funnelTopWidth * 0.75)) / 2;
-    const mid1_RightX = funnelTopWidth - mid1_LeftX;
-    
-    const mid2_LeftX = (funnelTopWidth - (funnelTopWidth * 0.52)) / 2;
-    const mid2_RightX = funnelTopWidth - mid2_LeftX;
+            const funnelTopWidth = svgWidth;
+            const funnelBottomWidth = svgWidth * 0.3;
 
-    const bottomX = (funnelTopWidth - funnelBottomWidth) / 2;
-    const bottomRightX = funnelTopWidth - bottomX;
+            const topX = 0;
+            const topRightX = funnelTopWidth;
 
-    const funnelHTML = `
+            const mid1_LeftX = (funnelTopWidth - (funnelTopWidth * 0.75)) / 2;
+            const mid1_RightX = funnelTopWidth - mid1_LeftX;
+
+            const mid2_LeftX = (funnelTopWidth - (funnelTopWidth * 0.52)) / 2;
+            const mid2_RightX = funnelTopWidth - mid2_LeftX;
+
+            const bottomX = (funnelTopWidth - funnelBottomWidth) / 2;
+            const bottomRightX = funnelTopWidth - bottomX;
+
+            const funnelHTML = `
         <div class="funnel-wrapper">
             <h3>Funil de Conversão - ${accountName}</h3>
             <svg class="funnel-svg" viewBox="0 0 ${svgWidth + 100} ${svgHeight}" preserveAspectRatio="xMidYMid meet">
@@ -2569,22 +2869,22 @@ function renderAccountFunnel(containerId, sourceData, accountName) {
                 <g class="funnel-section-group">
                     <title>Total de Impressões</title>
                     <polygon class="funnel-polygon" points="${topX},0 ${topRightX},0 ${mid1_RightX},${sectionHeight} ${mid1_LeftX},${sectionHeight}" fill="#6a82fb" />
-                    <text class="funnel-label" x="${svgWidth/2}" y="${sectionHeight/2 - 10}">Impressões</text>
-                    <text class="funnel-value" x="${svgWidth/2}" y="${sectionHeight/2 + 25}">${totals.impressions.toLocaleString('pt-BR')}</text>
+                    <text class="funnel-label" x="${svgWidth / 2}" y="${sectionHeight / 2 - 10}">Impressões</text>
+                    <text class="funnel-value" x="${svgWidth / 2}" y="${sectionHeight / 2 + 25}">${totals.impressions.toLocaleString('pt-BR')}</text>
                 </g>
 
                 <g class="funnel-section-group">
                     <title>CTR (Taxa de Clique): ${ctr.toFixed(2)}%</title>
-                    <polygon class="funnel-polygon" points="${mid1_LeftX},${sectionHeight} ${mid1_RightX},${sectionHeight} ${mid2_RightX},${sectionHeight*2} ${mid2_LeftX},${sectionHeight*2}" fill="#5087f8" />
-                    <text class="funnel-label" x="${svgWidth/2}" y="${sectionHeight*1.5 - 10}">Cliques</text>
-                    <text class="funnel-value" x="${svgWidth/2}" y="${sectionHeight*1.5 + 25}">${totals.clicks.toLocaleString('pt-BR')}</text>
+                    <polygon class="funnel-polygon" points="${mid1_LeftX},${sectionHeight} ${mid1_RightX},${sectionHeight} ${mid2_RightX},${sectionHeight * 2} ${mid2_LeftX},${sectionHeight * 2}" fill="#5087f8" />
+                    <text class="funnel-label" x="${svgWidth / 2}" y="${sectionHeight * 1.5 - 10}">Cliques</text>
+                    <text class="funnel-value" x="${svgWidth / 2}" y="${sectionHeight * 1.5 + 25}">${totals.clicks.toLocaleString('pt-BR')}</text>
                 </g>
 
                 <g class="funnel-section-group">
                     <title>CVR (Taxa de Conversão): ${cvr.toFixed(2)}%</title>
-                    <polygon class="funnel-polygon" points="${mid2_LeftX},${sectionHeight*2} ${mid2_RightX},${sectionHeight*2} ${bottomRightX},${svgHeight} ${bottomX},${svgHeight}" fill="#3478e8" />
-                    <text class="funnel-label" x="${svgWidth/2}" y="${sectionHeight*2.5 - 10}">Conversões</text>
-                    <text class="funnel-value" x="${svgWidth/2}" y="${sectionHeight*2.5 + 25}">${totals.conversions.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 2})}</text>
+                    <polygon class="funnel-polygon" points="${mid2_LeftX},${sectionHeight * 2} ${mid2_RightX},${sectionHeight * 2} ${bottomRightX},${svgHeight} ${bottomX},${svgHeight}" fill="#3478e8" />
+                    <text class="funnel-label" x="${svgWidth / 2}" y="${sectionHeight * 2.5 - 10}">Conversões</text>
+                    <text class="funnel-value" x="${svgWidth / 2}" y="${sectionHeight * 2.5 + 25}">${totals.conversions.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</text>
                 </g>
 
                 <defs>
@@ -2599,17 +2899,336 @@ function renderAccountFunnel(containerId, sourceData, accountName) {
                 </text>
 
                 <path class="funnel-loss-arrow" d="M ${mid1_RightX + 15} ${sectionHeight * 1.4} Q ${mid1_RightX + 45} ${sectionHeight * 1.9}, ${mid2_RightX + 15} ${sectionHeight * 2.4}" marker-end="url(#arrowhead)"></path>
-                 <text class="funnel-loss-text" x="${mid1_RightX + 55}" y="${sectionHeight*2}">
+                 <text class="funnel-loss-text" x="${mid1_RightX + 55}" y="${sectionHeight * 2}">
                     ${cvr.toFixed(1)}%
                 </text>
             </svg>
         </div>
     `;
 
-    container.innerHTML = funnelHTML;
-    container.style.display = 'block';
+            container.innerHTML = funnelHTML;
+            container.style.display = 'block';
+        }
+
+        // --- FUNÇÕES PARA ANÁLISE DE CORRELAÇÃO ---
+
+        function populateCorrelationFilters() {
+            const accSelect = document.getElementById('correlationAccountFilter');
+            const metricXSelect = document.getElementById('correlationMetricX');
+            const metricYSelect = document.getElementById('correlationMetricY');
+
+            // Popula contas com base nos dados de JN e MG
+            const jnAccounts = [...new Set(rawDataJn.map(r => r.accountName))];
+            const mgAccounts = [...new Set(rawDataMg.map(r => r.accountName))];
+            const allAccounts = [...jnAccounts, ...mgAccounts].sort();
+
+            accSelect.innerHTML = '<option value="">-- Selecione uma Conta --</option>' + allAccounts.map(acc => `<option value="${acc}">${acc}</option>`).join('');
+
+            // Popula métricas disponíveis nos dados detalhados
+            const metrics = [
+                { key: 'spend', label: 'Gasto' },
+                { key: 'cpa', label: 'CPA' },
+                { key: 'cpm', label: 'CPM' },
+                { key: 'cpc', label: 'CPC' },
+                { key: 'ctr', label: 'CTR (%)' },
+                { key: 'convRate', label: 'Taxa de Conversão (%)' },
+                { key: 'impressions', label: 'Impressões' },
+                { key: 'clicks', label: 'Cliques' },
+                { key: 'conversions', label: 'Conversões' }
+            ];
+            const metricOptions = metrics.map(m => `<option value="${m.key}">${m.label}</option>`).join('');
+            metricXSelect.innerHTML = metricOptions;
+            metricYSelect.innerHTML = metricOptions;
+
+            // Define padrões
+            metricXSelect.value = 'cpa';
+            metricYSelect.value = 'ctr';
+        }
+
+        function renderCorrelationChart() {
+            const accountName = document.getElementById('correlationAccountFilter').value;
+            const metricXKey = document.getElementById('correlationMetricX').value;
+            const metricYKey = document.getElementById('correlationMetricY').value;
+            const resultText = document.getElementById('correlation-result-text');
+            const explanationBox = document.getElementById('correlation-explanation-box');
+
+            // Esconde a explicação e limpa o gráfico se nada for selecionado
+            explanationBox.style.display = 'none';
+            if (!accountName || !metricXKey || !metricYKey) {
+                resultText.textContent = "Selecione uma conta e as métricas para começar.";
+                if (charts['correlationChart']) charts['correlationChart'].destroy();
+                return;
+            }
+
+            // Usa a fonte de dados correta (JN ou MG)
+            const sourceData = rawDataJn.some(r => r.accountName === accountName) ? rawDataJn : rawDataMg;
+            const dataPoints = sourceData
+                .filter(row => row.accountName === accountName)
+                .map(row => ({ x: row[metricXKey], y: row[metricYKey] }))
+                .filter(p => isFinite(p.x) && isFinite(p.y) && p.x > 0 && p.y > 0);
+
+            if (dataPoints.length < 3) { // Aumentado para 3 para uma correlação minimamente útil
+                resultText.textContent = "Não há dados diários suficientes para calcular a correlação.";
+                if (charts['correlationChart']) charts['correlationChart'].destroy();
+                return;
+            }
+
+            // Cálculos estatísticos
+            const { x, y } = dataPoints.reduce((acc, p) => ({ x: [...acc.x, p.x], y: [...acc.y, p.y] }), { x: [], y: [] });
+            const { slope, intercept } = linearRegression(y, x);
+            const correlation = pearsonCorrelation(x, y);
+
+            // Texto de resultado
+            let strength = "muito fraca";
+            if (Math.abs(correlation) >= 0.7) strength = "forte";
+            else if (Math.abs(correlation) >= 0.4) strength = "moderada";
+            else if (Math.abs(correlation) >= 0.2) strength = "fraca";
+            const direction = correlation >= 0 ? "positiva" : "negativa";
+            resultText.innerHTML = `Coeficiente de Correlação (r): <strong>${correlation.toFixed(3)}</strong> <br> Relação ${direction} ${strength}.`;
+
+            // Linha de tendência
+            const minX = Math.min(...x);
+            const maxX = Math.max(...x);
+            const trendlinePoints = [{ x: minX, y: slope * minX + intercept }, { x: maxX, y: slope * maxX + intercept }];
+
+            // Cria o gráfico
+            createOrUpdateChart('correlationChart', 'scatter', {
+                datasets: [{
+                    label: 'Dados Diários', data: dataPoints, backgroundColor: hexToRgba(REGION_COLORS.all.investment, 0.7),
+                }, {
+                    label: 'Linha de Tendência', data: trendlinePoints, type: 'line',
+                    backgroundColor: 'transparent', borderColor: '#e74c3c', borderWidth: 2, pointRadius: 0,
+                }]
+            }, {
+                scales: {
+                    x: { title: { display: true, text: document.getElementById('correlationMetricX').options[document.getElementById('correlationMetricX').selectedIndex].text } },
+                    y: { title: { display: true, text: document.getElementById('correlationMetricY').options[document.getElementById('correlationMetricY').selectedIndex].text } }
+                }
+            });
+
+            // --- GERA A EXPLICAÇÃO DINÂMICA ---
+            const metricXLabel = document.getElementById('correlationMetricX').options[document.getElementById('correlationMetricX').selectedIndex].text;
+            const metricYLabel = document.getElementById('correlationMetricY').options[document.getElementById('correlationMetricY').selectedIndex].text;
+            let directionText, strengthText;
+
+            if (direction === 'positiva') {
+                directionText = `A relação é <strong>positiva</strong>. Isso significa que, em geral, quando <strong>${metricXLabel}</strong> sobe, a <strong>${metricYLabel}</strong> também tende a subir.`;
+            } else {
+                directionText = `A relação é <strong>negativa</strong>. Isso significa que, em geral, quando <strong>${metricXLabel}</strong> sobe, a <strong>${metricYLabel}</strong> tende a descer.`;
+            }
+
+            if (strength === "forte") {
+                strengthText = `A força <strong>"forte"</strong> (r acima de 0.7 ou abaixo de -0.7) indica que as duas métricas estão fortemente conectadas. A mudança em uma é um bom indicador da mudança na outra.`;
+            } else if (strength === "moderada") {
+                strengthText = `A força <strong>"moderada"</strong> (r entre 0.4 e 0.7) sugere uma tendência clara, mas outros fatores também estão influenciando o resultado.`;
+            } else { // Fraca ou Muito Fraca
+                strengthText = `A força <strong>"fraca"</strong> (r abaixo de 0.4) sugere que há pouca ou nenhuma conexão linear entre as métricas. Mudanças em uma não explicam bem as mudanças na outra.`;
+            }
+
+            explanationBox.innerHTML = `
+        <h4>💡 Interpretando o Resultado</h4>
+        <p>${directionText}</p>
+        <p>${strengthText}</p>
+        <p><strong>Importante:</strong> Correlação não significa causalidade. Só porque duas métricas se movem juntas, não significa que uma <i>causa</i> a outra. Podem existir outros fatores não analisados influenciando o resultado.</p>
+    `;
+            explanationBox.style.display = 'block';
+        }
+        // --- FUNÇÃO PARA O GRÁFICO DE PREVISÃO AVANÇADA ---
+        // --- FUNÇÃO CORRIGIDA PARA O GRÁFICO DE PREVISÃO AVANÇADA ---
+
+        function renderAdvancedForecastChart() {
+    const historicalAggregates = filteredData
+        .filter(row => row.operacao && !row.operacao.toUpperCase().endsWith('TOTAL'))
+        .reduce((acc, row) => {
+            if (!row.data) return acc;
+            const date = parseDate(row.data);
+            if (!date) return acc;
+            const dateKey = date.toISOString().split('T')[0];
+            if (!acc[dateKey]) acc[dateKey] = { gasto: 0, receita: 0 };
+            acc[dateKey].gasto += row.gasto;
+            acc[dateKey].receita += row.receita;
+            return acc;
+        }, {});
+
+    const sortedHistoricalDates = Object.keys(historicalAggregates).sort();
+    
+    if (sortedHistoricalDates.length === 0 || rawDataForecast.length === 0) {
+        // Limpa o gráfico e a análise se não houver dados
+        if (charts['advancedForecastChart']) charts['advancedForecastChart'].destroy();
+        document.getElementById('forecast-text-analysis').style.display = 'none';
+        return;
+    }
+
+    const historicalLabels = sortedHistoricalDates.map(dateStr => formatDate(new Date(dateStr + 'T00:00:00Z')));
+    const historicalGasto = sortedHistoricalDates.map(dateStr => historicalAggregates[dateStr].gasto);
+    const historicalReceita = sortedHistoricalDates.map(dateStr => historicalAggregates[dateStr].receita);
+    
+    const forecastLabels = rawDataForecast.map(row => formatDate(row.data));
+    const forecastGasto = rawDataForecast.map(row => row.gasto);
+    const forecastReceita = rawDataForecast.map(row => row.receita);
+
+    const lastHistoricalGasto = historicalGasto[historicalGasto.length - 1];
+    const lastHistoricalReceita = historicalReceita[historicalReceita.length - 1];
+
+    const allLabels = [...historicalLabels, ...forecastLabels];
+    const combinedGasto = [...historicalGasto.slice(0, -1), lastHistoricalGasto, ...forecastGasto];
+    const combinedReceita = [...historicalReceita.slice(0, -1), lastHistoricalReceita, ...forecastReceita];
+    
+    const historicalDataCount = historicalLabels.length;
+
+    createOrUpdateChart('advancedForecastChart', 'line', {
+        labels: allLabels,
+        datasets: [{
+            label: 'Gasto (Real + Previsão)', data: combinedGasto, borderColor: '#6a82fb',
+            backgroundColor: hexToRgba('#6a82fb', 0.1), fill: true, tension: 0.3,
+            segment: { borderDash: ctx => ctx.p1DataIndex >= historicalDataCount -1 ? [6, 6] : undefined }
+        }, {
+            label: 'Receita (Real + Previsão)', data: combinedReceita, borderColor: '#20c997',
+            backgroundColor: 'transparent', tension: 0.3,
+            segment: { borderDash: ctx => ctx.p1DataIndex >= historicalDataCount -1 ? [6, 6] : undefined }
+        }]
+    }, {
+        plugins: { tooltip: { callbacks: { label: function(context) { let label = context.dataset.label.split(' (')[0]; const isForecast = context.dataIndex >= historicalDataCount; label += isForecast ? ' (Previsão): ' : ' (Real): '; label += formatCurrency(context.parsed.y); return label; } } } },
+        scales: { y: { ticks: { callback: v => formatKilo(v) } } }
+    });
+
+    // ==========================================================
+    // --- INÍCIO DA NOVA LÓGICA DE ANÁLISE DE TEXTO ---
+    // ==========================================================
+    const analysisBox = document.getElementById('forecast-text-analysis');
+    let analysisPoints = [];
+
+    // 1. Análise da Tendência Imediata
+    const firstForecastSpend = forecastGasto[0];
+    const spendChange = ((firstForecastSpend / lastHistoricalGasto) - 1) * 100;
+    let immediateTrendText = `A previsão inicia com tendência de <strong>estabilidade</strong>, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, similar aos <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
+    if (spendChange > 5) {
+        immediateTrendText = `A previsão aponta para uma <strong>tendência de alta</strong> imediata, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, um aumento de <strong>${spendChange.toFixed(0)}%</strong> sobre os <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
+    } else if (spendChange < -5) {
+        immediateTrendText = `A previsão aponta para uma <strong>tendência de baixa</strong> imediata, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, uma queda de <strong>${Math.abs(spendChange).toFixed(0)}%</strong> sobre os <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
+    }
+    analysisPoints.push(immediateTrendText);
+
+    // 2. Análise da Média Semanal
+    const avgHistoricalSpend = historicalGasto.slice(-7).reduce((a, b) => a + b, 0) / 7;
+    const avgForecastSpend = forecastGasto.slice(0, 7).reduce((a, b) => a + b, 0) / 7;
+    const weeklyChange = ((avgForecastSpend / avgHistoricalSpend) - 1) * 100;
+    analysisPoints.push(`A média de gasto para os próximos 7 dias está projetada em <strong>${formatCurrency(avgForecastSpend)}</strong> por dia, uma variação de <strong>${weeklyChange.toFixed(1)}%</strong> em relação à média da última semana (<strong>${formatCurrency(avgHistoricalSpend)}</strong>).`);
+
+    // 3. Análise do Ritmo Mensal (Pacing)
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const monthToDateSpend = historicalGasto.filter((_, i) => new Date(sortedHistoricalDates[i]).getMonth() === currentMonth).reduce((a, b) => a + b, 0);
+    const remainingForecastSpend = forecastGasto.filter((_, i) => rawDataForecast[i].data.getMonth() === currentMonth).reduce((a, b) => a + b, 0);
+    const fullMonthProjectedSpend = monthToDateSpend + remainingForecastSpend;
+    analysisPoints.push(`Mantendo o ritmo atual mais a previsão, o gasto total projetado para o final deste mês é de aproximadamente <strong>${formatKilo(fullMonthProjectedSpend)}</strong>.`);
+
+    // 4. Análise do Padrão Semanal
+    const dayNames = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+    const dailyForecasts = forecastGasto.slice(0, 7).map((value, i) => ({ day: dayNames[rawDataForecast[i].data.getDay()], value }));
+    const maxDay = dailyForecasts.reduce((prev, current) => (prev.value > current.value) ? prev : current);
+    const minDay = dailyForecasts.reduce((prev, current) => (prev.value < current.value) ? prev : current);
+    analysisPoints.push(`O modelo identificou um padrão semanal nos seus dados, projetando <strong>${maxDay.day}</strong> como o dia de maior investimento e <strong>${minDay.day}</strong> como o de menor atividade na próxima semana.`);
+
+    // Monta o HTML final e exibe a caixa
+    analysisBox.innerHTML = `
+        <h4>📝 Análise da Previsão</h4>
+        <ul>
+            ${analysisPoints.map(point => `<li>${point}</li>`).join('')}
+        </ul>
+    `;
+    analysisBox.style.display = 'block';
 }
 
+        // Funções de cálculo estatístico
+        function linearRegression(y, x) {
+            const n = y.length;
+            let sum_x = 0, sum_y = 0, sum_xy = 0, sum_xx = 0;
+            for (let i = 0; i < y.length; i++) {
+                sum_x += x[i];
+                sum_y += y[i];
+                sum_xy += (x[i] * y[i]);
+                sum_xx += (x[i] * x[i]);
+            }
+            const slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x);
+            const intercept = (sum_y - slope * sum_x) / n;
+            return { slope, intercept };
+        }
+
+        function pearsonCorrelation(x, y) {
+            const n = x.length;
+            const meanX = x.reduce((a, b) => a + b) / n;
+            const meanY = y.reduce((a, b) => a + b) / n;
+            const stdDevX = Math.sqrt(x.map(val => (val - meanX) ** 2).reduce((a, b) => a + b) / n);
+            const stdDevY = Math.sqrt(y.map(val => (val - meanY) ** 2).reduce((a, b) => a + b) / n);
+            let covariance = 0;
+            for (let i = 0; i < n; i++) {
+                covariance += (x[i] - meanX) * (y[i] - meanY);
+            }
+            covariance /= n;
+            return covariance / (stdDevX * stdDevY);
+        }
+        // --- FUNÇÕES DE CONTROLE DE UI (ATUALIZADAS) ---
+        function setupEventListeners() {
+            // Controle da Sidebar
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('sidebar-minimized');
+                    localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-minimized') ? 'minimized' : 'expanded');
+                    setTimeout(() => Object.values(charts).forEach(chart => chart && chart.resize()), 350);
+                });
+            }
+            if (localStorage.getItem('sidebarState') === 'minimized') {
+                document.body.classList.add('sidebar-minimized');
+            }
+
+            // Controle da Navegação por Abas (substitui a antiga setupNavbar)
+            const navButtons = document.querySelectorAll('.sidebar-nav .nav-btn');
+            const viewSections = document.querySelectorAll('.view-section');
+            const mainTitle = document.getElementById('main-title');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    if (!targetId) return;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    viewSections.forEach(section => section.classList.toggle('active', section.id === targetId));
+
+                    if (mainTitle) {
+                        mainTitle.textContent = button.dataset.tooltip || "Dashboard";
+                    }
+
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        setTimeout(() => {
+                            targetSection.querySelectorAll('canvas').forEach(canvas => {
+                                const chartInstance = charts[canvas.id];
+                                if (chartInstance) chartInstance.resize();
+                            });
+                        }, 10);
+                    }
+                });
+            });
+
+            // Controle do seletor de métrica
+            document.querySelectorAll('#metric-toggle .toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    if (this.classList.contains('active')) return;
+                    document.querySelectorAll('#metric-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateProportionCharts();
+                });
+            });
+        }
+        /// --- PONTO DE ENTRADA DA APLICAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAllData();
+            setupEventListeners(); // Função unificada que inicializa todos os controles
+        });
     </script>
 </body>
 
