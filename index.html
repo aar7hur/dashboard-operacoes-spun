@@ -422,10 +422,13 @@
             grid-template-columns: 1fr;
         }
 
-        #view-managers .chart-container,
-        #view-adops .chart-container {
-            height: auto;
+        /* Garante altura fixa para o gráfico principal de evolução */
+        #view-managers .chart-container.chart-full {
+            height: 500px;
         }
+
+        /* Permite altura automática para os outros gráficos menores na mesma aba */
+        #view-managers .charts-grid:not(:first-of-type) .chart-container,
 
         #view-segments .charts-grid {
             grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
@@ -1176,6 +1179,211 @@
         .explanation-box i {
             font-style: italic;
         }
+
+        /* --- ESTILOS PARA O SELETOR DE GESTOR CUSTOMIZADO --- */
+        .custom-select-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .custom-select-wrapper label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .custom-select {
+            position: relative;
+            width: 350px;
+        }
+
+        .custom-select-trigger {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #fff;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .custom-select-trigger::after {
+            content: '▼';
+            font-size: 0.8em;
+            color: var(--text-light);
+        }
+
+        .custom-select-options {
+            position: absolute;
+            top: 105%;
+            left: 0;
+            right: 0;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            z-index: 100;
+            display: none;
+            /* Controlado por JS */
+            overflow: hidden;
+        }
+
+        .custom-select-options.open {
+            display: block;
+        }
+
+        .custom-select-search {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            outline: none;
+            font-size: 14px;
+        }
+
+        .custom-options-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .custom-options-list label {
+            display: block;
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .custom-options-list label:hover {
+            background-color: #f1f3f5;
+        }
+
+        .custom-options-list input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* --- ESTILOS PARA A LISTA DE OPERAÇÕES POR COORDENADOR --- */
+        .ops-list-container {
+            padding: 15px;
+        }
+
+        .ops-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .ops-list-item {
+            background-color: #e9ecef;
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 50px;
+            /* Bordas arredondadas para o estilo "pill" */
+            font-size: 0.9em;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .ops-list-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Adicione no final do seu CSS */
+        #coordination-ops-list-container .performance-table td {
+            text-align: left;
+        }
+
+        /* Adicione no final da sua seção <style> */
+
+        #coordination-ops-list-container .regional-section h3 {
+            margin-bottom: 15px;
+            /* Adiciona um pequeno espaço abaixo do título */
+        }
+
+        #coordination-ops-list-container .performance-table {
+            font-size: 0.9em;
+            /* Ajusta o tamanho da fonte para a lista */
+        }
+
+        #coordination-ops-list-container .performance-table td {
+            text-align: left;
+            /* Alinha o nome das operações à esquerda */
+            padding: 10px 15px;
+            /* Ajusta o espaçamento interno */
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #coordination-ops-list-container .performance-table tr:last-child td {
+            border-bottom: none;
+            /* Remove a borda da última linha */
+        }
+
+        /* Adicione no final da sua seção <style> */
+
+        /* Corrige o layout dos gráficos de altura total (Gestor e AdOps) */
+        .chart-container.chart-full {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Faz o canvas ocupar todo o espaço vertical restante no contêiner */
+        .chart-container.chart-full canvas {
+            flex-grow: 1;
+            /* Precisamos redefinir a altura para que o flex-grow funcione corretamente */
+            height: 0;
+        }
+
+        /* --- ESTILOS PARA INFO TOOLTIP DO PLANEJADOR --- */
+        .info-tooltip {
+            display: inline-block;
+            position: relative;
+            cursor: help;
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: #eef;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .info-tooltip:hover::after {
+            content: attr(data-tooltip-text);
+            position: absolute;
+            bottom: 125%;
+            /* Posição acima do '?' */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #343a40;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 500;
+            width: 300px;
+            /* Largura do tooltip */
+            text-align: left;
+            white-space: normal;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
 </head>
 
@@ -1205,14 +1413,21 @@
                 <button class="nav-btn" data-target="view-companies" data-tooltip="Performance por Empresa">
                     <span class="nav-icon">🏢</span> <span>Performance por Empresa</span>
                 </button>
-                <button class="nav-btn" data-target="view-metas" data-tooltip="Metas">
-                    <span class="nav-icon">🎯</span> <span>Metas</span>
+                <div class="menu-group-title">Metas</div>
+                <button class="nav-btn" data-target="view-metas-geral" data-tooltip="Metas Gerais">
+                    <span class="nav-icon">🎯</span> <span>Metas Gerais</span>
+                </button>
+                <button class="nav-btn" data-target="view-metas-planner" data-tooltip="Planejador de Metas">
+                    <span class="nav-icon">🏃</span> <span>Planejador de Metas</span>
                 </button>
 
                 <div class="menu-group">
                     <div class="menu-group-title">Performance</div>
                     <button class="nav-btn" data-target="view-managers" data-tooltip="Performance por Gestor">
-                        <span class="nav-icon">👨‍💼</span> <span>Por Gestor</span>
+                        <span class="nav-icon">👨‍💼</span> <span>Por Gestor de Tráfego</span>
+                    </button>
+                    <button class="nav-btn" data-target="view-coordination" data-tooltip="Performance por Coordenação">
+                        <span class="nav-icon">👑</span> <span>Por Coordenação (Aquisição)</span>
                     </button>
                     <button class="nav-btn" data-target="view-adops" data-tooltip="Performance por AdOps">
                         <span class="nav-icon">👩‍💻</span> <span>Por AdOps</span>
@@ -1226,6 +1441,8 @@
                     <button class="nav-btn" data-target="view-forecast" data-tooltip="Previsão Avançada">
                         <span class="nav-icon">🔮</span> <span>Previsão Avançada</span>
                     </button>
+
+
                 </div>
 
 
@@ -1266,6 +1483,7 @@
                 </div>
 
                 <div class="content-wrapper" id="mainContent">
+
                     <div id="view-general" class="view-section active">
                         <div class="section-header">
                             <h2 class="section-title" id="general-results-title">Resultados Gerais do Período</h2>
@@ -1326,6 +1544,7 @@
                         </div>
                         <div class="summary-cards" id="projectionCards"></div>
                     </div>
+
                     <div id="view-operational" class="view-section">
                         <div class="section-header">
                             <h2 class="section-title">Análise Consolidada por Operação</h2>
@@ -1334,6 +1553,7 @@
                             <p style="padding: 20px; text-align: center;">Carregando dados operacionais...</p>
                         </div>
                     </div>
+
                     <div id="view-proportion" class="view-section">
                         <div class="section-header">
                             <h2 class="section-title">Proporção de Investimento / Leads</h2>
@@ -1358,47 +1578,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="view-managers" class="view-section">
-                        <div class="section-header">
-                            <h2 class="section-title">Análise de Performance por Gestor (Aquisição)</h2>
-                        </div>
-                        <div class="charts-grid">
-                            <div class="chart-container">
-                                <h2>📈 Operações por Gestor</h2><canvas id="managerOpsCountChart"></canvas>
-                            </div>
-                            <div class="chart-container">
-                                <h2>💸 CPA Médio por Gestor</h2><canvas id="gestorCpaChart"></canvas>
-                            </div>
-                            <div class="chart-container">
-                                <h2>💰 Maior Investimento</h2><canvas id="gestorInvestimentoTotalChart"></canvas>
-                            </div>
-                            <div class="chart-container">
-                                <h2>🎯 Melhor ROAS</h2><canvas id="gestorRoasChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="view-adops" class="view-section">
-                        <div class="section-header">
-                            <h2 class="section-title">Análise de Performance por AdOps (Monetização)</h2>
-                        </div>
-                        <div class="charts-grid">
-                            <div class="chart-container">
-                                <h2>📈 Receita Total por AdOps</h2><canvas id="adopsRevenueChart"></canvas>
-                            </div>
-                            <div class="chart-container">
-                                <h2>💰 Investimento Gerenciado</h2><canvas id="adopsInvestmentChart"></canvas>
-                            </div>
-                            <div class="chart-container">
-                                <h2>🎯 ROAS Médio por AdOps</h2><canvas id="adopsRoasChart"></canvas>
-                            </div>
-                            <div class="chart-container">
-                                <h2>👥 Leads Gerenciados</h2><canvas id="adopsLeadsChart"></canvas>
-                            </div>
-                            <div class="chart-container">
-                                <h2>📋 Operações por AdOps</h2><canvas id="adopsOpsCountChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
+
                     <div id="view-segments" class="view-section">
                         <div class="section-header">
                             <h2 class="section-title">Análise Comparativa por Segmento de Negócio</h2>
@@ -1430,6 +1610,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div id="view-companies" class="view-section">
                         <div class="section-header">
                             <h2 class="section-title">Resultados Consolidados por Empresa</h2>
@@ -1457,7 +1638,8 @@
                         </div>
                         <div class="charts-grid" id="companyDistributionCharts"></div>
                     </div>
-                    <div id="view-metas" class="view-section">
+
+                    <div id="view-metas-geral" class="view-section">
                         <div class="section-header">
                             <h2 class="section-title">Visão Geral das Metas Diárias</h2>
                         </div>
@@ -1466,7 +1648,7 @@
                             <div id="sprint-kpi-cards"></div>
                         </div>
                         <div class="section-header">
-                            <h2 class="section-title">🚀 Sprint 1M - Plano de Aceleração Diária (até 12/10)</h2>
+                            <h2 class="section-title">🚀 Sprint 1M - Plano de Aceleração Diária (até 18/10)</h2>
                         </div>
                         <div class="chart-container chart-full" style="height: auto; padding: 25px;">
                             <div id="sprint-1m-table" style="overflow-x: auto;"></div>
@@ -1484,15 +1666,205 @@
                             <div id="metas-acceleration-table" style="overflow-x: auto;"></div>
                         </div>
                     </div>
+                    <div id="view-metas-planner" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Planejador de Metas (Simulador de Pacing)</h2>
+                        </div>
+
+                        <div class="chart-filters-container"
+                            style="display: flex; justify-content: space-around; align-items: flex-end;">
+                                                        <div class="filter-group" style="flex-grow: 1;">
+                                                                                                <label
+                                    for="plannerOperationFilter" style="display: flex; align-items: center;">
+                                                                        1. Selecione a Operação (Total)
+                                                                        <span class="info-tooltip"
+                                        data-tooltip-text="A projeção irá distribuir o gasto total pelas sub-operações (ex: 01, 02) com base na média de performance dos últimos 7 dias.">(?)</span>
+                                                                    </label>
+                                                                <select id="plannerOperationFilter"
+                                    style="width: 100%;">
+                                                                        <option value="">-- Carregando operações --
+                                    </option>
+                                                                    </select>
+                                                                                            </div>
+                                                        <div class="filter-group">
+                                                                <label for="plannerTargetSpend">2. Meta de Gasto
+                                    Total</label>
+                                                                <input type="number" id="plannerTargetSpend"
+                                    placeholder="500000" style="width: 200px;">
+                                                            </div>
+                                                        <div class="filter-group">
+                                                                <label for="plannerEndDate">3. Data Final</label>
+                                                                <input type="date" id="plannerEndDate"
+                                    style="width: 200px;">
+                                                            </div>
+                                                        <button id="plannerCalculateBtn"
+                                style="padding: 10px 15px; height: 44px; margin-left: 15px;">📊 Calcular Plano</button>
+                                                    </div>
+
+                        <div class="summary-cards" id="plannerSummaryCards" style="margin-top: 25px; display: none;">
+                        </div>
+
+                        <div class="charts-grid" style="margin-top: 25px; display: none;" id="plannerChartContainer">
+                            <div class="chart-container chart-full">
+                                <h2>Evolução Planejada vs. Real</h2>
+                                <canvas id="plannerChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div style="display: none;" id="plannerTableContainer">
+                            <div class="section-header" style="margin-top: 20px;">
+                                <h2 class="section-title">Plano de Gasto Diário</h2>
+                            </div>
+                            <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                                <div id="plannerTable" style="overflow-x: auto;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="view-managers" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise de Performance por Gestor (Aquisição)</h2>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container chart-full">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                                    <h2 style="margin-bottom: 0;">📊 Evolução Diária por Gestor</h2>
+                                    <div class="custom-select-wrapper">
+                                        <label>Selecione o(s) Gestor(es):</label>
+                                        <div class="custom-select" id="manager-select-container">
+                                            <button class="custom-select-trigger"
+                                                id="manager-select-trigger">Selecione...</button>
+                                            <div class="custom-select-options" id="manager-select-options">
+                                                <input type="text" id="manager-search-input"
+                                                    placeholder="Buscar gestor..." class="custom-select-search">
+                                                <div id="manager-options-list" class="custom-options-list"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <canvas id="gestorEvolucaoDiariaChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>📈 Operações por Gestor</h2><canvas id="managerOpsCountChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>💸 CPA Médio por Gestor</h2><canvas id="gestorCpaChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>💰 Maior Investimento</h2><canvas id="gestorInvestimentoTotalChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🎯 Melhor ROAS</h2><canvas id="gestorRoasChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="view-coordination" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise de Performance por Coordenação (Aquisição)</h2>
+                            <div class="custom-select-wrapper">
+                                <label>Filtrar por Coordenação:</label>
+                                <div class="custom-select" id="coord-select-container">
+                                    <button class="custom-select-trigger" id="coord-select-trigger">Todos</button>
+                                    <div class="custom-select-options" id="coord-select-options">
+                                        <input type="text" id="coord-search-input" placeholder="Buscar..."
+                                            class="custom-select-search">
+                                        <div id="coord-options-list" class="custom-options-list">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="coordination-summary-cards" class="regional-cards-wrapper">
+                        </div>
+
+                        <div class="section-header">
+                            <h2 class="section-title">Análise Gráfica</h2>
+                        </div>
+
+                        <div class="charts-grid" style="grid-template-columns: 2fr 1fr; gap: 25px;">
+                            <div class="chart-container" style="grid-column: 1 / 2;">
+                                <h2>📈 Evolução Diária (Gasto, ROAS, CPA)</h2>
+                                <canvas id="coordinationEvolutionChart"></canvas>
+                            </div>
+
+                            <div style="grid-column: 2 / 3; display: flex; flex-direction: column; gap: 25px;">
+                                <div class="chart-container">
+                                    <h2>📊 Proporção de Gasto</h2>
+                                    <canvas id="coordinationSpendPieChart"></canvas>
+                                </div>
+                                <div class="chart-container" style="height: auto;">
+                                    <h2>📋 Nº de Operações</h2>
+                                    <canvas id="coordinationOpsCountChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-header">
+                            <h2 class="section-title">Operações por Coordenador</h2>
+                        </div>
+                        <div id="coordination-ops-list-container" class="regional-cards-wrapper">
+                        </div>
+                    </div>
+
+                    <div id="view-adops" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise de Performance por AdOps (Monetização)</h2>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-full" style="grid-column: 1 / -1;">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
+                                    <h2 style="margin-bottom: 0;">📈 Evolução Diária por AdOps</h2>
+                                    <div class="custom-select-wrapper">
+                                        <label>Selecione o(s) AdOps:</label>
+                                        <div class="custom-select" id="adops-select-container">
+                                            <button class="custom-select-trigger"
+                                                id="adops-select-trigger">Selecione...</button>
+                                            <div class="custom-select-options" id="adops-select-options">
+                                                <input type="text" id="adops-search-input" placeholder="Buscar AdOps..."
+                                                    class="custom-select-search">
+                                                <div id="adops-options-list" class="custom-options-list"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="chart-container chart-full">
+                                    <canvas id="adopsEvolutionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h2>📈 Receita Total por AdOps</h2><canvas id="adopsRevenueChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>💰 Investimento Gerenciado</h2><canvas id="adopsInvestmentChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>🎯 ROAS Médio por AdOps</h2><canvas id="adopsRoasChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>👥 Leads Gerenciados</h2><canvas id="adopsLeadsChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h2>📋 Operações por AdOps</h2><canvas id="adopsOpsCountChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="view-correlation" class="view-section">
                         <div class="section-header">
                             <h2 class="section-title">🔗 Análise de Correlação entre Métricas</h2>
                         </div>
-                    
                         <div class="chart-filters-container">
                             <div class="filter-group">
                                 <label for="correlationAccountFilter">Selecione a Conta:</label>
-                                <select id="correlationAccountFilter" onchange="renderCorrelationChart()" style="width: 350px;"></select>
+                                <select id="correlationAccountFilter" onchange="renderCorrelationChart()"
+                                    style="width: 350px;"></select>
                             </div>
                             <div class="filter-group">
                                 <label for="correlationMetricX">Métrica do Eixo X:</label>
@@ -1503,14 +1875,13 @@
                                 <select id="correlationMetricY" onchange="renderCorrelationChart()"></select>
                             </div>
                         </div>
-                    
                         <div class="chart-container chart-full">
-                            <h3 id="correlation-result-text" style="text-align:center; margin-bottom: 15px;">Selecione uma conta e as métricas.</h3>
+                            <h3 id="correlation-result-text" style="text-align:center; margin-bottom: 15px;">Selecione
+                                uma conta e as métricas.</h3>
                             <canvas id="correlationChart"></canvas>
                         </div>
-                    
-                        <div id="correlation-explanation-box" class="explanation-box" style="display: none; margin-top: 25px;">
-                            </div>
+                        <div id="correlation-explanation-box" class="explanation-box"
+                            style="display: none; margin-top: 25px;"></div>
                     </div>
 
                     <div id="view-forecast" class="view-section">
@@ -1518,138 +1889,264 @@
                             <h2 class="section-title">🔮 Previsão Avançada de Performance</h2>
                         </div>
                         <div class="chart-container chart-full" style="height: 600px;">
-                             <canvas id="advancedForecastChart"></canvas>
+                            <canvas id="advancedForecastChart"></canvas>
                         </div>
-                    
-                        <div id="forecast-text-analysis" class="explanation-box" style="display: none; margin-top: 25px;">
+                        <div id="forecast-text-analysis" class="explanation-box"
+                            style="display: none; margin-top: 25px;"></div>
+                    </div>
+
+                    <div id="view-jn-analysis" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise de Performance por Conta (JN)</h2>
+                        </div>
+                        <div class="chart-filters-container">
+                            <div class="filter-group"><label>Modo de Visualização:</label>
+                                <div class="checkbox-wrapper"><input type="radio" id="jn-mode-single"
+                                        name="jn-view-mode" value="single" onchange="toggleJnViewMode('single')"
+                                        checked><label for="jn-mode-single">Visão Única</label><input type="radio"
+                                        id="jn-mode-compare" name="jn-view-mode" value="compare"
+                                        onchange="toggleJnViewMode('compare')"><label for="jn-mode-compare">Modo de
+                                        Comparação</label></div>
                             </div>
+                            <div class="filter-group"><label>Métricas do Gráfico:</label>
+                                <div id="jn-metric-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
+                                        id="jn-metric-gasto" value="gasto" onchange="renderJnAnalysisView()"
+                                        checked><label for="jn-metric-gasto">Gasto</label><input type="checkbox"
+                                        id="jn-metric-cpa" value="cpa" onchange="renderJnAnalysisView()" checked><label
+                                        for="jn-metric-cpa">CPA</label><input type="checkbox" id="jn-metric-cpm"
+                                        value="cpm" onchange="renderJnAnalysisView()"><label
+                                        for="jn-metric-cpm">CPM</label><input type="checkbox" id="jn-metric-ctr"
+                                        value="ctr" onchange="renderJnAnalysisView()"><label
+                                        for="jn-metric-ctr">CTR</label></div>
+                            </div>
+                        </div>
+                        <div id="jn-single-view-controls" class="chart-filters-container">
+                            <div class="filter-group"><label for="jnAccountFilter">Selecione uma Conta:</label><select
+                                    id="jnAccountFilter" onchange="renderJnAnalysisView()" style="width: 450px;">
+                                    <option value="">-- Carregando contas --</option>
+                                </select></div>
+                        </div>
+                        <div id="jn-compare-view-controls" class="chart-filters-container" style="display: none;">
+                            <div class="comparison-controls-wrapper">
+                                <div class="search-container">
+                                    <div class="filter-group"><label for="jnAccountSearch">Buscar conta por
+                                            palavra-chave:</label><input type="search" id="jnAccountSearch"
+                                            onkeyup="handleJnAccountSearch()" placeholder="Digite para buscar..."
+                                            style="width: 100%;">
+                                        <div id="jnSearchResults" class="search-results"></div>
+                                    </div>
+                                </div>
+                                <div class="selected-accounts-container"><label>Contas em comparação:</label>
+                                    <div id="jnSelectedAccounts" class="selected-accounts-list"></div><button
+                                        onclick="clearJnComparison()"
+                                        style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar
+                                        Seleção</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container chart-full">
+                                <div id="jn-currency-warning" class="currency-warning-box"></div><canvas
+                                    id="jnEvolutionChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="jn-funnel-container" style="display: none; margin-top: 25px;"></div>
+                        <div class="section-header" style="margin-top: 20px;">
+                            <h2 class="section-title">Dados Diários Agregados</h2>
+                        </div>
+                        <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                            <div id="jn-daily-table" style="overflow-x: auto;"></div>
+                        </div>
+                    </div>
+
+                    <div id="view-mg-analysis" class="view-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Análise de Performance por Conta (MG)</h2>
+                        </div>
+                        <div class="chart-filters-container">
+                            <div class="filter-group"><label>Modo de Visualização:</label>
+                                <div class="checkbox-wrapper"><input type="radio" id="mg-mode-single"
+                                        name="mg-view-mode" value="single" onchange="toggleMgViewMode('single')"
+                                        checked><label for="mg-mode-single">Visão Única</label><input type="radio"
+                                        id="mg-mode-compare" name="mg-view-mode" value="compare"
+                                        onchange="toggleMgViewMode('compare')"><label for="mg-mode-compare">Modo de
+                                        Comparação</label></div>
+                            </div>
+                            <div class="filter-group"><label>Métricas do Gráfico:</label>
+                                <div id="mg-metric-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
+                                        id="mg-metric-gasto" value="gasto" onchange="renderMgAnalysisView()"
+                                        checked><label for="mg-metric-gasto">Gasto</label><input type="checkbox"
+                                        id="mg-metric-cpa" value="cpa" onchange="renderMgAnalysisView()" checked><label
+                                        for="mg-metric-cpa">CPA</label><input type="checkbox" id="mg-metric-cpm"
+                                        value="cpm" onchange="renderMgAnalysisView()"><label
+                                        for="mg-metric-cpm">CPM</label><input type="checkbox" id="mg-metric-ctr"
+                                        value="ctr" onchange="renderMgAnalysisView()"><label
+                                        for="mg-metric-ctr">CTR</label></div>
+                            </div>
+                        </div>
+                        <div id="mg-single-view-controls" class="chart-filters-container">
+                            <div class="filter-group"><label for="mgAccountFilter">Selecione uma Conta:</label><select
+                                    id="mgAccountFilter" onchange="renderMgAnalysisView()" style="width: 450px;">
+                                    <option value="">-- Carregando contas --</option>
+                                </select></div>
+                        </div>
+                        <div id="mg-compare-view-controls" class="chart-filters-container" style="display: none;">
+                            <div class="comparison-controls-wrapper">
+                                <div class="search-container">
+                                    <div class="filter-group"><label for="mgAccountSearch">Buscar conta por
+                                            palavra-chave:</label><input type="search" id="mgAccountSearch"
+                                            onkeyup="handleMgAccountSearch()" placeholder="Digite para buscar..."
+                                            style="width: 100%;">
+                                        <div id="mgSearchResults" class="search-results"></div>
+                                    </div>
+                                </div>
+                                <div class="selected-accounts-container"><label>Contas em comparação:</label>
+                                    <div id="mgSelectedAccounts" class="selected-accounts-list"></div><button
+                                        onclick="clearMgComparison()"
+                                        style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar
+                                        Seleção</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-container chart-full">
+                                <div id="mg-currency-warning" class="currency-warning-box"></div><canvas
+                                    id="mgEvolutionChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="mg-funnel-container" style="display: none; margin-top: 25px;"></div>
+                        <div class="section-header" style="margin-top: 20px;">
+                            <h2 class="section-title">Dados Diários Agregados</h2>
+                        </div>
+                        <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                            <div id="mg-daily-table" style="overflow-x: auto;"></div>
+                        </div>
                     </div>
 
                 </div>
-                <div id="view-jn-analysis" class="view-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Análise de Performance por Conta (JN)</h2>
+            </div>
+            <div id="view-jn-analysis" class="view-section">
+                <div class="section-header">
+                    <h2 class="section-title">Análise de Performance por Conta (JN)</h2>
+                </div>
+                <div class="chart-filters-container">
+                    <div class="filter-group"><label>Modo de Visualização:</label>
+                        <div class="checkbox-wrapper"><input type="radio" id="jn-mode-single" name="jn-view-mode"
+                                value="single" onchange="toggleJnViewMode('single')" checked><label
+                                for="jn-mode-single">Visão Única</label><input type="radio" id="jn-mode-compare"
+                                name="jn-view-mode" value="compare" onchange="toggleJnViewMode('compare')"><label
+                                for="jn-mode-compare">Modo de Comparação</label></div>
                     </div>
-                    <div class="chart-filters-container">
-                        <div class="filter-group"><label>Modo de Visualização:</label>
-                            <div class="checkbox-wrapper"><input type="radio" id="jn-mode-single" name="jn-view-mode"
-                                    value="single" onchange="toggleJnViewMode('single')" checked><label
-                                    for="jn-mode-single">Visão Única</label><input type="radio" id="jn-mode-compare"
-                                    name="jn-view-mode" value="compare" onchange="toggleJnViewMode('compare')"><label
-                                    for="jn-mode-compare">Modo de Comparação</label></div>
-                        </div>
-                        <div class="filter-group"><label>Métricas do Gráfico:</label>
-                            <div id="jn-metric-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
-                                    id="jn-metric-gasto" value="gasto" onchange="renderJnAnalysisView()" checked><label
-                                    for="jn-metric-gasto">Gasto</label><input type="checkbox" id="jn-metric-cpa"
-                                    value="cpa" onchange="renderJnAnalysisView()" checked><label
-                                    for="jn-metric-cpa">CPA</label><input type="checkbox" id="jn-metric-cpm" value="cpm"
-                                    onchange="renderJnAnalysisView()"><label for="jn-metric-cpm">CPM</label><input
-                                    type="checkbox" id="jn-metric-ctr" value="ctr"
-                                    onchange="renderJnAnalysisView()"><label for="jn-metric-ctr">CTR</label></div>
-                        </div>
-                    </div>
-                    <div id="jn-single-view-controls" class="chart-filters-container">
-                        <div class="filter-group"><label for="jnAccountFilter">Selecione uma Conta:</label><select
-                                id="jnAccountFilter" onchange="renderJnAnalysisView()" style="width: 450px;">
-                                <option value="">-- Carregando contas --</option>
-                            </select></div>
-                    </div>
-                    <div id="jn-compare-view-controls" class="chart-filters-container" style="display: none;">
-                        <div class="comparison-controls-wrapper">
-                            <div class="search-container">
-                                <div class="filter-group"><label for="jnAccountSearch">Buscar conta por
-                                        palavra-chave:</label><input type="search" id="jnAccountSearch"
-                                        onkeyup="handleJnAccountSearch()" placeholder="Digite para buscar..."
-                                        style="width: 100%;">
-                                    <div id="jnSearchResults" class="search-results"></div>
-                                </div>
-                            </div>
-                            <div class="selected-accounts-container"><label>Contas em comparação:</label>
-                                <div id="jnSelectedAccounts" class="selected-accounts-list"></div><button
-                                    onclick="clearJnComparison()"
-                                    style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar
-                                    Seleção</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="charts-grid">
-                        <div class="chart-container chart-full">
-                            <div id="jn-currency-warning" class="currency-warning-box"></div><canvas
-                                id="jnEvolutionChart"></canvas>
-                        </div>
-                    </div>
-                    <div id="jn-funnel-container" style="display: none; margin-top: 25px;"></div>
-                    <div class="section-header" style="margin-top: 20px;">
-                        <h2 class="section-title">Dados Diários Agregados</h2>
-                    </div>
-                    <div class="chart-container chart-full" style="height: auto; padding: 0;">
-                        <div id="jn-daily-table" style="overflow-x: auto;"></div>
+                    <div class="filter-group"><label>Métricas do Gráfico:</label>
+                        <div id="jn-metric-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
+                                id="jn-metric-gasto" value="gasto" onchange="renderJnAnalysisView()" checked><label
+                                for="jn-metric-gasto">Gasto</label><input type="checkbox" id="jn-metric-cpa" value="cpa"
+                                onchange="renderJnAnalysisView()" checked><label for="jn-metric-cpa">CPA</label><input
+                                type="checkbox" id="jn-metric-cpm" value="cpm" onchange="renderJnAnalysisView()"><label
+                                for="jn-metric-cpm">CPM</label><input type="checkbox" id="jn-metric-ctr" value="ctr"
+                                onchange="renderJnAnalysisView()"><label for="jn-metric-ctr">CTR</label></div>
                     </div>
                 </div>
-                <div id="view-mg-analysis" class="view-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Análise de Performance por Conta (MG)</h2>
-                    </div>
-                    <div class="chart-filters-container">
-                        <div class="filter-group"><label>Modo de Visualização:</label>
-                            <div class="checkbox-wrapper"><input type="radio" id="mg-mode-single" name="mg-view-mode"
-                                    value="single" onchange="toggleMgViewMode('single')" checked><label
-                                    for="mg-mode-single">Visão Única</label><input type="radio" id="mg-mode-compare"
-                                    name="mg-view-mode" value="compare" onchange="toggleMgViewMode('compare')"><label
-                                    for="mg-mode-compare">Modo de Comparação</label></div>
-                        </div>
-                        <div class="filter-group"><label>Métricas do Gráfico:</label>
-                            <div id="mg-metric-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
-                                    id="mg-metric-gasto" value="gasto" onchange="renderMgAnalysisView()" checked><label
-                                    for="mg-metric-gasto">Gasto</label><input type="checkbox" id="mg-metric-cpa"
-                                    value="cpa" onchange="renderMgAnalysisView()" checked><label
-                                    for="mg-metric-cpa">CPA</label><input type="checkbox" id="mg-metric-cpm" value="cpm"
-                                    onchange="renderMgAnalysisView()"><label for="mg-metric-cpm">CPM</label><input
-                                    type="checkbox" id="mg-metric-ctr" value="ctr"
-                                    onchange="renderMgAnalysisView()"><label for="mg-metric-ctr">CTR</label></div>
-                        </div>
-                    </div>
-                    <div id="mg-single-view-controls" class="chart-filters-container">
-                        <div class="filter-group"><label for="mgAccountFilter">Selecione uma Conta:</label><select
-                                id="mgAccountFilter" onchange="renderMgAnalysisView()" style="width: 450px;">
-                                <option value="">-- Carregando contas --</option>
-                            </select></div>
-                    </div>
-                    <div id="mg-compare-view-controls" class="chart-filters-container" style="display: none;">
-                        <div class="comparison-controls-wrapper">
-                            <div class="search-container">
-                                <div class="filter-group"><label for="mgAccountSearch">Buscar conta por
-                                        palavra-chave:</label><input type="search" id="mgAccountSearch"
-                                        onkeyup="handleMgAccountSearch()" placeholder="Digite para buscar..."
-                                        style="width: 100%;">
-                                    <div id="mgSearchResults" class="search-results"></div>
-                                </div>
-                            </div>
-                            <div class="selected-accounts-container"><label>Contas em comparação:</label>
-                                <div id="mgSelectedAccounts" class="selected-accounts-list"></div><button
-                                    onclick="clearMgComparison()"
-                                    style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar
-                                    Seleção</button>
+                <div id="jn-single-view-controls" class="chart-filters-container">
+                    <div class="filter-group"><label for="jnAccountFilter">Selecione uma Conta:</label><select
+                            id="jnAccountFilter" onchange="renderJnAnalysisView()" style="width: 450px;">
+                            <option value="">-- Carregando contas --</option>
+                        </select></div>
+                </div>
+                <div id="jn-compare-view-controls" class="chart-filters-container" style="display: none;">
+                    <div class="comparison-controls-wrapper">
+                        <div class="search-container">
+                            <div class="filter-group"><label for="jnAccountSearch">Buscar conta por
+                                    palavra-chave:</label><input type="search" id="jnAccountSearch"
+                                    onkeyup="handleJnAccountSearch()" placeholder="Digite para buscar..."
+                                    style="width: 100%;">
+                                <div id="jnSearchResults" class="search-results"></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="charts-grid">
-                        <div class="chart-container chart-full">
-                            <div id="mg-currency-warning" class="currency-warning-box"></div><canvas
-                                id="mgEvolutionChart"></canvas>
+                        <div class="selected-accounts-container"><label>Contas em comparação:</label>
+                            <div id="jnSelectedAccounts" class="selected-accounts-list"></div><button
+                                onclick="clearJnComparison()"
+                                style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar
+                                Seleção</button>
                         </div>
                     </div>
-                    <div id="mg-funnel-container" style="display: none; margin-top: 25px;"></div>
-                    <div class="section-header" style="margin-top: 20px;">
-                        <h2 class="section-title">Dados Diários Agregados</h2>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container chart-full">
+                        <div id="jn-currency-warning" class="currency-warning-box"></div><canvas
+                            id="jnEvolutionChart"></canvas>
                     </div>
-                    <div class="chart-container chart-full" style="height: auto; padding: 0;">
-                        <div id="mg-daily-table" style="overflow-x: auto;"></div>
-                    </div>
+                </div>
+                <div id="jn-funnel-container" style="display: none; margin-top: 25px;"></div>
+                <div class="section-header" style="margin-top: 20px;">
+                    <h2 class="section-title">Dados Diários Agregados</h2>
+                </div>
+                <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                    <div id="jn-daily-table" style="overflow-x: auto;"></div>
                 </div>
             </div>
-        </main>
+            <div id="view-mg-analysis" class="view-section">
+                <div class="section-header">
+                    <h2 class="section-title">Análise de Performance por Conta (MG)</h2>
+                </div>
+                <div class="chart-filters-container">
+                    <div class="filter-group"><label>Modo de Visualização:</label>
+                        <div class="checkbox-wrapper"><input type="radio" id="mg-mode-single" name="mg-view-mode"
+                                value="single" onchange="toggleMgViewMode('single')" checked><label
+                                for="mg-mode-single">Visão Única</label><input type="radio" id="mg-mode-compare"
+                                name="mg-view-mode" value="compare" onchange="toggleMgViewMode('compare')"><label
+                                for="mg-mode-compare">Modo de Comparação</label></div>
+                    </div>
+                    <div class="filter-group"><label>Métricas do Gráfico:</label>
+                        <div id="mg-metric-checkbox-group" class="checkbox-wrapper"><input type="checkbox"
+                                id="mg-metric-gasto" value="gasto" onchange="renderMgAnalysisView()" checked><label
+                                for="mg-metric-gasto">Gasto</label><input type="checkbox" id="mg-metric-cpa" value="cpa"
+                                onchange="renderMgAnalysisView()" checked><label for="mg-metric-cpa">CPA</label><input
+                                type="checkbox" id="mg-metric-cpm" value="cpm" onchange="renderMgAnalysisView()"><label
+                                for="mg-metric-cpm">CPM</label><input type="checkbox" id="mg-metric-ctr" value="ctr"
+                                onchange="renderMgAnalysisView()"><label for="mg-metric-ctr">CTR</label></div>
+                    </div>
+                </div>
+                <div id="mg-single-view-controls" class="chart-filters-container">
+                    <div class="filter-group"><label for="mgAccountFilter">Selecione uma Conta:</label><select
+                            id="mgAccountFilter" onchange="renderMgAnalysisView()" style="width: 450px;">
+                            <option value="">-- Carregando contas --</option>
+                        </select></div>
+                </div>
+                <div id="mg-compare-view-controls" class="chart-filters-container" style="display: none;">
+                    <div class="comparison-controls-wrapper">
+                        <div class="search-container">
+                            <div class="filter-group"><label for="mgAccountSearch">Buscar conta por
+                                    palavra-chave:</label><input type="search" id="mgAccountSearch"
+                                    onkeyup="handleMgAccountSearch()" placeholder="Digite para buscar..."
+                                    style="width: 100%;">
+                                <div id="mgSearchResults" class="search-results"></div>
+                            </div>
+                        </div>
+                        <div class="selected-accounts-container"><label>Contas em comparação:</label>
+                            <div id="mgSelectedAccounts" class="selected-accounts-list"></div><button
+                                onclick="clearMgComparison()"
+                                style="background: #6c757d; margin-top: auto; padding: 5px 10px; font-size: 0.8em;">Limpar
+                                Seleção</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container chart-full">
+                        <div id="mg-currency-warning" class="currency-warning-box"></div><canvas
+                            id="mgEvolutionChart"></canvas>
+                    </div>
+                </div>
+                <div id="mg-funnel-container" style="display: none; margin-top: 25px;"></div>
+                <div class="section-header" style="margin-top: 20px;">
+                    <h2 class="section-title">Dados Diários Agregados</h2>
+                </div>
+                <div class="chart-container chart-full" style="height: auto; padding: 0;">
+                    <div id="mg-daily-table" style="overflow-x: auto;"></div>
+                </div>
+            </div>
+    </div>
+    </main>
     </div>
     </div>
 
@@ -1667,6 +2164,10 @@
         const SEGMENT_BR_EMP = ['JN BR EMP TOTAL', 'MG BR EMP TOTAL'];
         const SEGMENT_DE_CC = ['JN DE CC TOTAL', 'MG DE CC TOTAL'];
         const SEGMENT_FR_CC = ['JN FR CC TOTAL', 'MG FR CC TOTAL'];
+        // Adicione esta linha perto do topo do seu <script>
+        let selectedManagersForChart = [];
+        let selectedCoordinatorsForChart = []; // Adicione esta linha
+        let selectedAdopsForChart = []; // Adicione esta linha
 
         const COMPANIES = {
             'MG': { name: 'MG', color: '#3498db' }, 'JN': { name: 'JN', color: '#2ecc71' }, 'GRID': { name: 'GRID', color: '#e74c3c' }, 'FM': { name: 'FM', color: '#f1c40f' }, 'CL': { name: 'CL', color: '#9b59b6' }, 'ND': { name: 'ND', color: '#34495e' }
@@ -1686,7 +2187,7 @@
 
         const investmentGoals = {
             'JN CC EUA': 300000, 'MG US CC': 300000, 'JN US CC': 300000,
-            'JN EMP EUA': 50000, 'MG US EMP': 20000, 'JN US EMP': 50000,
+            'JN EMP EUA': 60000, 'MG US EMP': 30000, 'JN US EMP': 60000,
             'JN CC BR': 50000, 'MG BR CC': 50000,
             'JN EMP BR': 30000, 'MG BR EMP': 30000,
         };
@@ -1778,61 +2279,428 @@
         function parseCsv(csvText) { return new Promise((resolve, reject) => { Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: resolve, error: reject }); }); }
 
         async function loadAllData(forceRefresh = false) {
-        document.getElementById('loader').style.display = 'flex';
-        document.getElementById('updateBtn').disabled = true;
-        document.getElementById('status').textContent = '⏳ Carregando dados...';
-        try {
-            // CORREÇÃO: Linhas de busca de dados (fetch) ajustadas
-            const [mainResponse, jnResponse, mgResponse, forecastResponse] = await Promise.all([
-                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`, { cache: forceRefresh ? 'reload' : 'default' }),
-                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_JN)}`, { cache: forceRefresh ? 'reload' : 'default' }),
-                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_MG)}`, { cache: forceRefresh ? 'reload' : 'default' }),
-                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_FORECAST)}`, { cache: forceRefresh ? 'reload' : 'default' })
-            ]);
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('updateBtn').disabled = true;
+            document.getElementById('status').textContent = '⏳ Carregando dados...';
+            try {
+                // CORREÇÃO: Linhas de busca de dados (fetch) ajustadas
+                const [mainResponse, jnResponse, mgResponse, forecastResponse] = await Promise.all([
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`, { cache: forceRefresh ? 'reload' : 'default' }),
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_JN)}`, { cache: forceRefresh ? 'reload' : 'default' }),
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_MG)}`, { cache: forceRefresh ? 'reload' : 'default' }),
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME_FORECAST)}`, { cache: forceRefresh ? 'reload' : 'default' })
+                ]);
 
-            if (!mainResponse.ok || !jnResponse.ok || !mgResponse.ok || !forecastResponse.ok) throw new Error(`A resposta da rede não foi bem-sucedida.`);
+                if (!mainResponse.ok || !jnResponse.ok || !mgResponse.ok || !forecastResponse.ok) throw new Error(`A resposta da rede não foi bem-sucedida.`);
 
-            const [mainCsvText, jnCsvText, mgCsvText, forecastCsvText] = await Promise.all([mainResponse.text(), jnResponse.text(), mgResponse.text(), forecastResponse.text()]);
-            
-            // CORREÇÃO: Lista de processamento (parseCsv) ajustada
-            const [mainResults, jnResults, mgResults, forecastResults] = await Promise.all([parseCsv(mainCsvText), parseCsv(jnCsvText), parseCsv(mgCsvText), parseCsv(forecastCsvText)]);
+                const [mainCsvText, jnCsvText, mgCsvText, forecastCsvText] = await Promise.all([mainResponse.text(), jnResponse.text(), mgResponse.text(), forecastResponse.text()]);
 
-            rawData = mainResults.data.map(row => ({ data: row.DATA, operacao: row['OPERAÇÃO'], gasto: parseMonetaryValue(row.GASTO), receita: parseMonetaryValue(row.RECEITA), cpa: parseMonetaryValue(row.CPA), leads: parseInt(row['TOTAL DE LEADS'] || 0), responsavelAquisicao: row['RESPONSÁVEL AQUISIÇÃO'], responsavelMonetizacao: row['RESPONSÁVEL MONETIZAÇÃO'] })).filter(row => row.operacao && row.operacao.trim() !== '');
-            
-            const mapAccountData = (row) => ({ day: row['Day'] ? String(row['Day']).trim() : null, accountName: row['Account Name'] ? String(row['Account Name']).trim() : null, impressions: parseInt(String(row['Impressions'] || '0').replace(/,/g, '')), clicks: parseInt(String(row['Clicks'] || '0').replace(/,/g, '')), ctr: parseFloat(String(row['CTR'] || '0').replace('%', '').replace(',', '.')), conversions: parseFloat(String(row['Conversions'] || '0').replace(',', '.')), convRate: parseFloat(String(row['Conv. rate'] || '0').replace('%', '').replace(',', '.')), spend: parseMonetaryValue(row['Cost (Spend)'] || row['Cost']), cpm: parseMonetaryValue(row['Avg. CPM']), cpc: parseMonetaryValue(row['Avg. CPC']), cpa: parseMonetaryValue(row['Cost / conv.']) });
-            
-            rawDataJn = jnResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
-            rawDataMg = mgResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
-            
-            rawDataForecast = forecastResults.data.map(row => ({
-                data: new Date(row.Data),
-                gasto: parseFloat(row.Previsao_Gasto),
-                receita: parseFloat(row.Previsao_Receita)
-            }));
+                // CORREÇÃO: Lista de processamento (parseCsv) ajustada
+                const [mainResults, jnResults, mgResults, forecastResults] = await Promise.all([parseCsv(mainCsvText), parseCsv(jnCsvText), parseCsv(mgCsvText), parseCsv(forecastCsvText)]);
 
-            initializeDashboard();
+                // CORREÇÃO: Mapeamento de dados ajustado// Dentro da função loadAllData
+                rawData = mainResults.data.map(row => ({
+                    data: row.DATA,
+                    operacao: row['OPERAÇÃO'],
+                    gasto: parseMonetaryValue(row.GASTO),
+                    receita: parseMonetaryValue(row.RECEITA),
+                    cpa: parseMonetaryValue(row.CPA),
+                    leads: parseInt(row['TOTAL DE LEADS'] || 0),
+                    responsavelAquisicao: row['RESPONSÁVEL AQUISIÇÃO'],
+                    responsavelMonetizacao: row['ADOPS'],
+                    // ▼▼▼ ADICIONE A LINHA ABAIXO ▼▼▼
+                    coordenadorAquisicao: row['COORDENADOR(A) AQUISIÇÃO']
+                })).filter(row => row.operacao && row.operacao.trim() !== '');
+                const mapAccountData = (row) => ({ day: row['Day'] ? String(row['Day']).trim() : null, accountName: row['Account Name'] ? String(row['Account Name']).trim() : null, impressions: parseInt(String(row['Impressions'] || '0').replace(/,/g, '')), clicks: parseInt(String(row['Clicks'] || '0').replace(/,/g, '')), ctr: parseFloat(String(row['CTR'] || '0').replace('%', '').replace(',', '.')), conversions: parseFloat(String(row['Conversions'] || '0').replace(',', '.')), convRate: parseFloat(String(row['Conv. rate'] || '0').replace('%', '').replace(',', '.')), spend: parseMonetaryValue(row['Cost (Spend)'] || row['Cost']), cpm: parseMonetaryValue(row['Avg. CPM']), cpc: parseMonetaryValue(row['Avg. CPC']), cpa: parseMonetaryValue(row['Cost / conv.']) });
 
-        } catch (error) {
-            document.getElementById('status').textContent = `❌ Erro no carregamento: ${error.message}`;
-            console.error("Erro detalhado:", error);
-        } finally {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('updateBtn').disabled = false;
-            // A mensagem de "Dados atualizados!" foi movida para dentro do 'try' para aparecer apenas em caso de sucesso.
-            if (!document.getElementById('status').textContent.includes('Erro')) {
-                 document.getElementById('status').textContent = `✅ Dados atualizados!`;
+                rawDataJn = jnResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
+                rawDataMg = mgResults.data.map(mapAccountData).filter(row => row.accountName && row.day);
+
+                rawDataForecast = forecastResults.data.map(row => ({
+                    data: new Date(row.Data),
+                    gasto: parseFloat(row.Previsao_Gasto),
+                    receita: parseFloat(row.Previsao_Receita)
+                }));
+
+                return rawData; // ADICIONE ESTA LINHA
+
+            } catch (error) {
+                document.getElementById('status').textContent = `❌ Erro no carregamento: ${error.message}`;
+                console.error("Erro detalhado:", error);
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('updateBtn').disabled = false;
+                // A mensagem de "Dados atualizados!" foi movida para dentro do 'try' para aparecer apenas em caso de sucesso.
+                if (!document.getElementById('status').textContent.includes('Erro')) {
+                    document.getElementById('status').textContent = `✅ Dados atualizados!`;
+                }
             }
         }
-    }
+        // ADICIONE ESTE BLOCO DE NOVAS FUNÇÕES NO FINAL DO SEU SCRIPT
+
+        /**
+         * Popula o dropdown de seleção de operação do planejador.
+         * Usa apenas sub-operações (não-TOTAL).
+         */
+       // 1. SUBSTITUA ESTA FUNÇÃO
+               function populatePlannerOperationFilter(data) {
+            const select = document.getElementById('plannerOperationFilter');
+            if (!select) return;
+            
+            // MODIFICADO: Agora pega apenas operações "TOTAL"
+            const operations = [...new Set(data.map(r => r.operacao).filter(Boolean))]
+                .filter(op => endsWithTOTAL(op)) // Apenas operações TOTAIS
+                .sort();
+                
+            // MODIFICADO: Texto do select
+            select.innerHTML = '<option value="">-- Selecione uma Operação Total --</option>';
+            operations.forEach(op => {
+                // MODIFICADO: Remove " TOTAL" do texto
+                select.innerHTML += `<option value="${op}">${op.replace(' TOTAL', '')}</option>`;
+            });
+        }
+
+        // 2. SUBSTITUA ESTA FUNÇÃO
+        async function runGoalPlanner() {
+            const selectedTotalOp = document.getElementById('plannerOperationFilter').value;
+            const targetSpend = parseFloat(document.getElementById('plannerTargetSpend').value);
+            const endDateStr = document.getElementById('plannerEndDate').value;
+
+            const summaryContainer = document.getElementById('plannerSummaryCards');
+            const chartContainer = document.getElementById('plannerChartContainer');
+            const tableContainer = document.getElementById('plannerTableContainer');
+
+            if (!selectedTotalOp || !targetSpend || !endDateStr) {
+                alert("Por favor, preencha todos os campos: Operação, Meta de Gasto e Data Final.");
+                return;
+            }
+
+            // --- 1. Encontrar Sub-operações ---
+            const opPrefix = selectedTotalOp.replace(' TOTAL', '').trim();
+            const allOpsInRawData = [...new Set(rawData.map(r => r.operacao).filter(Boolean))];
+            const subOps = allOpsInRawData.filter(op => op.startsWith(opPrefix) && !endsWithTOTAL(op));
+
+            if (subOps.length === 0) {
+                alert(`Nenhuma sub-operação (ex: ${opPrefix} 01, ${opPrefix} 02) foi encontrada para a operação total '${selectedTotalOp}'. Não é possível calcular o pacing.`);
+                return;
+            }
+
+            // --- 2. Calcular Datas ---
+            const today = new Date();
+            today.setUTCHours(0, 0, 0, 0);
+            const endDate = new Date(endDateStr + 'T00:00:00Z');
+            endDate.setUTCHours(0, 0, 0, 0);
+
+            // O plano começa amanhã
+            const tomorrow = new Date(today);
+            tomorrow.setUTCDate(today.getUTCDate() + 1);
+            
+            if (endDate < tomorrow) {
+                alert("A Data Final deve ser a partir de amanhã.");
+                return;
+            }
+            
+            const daysRemaining = Math.max(1, (endDate.getTime() - tomorrow.getTime()) / (1000 * 60 * 60 * 24) + 1);
+
+            // --- 3. Calcular Gasto Acumulado (do grupo) ---
+            // Filtra rawData UMA VEZ para todas as sub-operações
+            const groupRawData = rawData.filter(r => subOps.includes(r.operacao) && r.data);
+            
+            const currentTotalSpend = groupRawData.reduce((sum, r) => sum + r.gasto, 0);
+
+            // --- 4. Calcular Gasto Acumulado por Sub-op (para a tabela) ---
+            const currentSpendPerSubOp = subOps.reduce((acc, op) => {
+                acc[op] = 0;
+                return acc;
+            }, {});
+            groupRawData.forEach(r => {
+                if (currentSpendPerSubOp.hasOwnProperty(r.operacao)) {
+                	currentSpendPerSubOp[r.operacao] += r.gasto;
+                }
+            });
+
+            // --- 5. Calcular Incremento Total ---
+            const totalRemainingSpend = targetSpend - currentTotalSpend;
+            const totalDailyIncrement = totalRemainingSpend > 0 ? totalRemainingSpend / daysRemaining : 0;
+            
+            if (totalRemainingSpend <= 0) {
+                 alert(`Parabéns! A meta de ${formatCurrency(targetSpend)} já foi atingida (Gasto atual: ${formatCurrency(currentTotalSpend)}).`);
+            }
+
+            // --- 6. Calcular Pesos (Weighting) ---
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setUTCDate(today.getUTCDate() - 7);
+
+            const subOpSpendL7D = subOps.reduce((acc, op) => {
+                acc[op] = 0;
+                return acc;
+            }, {});
+            let totalSpendL7D = 0;
+
+            groupRawData.forEach(r => {
+                const rowDate = parseDate(r.data);
+                if (rowDate >= sevenDaysAgo && rowDate < today) { // Gasto dos últimos 7 dias, sem incluir hoje
+                    if (subOpSpendL7D.hasOwnProperty(r.operacao)) {
+                    	subOpSpendL7D[r.operacao] += r.gasto;
+                    	totalSpendL7D += r.gasto;
+                    }
+                }
+            });
+
+            // Calcular pesos e incremento diário por sub-op
+            const weights = {};
+            const dailyIncrementPerSubOp = {};
+
+            subOps.forEach(op => {
+                if (totalSpendL7D > 0) {
+                    // Distribuição ponderada
+                    weights[op] = subOpSpendL7D[op] / totalSpendL7D;
+                } else {
+                    // Distribuição igual (caso de operações novas sem gasto nos L7D)
+                    weights[op] = 1 / subOps.length;
+                }
+                dailyIncrementPerSubOp[op] = totalDailyIncrement * weights[op];
+            });
+
+            // --- 7. Exibir Resumo (para o GRUPO) ---
+            summaryContainer.style.display = 'grid';
+            summaryContainer.innerHTML = 
+                createCardHTML({ icon: '💰', title: 'Gasto Real (Acumulado)', value: formatCurrency(currentTotalSpend) }) +
+                createCardHTML({ icon: '🎯', title: 'Meta de Gasto Total', value: formatCurrency(targetSpend) }) +
+                createCardHTML({ icon: '💸', title: 'Gasto Restante', value: formatCurrency(totalRemainingSpend) }) +
+                createCardHTML({ icon: '🏃', title: 'Incremento Diário (Total)', value: formatCurrency(totalDailyIncrement) }) +
+                createCardHTML({ icon: '📅', title: 'Dias Restantes', value: `${daysRemaining} dias` });
+
+            // --- 8. Renderizar Gráfico (para o GRUPO) ---
+            // Precisamos agregar os dados reais do grupo por dia
+            const groupDailyData = groupRawData.reduce((acc, r) => {
+                if (!acc[r.data]) {
+                    acc[r.data] = { gasto: 0 };
+                }
+                acc[r.data].gasto += r.gasto;
+                return acc;
+            }, {});
+            
+            const sortedGroupData = Object.keys(groupDailyData)
+                .sort((a, b) => parseDate(a) - parseDate(b))
+                .map(date => ({ data: date, gasto: groupDailyData[date].gasto }));
+
+            // A função renderPlannerChart existente funciona perfeitamente se passarmos os dados do grupo
+            renderPlannerChart(sortedGroupData, currentTotalSpend, targetSpend, endDate, daysRemaining, totalDailyIncrement);
+
+            // --- 9. Renderizar Tabela (detalhada) ---
+            renderPlannerTable(currentSpendPerSubOp, dailyIncrementPerSubOp, tomorrow, daysRemaining);
+            
+            chartContainer.style.display = 'grid';
+            tableContainer.style.display = 'block';
+        }
+
+
+        // 3. SUBSTITUA ESTA FUNÇÃO
+        function renderPlannerChart(actualData, currentSpend, targetSpend, endDate, daysRemaining, dailyIncrement) {
+            const labels = [];
+            const actualDataPoints = [];
+            let cumulativeSpend = 0;
+
+            // MODIFICADO: Aceita o novo formato de dados
+            // Preenche com dados históricos reais
+            actualData.forEach(row => {
+                labels.push(row.data); // row.data já está formatado 'dd/mm/yyyy'
+                cumulativeSpend += row.gasto;
+                actualDataPoints.push(cumulativeSpend);
+            });
+
+            const lastActualDate = actualData.length > 0 ? parseDate(actualData[actualData.length - 1].data) : new Date(new Date().setUTCHours(0, 0, 0, 0));
+            
+            // Cria os pontos da projeção
+            const planDataPoints = [];
+            let projectedSpend = currentSpend;
+            
+            // Ponto de partida da projeção (último dia real)
+            planDataPoints.push(currentSpend);
+            
+            // O loop começa de amanhã
+            const tomorrow = new Date(lastActualDate.getTime());
+            tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+
+            for (let i = 0; i < daysRemaining; i++) {
+                const nextDay = new Date(tomorrow.getTime() + (1000 * 60 * 60 * 24 * i));
+                projectedSpend += dailyIncrement;
+                
+                labels.push(formatDate(nextDay));
+                planDataPoints.push(projectedSpend);
+            }
+            
+            // Garante que o último ponto da projeção esteja no gráfico e com o valor exato
+            if (daysRemaining > 0) {
+                labels[labels.length - 1] = formatDate(endDate);
+                planDataPoints[planDataPoints.length - 1] = targetSpend;
+            }
+
+            // Preenche os dados reais com 'null' para o futuro
+            const fullActualData = [...actualDataPoints, ...Array(planDataPoints.length - (actualDataPoints.length > 0 ? 1 : 0)).fill(null)];
+
+            const datasets = [
+                {
+                    label: 'Gasto Real (Acumulado)',
+                    data: fullActualData,
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'transparent',
+                    yAxisID: 'yCumulative',
+                    tension: 0.1,
+                    pointRadius: 4
+                },
+                {
+                    label: 'Projeção da Meta',
+                    // Começa do último ponto real
+                    data: [...Array(actualDataPoints.length - 1).fill(null), ...planDataPoints], 
+                    borderColor: '#6a82fb',
+                    backgroundColor: hexToRgba('#6a82fb', 0.1),
+                    fill: true,
+                    borderDash: [5, 5],
+                    yAxisID: 'yCumulative',
+                    tension: 0.1,
+                    pointRadius: 4
+                }
+            ];
+
+            const options = {
+                interaction: { mode: 'index', intersect: false },
+                plugins: { datalabels: { display: false } },
+                scales: {
+                    x: { title: { display: true, text: 'Data' }, grid: { display: false } },
+                    yCumulative: {
+                        type: 'linear',
+                        position: 'left',
+                        title: { display: true, text: 'Gasto Acumulado (R$)' },
+                        ticks: { callback: v => formatKilo(v) }
+                    }
+                }
+            };
+            
+            createOrUpdateChart('plannerChart', 'line', { labels, datasets }, options);
+        }
+
+        // 4. SUBSTITUA ESTA FUNÇÃO
+        function renderPlannerTable(currentSpendPerSubOp, dailyIncrementPerSubOp, startDate, daysRemaining) {
+            const container = document.getElementById('plannerTable');
+            const subOps = Object.keys(currentSpendPerSubOp).sort();
+            
+            // Reutiliza a classe da tabela de Sprint para um bom layout largo
+            let tableHTML = `<table class="performance-table sprint-table"><thead><tr><th>Data</th>`; 
+            
+            subOps.forEach(op => {
+                tableHTML += `<th>${op} (Gasto Diário)</th>`;
+                tableHTML += `<th>${op} (Acumulado)</th>`;
+            });
+            
+            tableHTML += `<th>Total Diário</th><th>Total Acumulado</th></tr></thead><tbody>`;
+
+            // Clona os gastos atuais para iniciar o acumulado do plano
+            const cumulativePlanPerSubOp = { ...currentSpendPerSubOp };
+            let cumulativeTotalPlan = Object.values(currentSpendPerSubOp).reduce((a, b) => a + b, 0);
+
+            for (let i = 0; i < daysRemaining; i++) {
+                const nextDay = new Date(startDate.getTime() + (1000 * 60 * 60 * 24 * i));
+                let dailyTotalIncrement = 0;
+
+                tableHTML += `<tr><td>${formatDate(nextDay)}</td>`;
+                
+                subOps.forEach(op => {
+                    const dailyIncrement = dailyIncrementPerSubOp[op];
+                    cumulativePlanPerSubOp[op] += dailyIncrement;
+                    dailyTotalIncrement += dailyIncrement;
+                    
+                    tableHTML += `<td style="color: var(--color-positive);">+${formatCurrency(dailyIncrement)}</td>`;
+                    tableHTML += `<td>${formatCurrency(cumulativePlanPerSubOp[op])}</td>`;
+                });
+
+                cumulativeTotalPlan += dailyTotalIncrement;
+                tableHTML += `<td style="font-weight:bold; color: var(--color-positive);">+${formatCurrency(dailyTotalIncrement)}</td>`;
+                tableHTML += `<td style="font-weight:bold;">${formatCurrency(cumulativeTotalPlan)}</td>`;
+                tableHTML += `</tr>`;
+            }
+
+            tableHTML += `</tbody></table>`;
+            container.innerHTML = tableHTML;
+        }
+
+        // 5. SUBSTITUA ESTA FUNÇÃO (para incluir o listener do planner)
+        function setupEventListeners() {
+            // Controle da Sidebar
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('sidebar-minimized');
+                    localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-minimized') ? 'minimized' : 'expanded');
+                    setTimeout(() => Object.values(charts).forEach(chart => chart && chart.resize()), 350);
+                });
+            }
+            if (localStorage.getItem('sidebarState') === 'minimized') {
+                document.body.classList.add('sidebar-minimized');
+            }
+
+            // Controle da Navegação por Abas (substitui a antiga setupNavbar)
+            const navButtons = document.querySelectorAll('.sidebar-nav .nav-btn');
+            const viewSections = document.querySelectorAll('.view-section');
+            const mainTitle = document.getElementById('main-title');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    if (!targetId) return;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    viewSections.forEach(section => section.classList.toggle('active', section.id === targetId));
+
+                    if (mainTitle) {
+                        mainTitle.textContent = button.dataset.tooltip || "Dashboard";
+                    }
+
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        setTimeout(() => {
+                            targetSection.querySelectorAll('canvas').forEach(canvas => {
+                                const chartInstance = charts[canvas.id];
+                                if (chartInstance) chartInstance.resize();
+                            });
+                        }, 10);
+                    }
+                });
+            });
+
+            // Controle do seletor de métrica
+            document.querySelectorAll('#metric-toggle .toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    if (this.classList.contains('active')) return;
+                    document.querySelectorAll('#metric-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateProportionCharts();
+                });
+            });
+            
+            // --- ADIÇÃO PARA O PLANEJADOR DE METAS (DA RESPOSTA ANTERIOR) ---
+            const plannerButton = document.getElementById('plannerCalculateBtn');
+            if (plannerButton) {
+                plannerButton.addEventListener('click', runGoalPlanner);
+            }
+            // --- FIM DA ADIÇÃO ---
+        }
 
         function initializeDashboard() {
             buildOperationalGoals();
             populateJnAccountFilter();
             populateMgAccountFilter();
             const allTotalData = rawData.filter(r => endsWithTOTAL(r.operacao));
+            populatePlannerOperationFilter(rawData);
             populateEvolutionFilters(allTotalData);
             populateCompanyCheckboxes();
             populateCorrelationFilters(); // ADICIONE ESTA LINHA
+            populateManagerFilter(rawData); // Popula o seletor de gestores
+            populateAdopsFilter(rawData); // <== ADICIONE ESTA LINHA
+            populateCoordinationFilter(rawData);
             filterAndRenderAll();
         }
 
@@ -1903,13 +2771,19 @@
             updateEvolutionChartWithFilters();
             renderOperationalView();
             updateProportionCharts();
-            renderNicheComparisonCharts(dataOnlyTotal);
+            renderNicheComparisonCharts(dataOnlyTotal, document.querySelector('#metric-toggle .toggle-btn.active').dataset.metric); // Correção aqui
             renderManagerCharts(dataNoTotal);
+
+
+            renderCoordinationView(filteredData);
+            renderManagerEvolutionChart(dataNoTotal); // Renderiza o novo gráfico de evolução
+
             renderAdopsCharts(dataOnlyTotal);
+            renderAdopsEvolutionChart(dataOnlyTotal); // <== ADICIONE ESTA LINHA
             renderBusinessSegmentTables(dataOnlyTotal);
             renderCompanyView(dataOnlyTotal);
             renderMetasView(dataOnlyTotal, filteredData);
-            renderAdvancedForecastChart(); // ADICIONE ESTA LINHA
+            renderAdvancedForecastChart();
         }
 
         // --- Funções do Dashboard Principal ---
@@ -1921,7 +2795,6 @@
         function updateProjectionCards(data) { const projectionContainer = document.getElementById('projectionCards'); projectionContainer.innerHTML = ''; const dates = [...new Set(data.map(r => r.data))].filter(Boolean); if (dates.length < 1) return; const lastDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0); const lastDateInData = parseDate(dates.sort((a, b) => parseDate(a) - parseDate(b)).pop()); const daysRemaining = Math.max(0, (lastDayOfMonth - lastDateInData) / (1000 * 60 * 60 * 24)); const totalGasto = data.reduce((s, r) => s + r.gasto, 0); const avgDailyGasto = totalGasto / dates.length; const projectedGasto = totalGasto + (avgDailyGasto * daysRemaining); const subtitle = `*Baseado na média de ${dates.length} dia(s) do período`; projectionContainer.innerHTML = createCardHTML({ icon: '🔮', title: 'Projeção de Gasto', value: formatCurrency(projectedGasto), isProjection: true, subtitle: subtitle }); }
         function createCardHTML(config) { const deltaClass = (config.deltaPositiveOverride !== undefined) ? (config.deltaPositiveOverride ? 'positive' : 'negative') : (config.delta > 0 ? 'positive' : 'negative'); const deltaHTML = config.delta ? `<span class="delta ${deltaClass}">${config.delta > 0 ? '▲' : '▼'} ${Math.abs(config.delta).toFixed(1)}%</span>` : ''; const subtitleHTML = config.subtitle ? `<div class="subtitle">${config.subtitle}</div>` : ''; const footerHTML = config.footerHTML ? config.footerHTML : ''; const valueClass = 'value'; return `<div class="card ${config.isProjection ? 'projection' : ''}"><div class="card-header"><h3>${config.icon} ${config.title}</h3>${deltaHTML}</div><div class="${valueClass}">${config.value}</div>${subtitleHTML}${footerHTML}</div>`; }
         function calculateChartHeight(numBars, minHeight = 250, barHeight = 40) { return Math.max(minHeight, numBars * barHeight + 100); }
-        function createOrUpdateChart(canvasId, type, data, customOptions = {}) { const ctx = document.getElementById(canvasId); if (!ctx) { return; } if (charts[canvasId]) { charts[canvasId].destroy(); } if (type === 'bar' && customOptions.indexAxis === 'y') { const numBars = data.labels.length; const newHeight = calculateChartHeight(numBars); ctx.style.height = `${newHeight}px`; if (ctx.parentElement.classList.contains('chart-container')) { ctx.parentElement.style.height = `${newHeight + 60}px`; } } else { ctx.style.height = ''; if (ctx.parentElement.classList.contains('chart-container')) { ctx.parentElement.style.height = ''; } } const defaultOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } }, tooltip: { backgroundColor: '#333', titleFont: { size: 14 }, bodyFont: { size: 12 }, footerFont: { size: 10 }, callbacks: { label: (ctx) => { let label = ctx.dataset.label || '', value = ctx.parsed.y ?? ctx.parsed; const metric = document.querySelector('#metric-toggle .toggle-btn.active')?.dataset.metric || 'gasto'; if (label) { label += ': '; } if (['regionInvestmentPieChart', 'platformInvestmentPieChart', 'nicheBrChart', 'nicheUsChart', 'companyTotalGastoPieChart'].includes(canvasId) || canvasId.startsWith('companyDistribution')) { return `${label}${formatCurrency(value)}`; } if (ctx.dataset.label?.includes('ROAS')) return `${label}${value.toFixed(2)}`; if (ctx.dataset.label?.includes('Leads')) return `${label}${value.toLocaleString('pt-BR')}`; if (canvasId === 'metas-bubble-chart') { const point = ctx.raw; return [`${point.label}`, `Investimento: ${point.progressoInvest.toFixed(0)}% da Meta`, `ROAS: ${point.diffRoas.toFixed(2)} p.p. vs Meta`, `Gasto: ${formatCurrency(point.gasto)}`]; } return `${label}${formatCurrency(value)}`; } } }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: (v) => formatKilo(v) } } } }; charts[canvasId] = new Chart(ctx, { type, data, options: { ...defaultOptions, ...customOptions } }); }
         function updateProportionCharts() { const metric = document.querySelector('#metric-toggle .toggle-btn.active').dataset.metric; const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao)); renderRegionSummaryCharts(dataOnlyTotal, metric); renderPlatformSummaryCharts(dataOnlyTotal, metric); renderNicheComparisonCharts(dataOnlyTotal, metric); }
         function renderRegionSummaryCharts(data, metric = 'gasto') { const regionTotals = { europa: 0, brasil: 0, usa: 0 }; data.forEach(row => { const op = row.operacao.toUpperCase(); if (op.includes('BR')) regionTotals.brasil += row[metric]; else if (op.includes('US')) regionTotals.usa += row[metric]; else if (['UK', 'DE', 'AU', 'FR'].some(p => op.includes(p))) regionTotals.europa += row[metric]; }); createOrUpdateChart('regionInvestmentPieChart', 'pie', { labels: ['Europa', 'Brasil', 'USA'], datasets: [{ data: [regionTotals.europa, regionTotals.brasil, regionTotals.usa], backgroundColor: ['#4169E1', '#009739', '#DC143C'] }] }, { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } }); }
         function renderNicheComparisonCharts(data, metric = 'gasto') { const nicheSpending = { us_cc: 0, us_emp: 0, br_cc: 0, br_emp: 0 }; data.forEach(row => { const op = row.operacao.toUpperCase(); if (op.includes('US')) { if (op.includes('CC')) nicheSpending.us_cc += row[metric]; if (op.includes('EMP')) nicheSpending.us_emp += row[metric]; } else if (op.includes('BR')) { if (op.includes('CC')) nicheSpending.br_cc += row[metric]; if (op.includes('EMP')) nicheSpending.br_emp += row[metric]; } }); const pieOptions = { plugins: { datalabels: { display: true, formatter: (v, ctx) => { const total = ctx.chart.getDatasetMeta(0).total; return total > 0 ? (v / total * 100).toFixed(1) + '%' : '0%'; }, color: '#fff', font: { weight: 'bold', size: 14 } } } }; createOrUpdateChart('nicheUsChart', 'pie', { labels: ['Cartão de Crédito', 'Empréstimo'], datasets: [{ data: [nicheSpending.us_cc, nicheSpending.us_emp], backgroundColor: ['#3498db', '#e67e22'] }] }, pieOptions); createOrUpdateChart('nicheBrChart', 'pie', { labels: ['Cartão de Crédito', 'Empréstimo'], datasets: [{ data: [nicheSpending.br_cc, nicheSpending.br_emp], backgroundColor: ['#2ecc71', '#f1c40f'] }] }, pieOptions); }
@@ -1941,7 +2814,65 @@
         function renderDailyGoalProgressionTable(gastoTotalOntem, metasData) { const container = document.getElementById('metas-acceleration-table'); if (!container) return; const totalMetaDiariaOriginal = metasData.reduce((sum, item) => sum + item.metaInvestimento, 0); const cenarios = [{ label: 'Cenário 1M/dia', target: 1000000 }, { label: 'Cenário 1.5M/dia', target: 1500000 }, { label: 'Cenário 2M/dia', target: 2000000 }, { label: 'Cenário 2.5M/dia', target: 2500000 }]; let tableHTML = `<table class="performance-table acceleration-table">`; tableHTML += `<thead><tr> <th rowspan="2" style="min-width: 200px;">Operação</th> <th rowspan="2">Gasto de Ontem</th> <th rowspan="2">Meta Original</th>`; cenarios.forEach((c, index) => { tableHTML += `<th colspan="2" class="${index === 0 ? 'scenario-group-start' : ''}">${c.label}</th>`; }); tableHTML += `</tr>`; tableHTML += `<tr>`; cenarios.forEach((c, index) => { tableHTML += `<th class="${index === 0 ? 'scenario-group-start' : ''}">Gasto Alvo</th><th>Acréscimo</th>`; }); tableHTML += `</tr></thead>`; tableHTML += `<tbody>`; metasData.forEach(op => { tableHTML += `<tr> <td>${op.operacao}</td> <td>${formatCurrency(op.atualInvestimento)}</td> <td>${formatCurrency(op.metaInvestimento)}</td>`; cenarios.forEach((c, index) => { const gapGlobal = c.target - gastoTotalOntem; const groupClass = index === 0 ? 'scenario-group-start' : ''; if (gapGlobal <= 0) { tableHTML += `<td class="delta-positive ${groupClass}">Atingido</td><td>-</td>`; } else { const peso = (totalMetaDiariaOriginal > 0) ? op.metaInvestimento / totalMetaDiariaOriginal : 0; const acrescimo = gapGlobal * peso; const gastoAlvo = op.atualInvestimento + acrescimo; tableHTML += `<td class="${groupClass}">${formatCurrency(gastoAlvo)}</td> <td class="delta-negative acrescimo-cell"><span>+${formatCurrency(acrescimo)}</span></td>`; } }); tableHTML += `</tr>`; }); container.innerHTML = tableHTML + '</tbody></table>'; }
         function renderSprint1MCard(allFilteredData, gastoTotalOntem) { const container = document.getElementById('sprint-kpi-cards'); if (!container) return; const progress = SPRINT_1M_GOAL > 0 ? (gastoTotalOntem / SPRINT_1M_GOAL) * 100 : 0; container.innerHTML = createCardHTML({ icon: '🚀', title: `Progresso Sprint 1M (até ${formatDate(SPRINT_1M_DEADLINE, true)})`, value: `${progress.toFixed(1)}%`, footerHTML: `<div class="progress-bar"><div class="progress-bar-inner" style="width: ${Math.min(progress, 100)}%;"></div></div> <div style="font-size: 0.9em; color: var(--text-light); margin-top: 5px;">${formatCurrency(gastoTotalOntem)} de ${formatCurrency(SPRINT_1M_GOAL)}</div>` }); }
         function renderSprint1MTable(allFilteredData, ontemData) { const container = document.getElementById('sprint-1m-table'); if (!container) return; const today = new Date(); today.setUTCHours(0, 0, 0, 0); const daysRemaining = Math.max(1, (SPRINT_1M_DEADLINE.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) + 1); const opMetrics = {}; const sprintOperations = SPRINT_1M_BASE_OPERATIONS.filter(opKey => !SPRINT_1M_RULES[opKey]?.exclude); sprintOperations.forEach(opKey => { const opData = allFilteredData.filter(row => getGoalKeyFromOperation(row.operacao) === opKey); const totalGasto = opData.reduce((sum, r) => sum + r.gasto, 0); const totalReceita = opData.reduce((sum, r) => sum + r.receita, 0); const gastoOntem = ontemData.filter(row => getGoalKeyFromOperation(row.operacao) === opKey).reduce((sum, r) => sum + r.gasto, 0); opMetrics[opKey] = { roas: totalGasto > 0 ? totalReceita / totalGasto : 0, gastoOntem: gastoOntem }; }); const gastoTotalOntem = ontemData.reduce((sum, r) => sum + r.gasto, 0); let totalGapParaAcelerar = SPRINT_1M_GOAL - gastoTotalOntem; const tableData = []; let totalIncrementoFixo = 0; sprintOperations.forEach(opKey => { const rule = SPRINT_1M_RULES[opKey]; if (rule) { let incrementoDiario = 0; let metaDiariaFinal = 0; if (rule.finalTarget) { metaDiariaFinal = rule.finalTarget; const gap = metaDiariaFinal - opMetrics[opKey].gastoOntem; incrementoDiario = gap / daysRemaining; } else if (rule.target) { metaDiariaFinal = rule.target; const gap = metaDiariaFinal - opMetrics[opKey].gastoOntem; incrementoDiario = gap > 0 ? gap / daysRemaining : 0; } totalIncrementoFixo += incrementoDiario; tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal, incrementoDiario }); } }); const gapParaDistribuir = (totalGapParaAcelerar / daysRemaining) - totalIncrementoFixo; const opsParaDistribuir = sprintOperations.filter(opKey => !SPRINT_1M_RULES[opKey] && opMetrics[opKey].roas > 0.9); const pesoTotal = opsParaDistribuir.reduce((sum, opKey) => sum + (GOALS_DATA[opKey]?.investimento || 50000), 0); opsParaDistribuir.forEach(opKey => { const peso = (GOALS_DATA[opKey]?.investimento || 50000) / pesoTotal; const incrementoDiario = gapParaDistribuir > 0 ? gapParaDistribuir * peso : 0; const metaDiariaFinal = opMetrics[opKey].gastoOntem + (incrementoDiario * daysRemaining); tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal, incrementoDiario }); }); sprintOperations.forEach(opKey => { if (!tableData.find(d => d.operacao === opKey)) { tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal: opMetrics[opKey].gastoOntem, incrementoDiario: 0 }); } }); const dateHeaders = Array.from({ length: daysRemaining }, (_, i) => { const d = new Date(today); d.setUTCDate(today.getUTCDate() + i); return d; }); const dailySpendByOp = allFilteredData.reduce((acc, row) => { const key = getGoalKeyFromOperation(row.operacao); if (key) { if (!acc[key]) acc[key] = {}; acc[key][row.data] = (acc[key][row.data] || 0) + row.gasto; } return acc; }, {}); let tableHTML = `<table class="performance-table sprint-table"><thead><tr> <th>Operação</th><th>Gasto Ontem</th><th>Meta Diária Final</th><th>Gap p/ Meta</th><th>Incremento Diário</th>`; dateHeaders.forEach(d => tableHTML += `<th>${formatDate(d, true)}</th>`); tableHTML += `</tr></thead><tbody>`; tableData.sort((a, b) => sprintOperations.indexOf(a.operacao) - sprintOperations.indexOf(b.operacao)); tableData.forEach(d => { const gap = d.metaDiariaFinal - d.gastoOntem; tableHTML += `<tr> <td>${d.operacao}</td><td>${formatCurrency(d.gastoOntem)}</td> <td style="font-weight:bold;">${formatCurrency(d.metaDiariaFinal)}</td> <td class="${gap >= 0 ? 'delta-negative' : 'delta-positive'}">${formatCurrency(gap)}</td> <td style="font-style: italic; color: ${d.incrementoDiario >= 0 ? 'var(--color-negative)' : 'var(--color-positive)'};">${d.incrementoDiario >= 0 ? '+' : ''}${formatCurrency(d.incrementoDiario)}</td>`; dateHeaders.forEach((date, i) => { const plannedSpend = d.gastoOntem + (d.incrementoDiario * (i + 1)); const actualSpend = dailySpendByOp[d.operacao]?.[formatDate(date)]; if (actualSpend !== undefined) { const performanceClass = actualSpend >= plannedSpend ? 'delta-positive' : 'delta-negative'; const progressPct = plannedSpend > 0.01 ? (actualSpend / plannedSpend * 100).toFixed(0) : 100; tableHTML += `<td> <div class="daily-cell ${performanceClass}"> <div>Real: ${formatCurrency(actualSpend)} (${progressPct}%)</div> <div>Planj: ${formatCurrency(plannedSpend)}</div> </div></td>`; } else { tableHTML += `<td><div class="daily-cell"><div>Planj: ${formatCurrency(plannedSpend)}</div></div></td>`; } }); tableHTML += `</tr>`; }); tableHTML += `</tbody><tfoot><tr><td>Total</td>`; const footerTotals = { gastoOntem: tableData.reduce((s, d) => s + d.gastoOntem, 0), metaDiariaFinal: tableData.reduce((s, d) => s + d.metaDiariaFinal, 0), gap: tableData.reduce((s, d) => s + (d.metaDiariaFinal - d.gastoOntem), 0), incrementoDiario: tableData.reduce((s, d) => s + d.incrementoDiario, 0) }; tableHTML += `<td>${formatCurrency(footerTotals.gastoOntem)}</td> <td>${formatCurrency(footerTotals.metaDiariaFinal)}</td> <td>${formatCurrency(footerTotals.gap)}</td> <td>+${formatCurrency(footerTotals.incrementoDiario)}</td>`; dateHeaders.forEach((date, i) => { const totalPlanned = tableData.reduce((s, d) => s + (d.gastoOntem + (d.incrementoDiario * (i + 1))), 0); const totalActual = sprintOperations.reduce((s, opKey) => s + (dailySpendByOp[opKey]?.[formatDate(date)] || 0), 0); if (totalActual > 0) { tableHTML += `<td>${formatCurrency(totalActual)}</td>`; } else { tableHTML += `<td>${formatCurrency(totalPlanned)}</td>`; } }); tableHTML += `</tr></tfoot>`; container.innerHTML = tableHTML + `</table>`; }
+        function createOrUpdateChart(canvasId, type, data, customOptions = {}, customPlugins = []) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) {
+                console.error(`Canvas with ID ${canvasId} not found.`);
+                return;
+            }
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
 
+            // Lógica para altura dinâmica de gráficos de barra horizontais
+            if (type === 'bar' && customOptions.indexAxis === 'y') {
+                const numBars = data.labels.length;
+                const newHeight = calculateChartHeight(numBars);
+                const parentContainer = ctx.parentElement;
+                if (parentContainer.classList.contains('chart-container')) {
+                    parentContainer.style.height = `${newHeight + 60}px`;
+                }
+            }
+
+            const defaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20 } },
+                    tooltip: {
+                        backgroundColor: '#333',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            label: (context) => {
+                                let label = context.dataset.label || '';
+                                let value = context.parsed.y ?? context.parsed;
+                                if (label) { label += ': '; }
+                                if (label.toLowerCase().includes('roas')) return `${label}${value.toFixed(2)}x`;
+                                if (label.toLowerCase().includes('leads')) return `${label}${value.toLocaleString('pt-BR')}`;
+                                return `${label}${formatCurrency(value)}`;
+                            }
+                        }
+                    },
+                    datalabels: { display: false }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: (v) => formatKilo(v) } }
+                }
+            };
+
+            // Combina as opções padrão com as customizadas
+            const finalOptions = { ...defaultOptions, ...customOptions };
+
+            // Cria o gráfico passando os plugins customizados
+            charts[canvasId] = new Chart(ctx, {
+                type,
+                data,
+                options: finalOptions,
+                plugins: customPlugins // Passa o array de plugins aqui
+            });
+        }
         // --- INÍCIO DAS FUNÇÕES PARA A ABA "ANÁLISE DE CONTAS JN" ---
 
         function processJnData() {
@@ -2302,6 +3233,57 @@
             select.innerHTML = '<option value="">Selecione uma conta...</option>';
             accounts.forEach(acc => {
                 select.innerHTML += `<option value="${acc}">${acc}</option>`;
+            });
+        }
+        function populateCoordinationFilter(data) {
+            const trigger = document.getElementById('coord-select-trigger');
+            const optionsContainer = document.getElementById('coord-select-options');
+            const optionsList = document.getElementById('coord-options-list');
+            const searchInput = document.getElementById('coord-search-input');
+            if (!trigger || !optionsList) return;
+
+            const coordinators = ['NICOLE', 'MARCELO', 'AMANDA']; // Lista fixa de coordenadores
+            optionsList.innerHTML = '';
+
+            // Define que por padrão todos estarão selecionados na primeira carga
+            if (selectedCoordinatorsForChart.length === 0) {
+                selectedCoordinatorsForChart = [...coordinators];
+            }
+
+            coordinators.forEach(coord => {
+                const id = `coord-opt-${coord.replace(/\s+/g, '')}`;
+                const isChecked = selectedCoordinatorsForChart.includes(coord) ? 'checked' : '';
+                optionsList.innerHTML += `<label for="${id}"><input type="checkbox" id="${id}" value="${coord}" ${isChecked}> ${coord}</label>`;
+            });
+
+            const updateTriggerText = () => {
+                if (selectedCoordinatorsForChart.length === 0) trigger.textContent = 'Nenhum selecionado';
+                else if (selectedCoordinatorsForChart.length === coordinators.length) trigger.textContent = 'Todos';
+                else if (selectedCoordinatorsForChart.length === 1) trigger.textContent = selectedCoordinatorsForChart[0];
+                else trigger.textContent = `${selectedCoordinatorsForChart.length} selecionados`;
+            };
+            updateTriggerText();
+
+            trigger.addEventListener('click', () => optionsContainer.classList.toggle('open'));
+            searchInput.addEventListener('keyup', () => {
+                const filter = searchInput.value.toLowerCase();
+                optionsList.querySelectorAll('label').forEach(label => {
+                    label.style.display = label.textContent.toLowerCase().includes(filter) ? '' : 'none';
+                });
+            });
+
+            optionsList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    selectedCoordinatorsForChart = coordinators.filter(c => document.getElementById(`coord-opt-${c.replace(/\s+/g, '')}`)?.checked);
+                    updateTriggerText();
+                    filterAndRenderAll();
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-select')) {
+                    optionsContainer.classList.remove('open');
+                }
             });
         }
 
@@ -2909,6 +3891,145 @@
             container.innerHTML = funnelHTML;
             container.style.display = 'block';
         }
+        // ADICIONE ESTA NOVA FUNÇÃO AO SEU JAVASCRIPT
+
+        function populateAdopsFilter(data) {
+            const trigger = document.getElementById('adops-select-trigger');
+            const optionsContainer = document.getElementById('adops-select-options');
+            const optionsList = document.getElementById('adops-options-list');
+            const searchInput = document.getElementById('adops-search-input');
+            if (!trigger || !optionsList) return;
+
+            optionsList.innerHTML = '';
+            const adopsList = [...new Set(data.map(r => r.responsavelMonetizacao).filter(Boolean))].sort();
+
+            adopsList.forEach(adops => {
+                const id = `adops-opt-${adops.replace(/\s+/g, '')}`;
+                const isChecked = selectedAdopsForChart.includes(adops) ? 'checked' : '';
+                const optionHTML = `<label for="${id}"><input type="checkbox" id="${id}" value="${adops}" ${isChecked}> ${adops}</label>`;
+                optionsList.innerHTML += optionHTML;
+            });
+
+            trigger.addEventListener('click', () => optionsContainer.classList.toggle('open'));
+
+            searchInput.addEventListener('keyup', () => {
+                const filter = searchInput.value.toLowerCase();
+                optionsList.querySelectorAll('label').forEach(label => {
+                    label.style.display = label.textContent.toLowerCase().includes(filter) ? '' : 'none';
+                });
+            });
+
+            optionsList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    selectedAdopsForChart = adopsList.filter(m => {
+                        const cb = document.getElementById(`adops-opt-${m.replace(/\s+/g, '')}`);
+                        return cb && cb.checked;
+                    });
+
+                    if (selectedAdopsForChart.length === 0) {
+                        trigger.textContent = 'Selecione...';
+                    } else if (selectedAdopsForChart.length === 1) {
+                        trigger.textContent = selectedAdopsForChart[0];
+                    } else {
+                        trigger.textContent = `${selectedAdopsForChart.length} AdOps selecionados`;
+                    }
+                    filterAndRenderAll(); // Atualiza o dashboard
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#adops-select-container')) {
+                    optionsContainer.classList.remove('open');
+                }
+            });
+        }
+        // ADICIONE ESTA NOVA FUNÇÃO AO SEU JAVASCRIPT
+
+        function renderAdopsEvolutionChart(data) {
+            const canvasId = 'adopsEvolutionChart';
+            const hasSelection = selectedAdopsForChart.length > 0;
+
+            let chartData = { labels: [], datasets: [] };
+            let chartOptions = {};
+            const placeholderPlugin = {
+                id: 'adopsEmptyChartMessage',
+                afterDraw: chart => {
+                    if (chart.data.datasets.length === 0) {
+                        let ctx = chart.ctx;
+                        let width = chart.width;
+                        let height = chart.height;
+                        chart.clear();
+                        ctx.save();
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.font = "16px sans-serif";
+                        ctx.fillStyle = '#6c757d';
+                        ctx.fillText('Selecione um ou mais AdOps para visualizar a evolução do ROAS.', width / 2, height / 2);
+                        ctx.restore();
+                    }
+                }
+            };
+
+            if (hasSelection) {
+                const dailyDataByAdops = {};
+                const allDates = new Set();
+
+                data.filter(row => selectedAdopsForChart.includes(row.responsavelMonetizacao) && row.data).forEach(row => {
+                    allDates.add(row.data);
+                    const adops = row.responsavelMonetizacao;
+                    if (!dailyDataByAdops[adops]) dailyDataByAdops[adops] = {};
+                    if (!dailyDataByAdops[adops][row.data]) {
+                        dailyDataByAdops[adops][row.data] = { gasto: 0, receita: 0 };
+                    }
+                    dailyDataByAdops[adops][row.data].gasto += row.gasto;
+                    dailyDataByAdops[adops][row.data].receita += row.receita;
+                });
+
+                const sortedLabels = Array.from(allDates).sort((a, b) => parseDate(a) - parseDate(b));
+                const datasets = [];
+                const colors = ['#20c997', '#fd7e14', '#3498db', '#9b59b6', '#e74c3c', '#f1c40f'];
+
+                selectedAdopsForChart.forEach((adops, index) => {
+                    const color = colors[index % colors.length];
+                    const adopsDailyData = dailyDataByAdops[adops] || {};
+
+                    const gastoData = sortedLabels.map(date => adopsDailyData[date]?.gasto ?? null);
+                    const roasData = sortedLabels.map(date => {
+                        const dayData = adopsDailyData[date];
+                        return (dayData && dayData.gasto > 0) ? (dayData.receita / dayData.gasto) : null;
+                    });
+
+                    datasets.push({
+                        label: `Gasto (${adops})`, data: gastoData, borderColor: color,
+                        yAxisID: 'yGasto', tension: 0.4, borderWidth: 2.5, backgroundColor: color,
+                        pointRadius: 4, pointHoverRadius: 7, borderDash: [5, 5]
+                    });
+                    datasets.push({
+                        label: `ROAS (${adops})`, data: roasData, borderColor: color,
+                        yAxisID: 'yRoas', tension: 0.4, borderWidth: 2, backgroundColor: color,
+                        pointRadius: 4, pointHoverRadius: 7
+                    });
+                });
+
+                const subtitleText = 'AdOps: ' + selectedAdopsForChart.join(', ');
+
+                chartData = { labels: sortedLabels, datasets };
+                chartOptions = {
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        datalabels: { display: false },
+                        subtitle: { display: true, text: subtitleText, align: 'start', padding: { bottom: 20 }, font: { size: 14, style: 'italic' }, color: '#6c757d' }
+                    },
+                    scales: {
+                        x: { ticks: { autoSkip: true, maxTicksLimit: 15 } },
+                        yGasto: { type: 'linear', position: 'left', title: { display: true, text: 'Investimento Gerenciado (R$)' }, ticks: { callback: (v) => formatKilo(v) } },
+                        yRoas: { type: 'linear', position: 'right', title: { display: true, text: 'ROAS (x)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toFixed(2) + 'x' } }
+                    }
+                };
+            }
+
+            createOrUpdateChart(canvasId, 'line', chartData, chartOptions, [placeholderPlugin]);
+        }
 
         // --- FUNÇÕES PARA ANÁLISE DE CORRELAÇÃO ---
 
@@ -3037,108 +4158,108 @@
         // --- FUNÇÃO CORRIGIDA PARA O GRÁFICO DE PREVISÃO AVANÇADA ---
 
         function renderAdvancedForecastChart() {
-    const historicalAggregates = filteredData
-        .filter(row => row.operacao && !row.operacao.toUpperCase().endsWith('TOTAL'))
-        .reduce((acc, row) => {
-            if (!row.data) return acc;
-            const date = parseDate(row.data);
-            if (!date) return acc;
-            const dateKey = date.toISOString().split('T')[0];
-            if (!acc[dateKey]) acc[dateKey] = { gasto: 0, receita: 0 };
-            acc[dateKey].gasto += row.gasto;
-            acc[dateKey].receita += row.receita;
-            return acc;
-        }, {});
+            const historicalAggregates = filteredData
+                .filter(row => row.operacao && !row.operacao.toUpperCase().endsWith('TOTAL'))
+                .reduce((acc, row) => {
+                    if (!row.data) return acc;
+                    const date = parseDate(row.data);
+                    if (!date) return acc;
+                    const dateKey = date.toISOString().split('T')[0];
+                    if (!acc[dateKey]) acc[dateKey] = { gasto: 0, receita: 0 };
+                    acc[dateKey].gasto += row.gasto;
+                    acc[dateKey].receita += row.receita;
+                    return acc;
+                }, {});
 
-    const sortedHistoricalDates = Object.keys(historicalAggregates).sort();
-    
-    if (sortedHistoricalDates.length === 0 || rawDataForecast.length === 0) {
-        // Limpa o gráfico e a análise se não houver dados
-        if (charts['advancedForecastChart']) charts['advancedForecastChart'].destroy();
-        document.getElementById('forecast-text-analysis').style.display = 'none';
-        return;
-    }
+            const sortedHistoricalDates = Object.keys(historicalAggregates).sort();
 
-    const historicalLabels = sortedHistoricalDates.map(dateStr => formatDate(new Date(dateStr + 'T00:00:00Z')));
-    const historicalGasto = sortedHistoricalDates.map(dateStr => historicalAggregates[dateStr].gasto);
-    const historicalReceita = sortedHistoricalDates.map(dateStr => historicalAggregates[dateStr].receita);
-    
-    const forecastLabels = rawDataForecast.map(row => formatDate(row.data));
-    const forecastGasto = rawDataForecast.map(row => row.gasto);
-    const forecastReceita = rawDataForecast.map(row => row.receita);
+            if (sortedHistoricalDates.length === 0 || rawDataForecast.length === 0) {
+                // Limpa o gráfico e a análise se não houver dados
+                if (charts['advancedForecastChart']) charts['advancedForecastChart'].destroy();
+                document.getElementById('forecast-text-analysis').style.display = 'none';
+                return;
+            }
 
-    const lastHistoricalGasto = historicalGasto[historicalGasto.length - 1];
-    const lastHistoricalReceita = historicalReceita[historicalReceita.length - 1];
+            const historicalLabels = sortedHistoricalDates.map(dateStr => formatDate(new Date(dateStr + 'T00:00:00Z')));
+            const historicalGasto = sortedHistoricalDates.map(dateStr => historicalAggregates[dateStr].gasto);
+            const historicalReceita = sortedHistoricalDates.map(dateStr => historicalAggregates[dateStr].receita);
 
-    const allLabels = [...historicalLabels, ...forecastLabels];
-    const combinedGasto = [...historicalGasto.slice(0, -1), lastHistoricalGasto, ...forecastGasto];
-    const combinedReceita = [...historicalReceita.slice(0, -1), lastHistoricalReceita, ...forecastReceita];
-    
-    const historicalDataCount = historicalLabels.length;
+            const forecastLabels = rawDataForecast.map(row => formatDate(row.data));
+            const forecastGasto = rawDataForecast.map(row => row.gasto);
+            const forecastReceita = rawDataForecast.map(row => row.receita);
 
-    createOrUpdateChart('advancedForecastChart', 'line', {
-        labels: allLabels,
-        datasets: [{
-            label: 'Gasto (Real + Previsão)', data: combinedGasto, borderColor: '#6a82fb',
-            backgroundColor: hexToRgba('#6a82fb', 0.1), fill: true, tension: 0.3,
-            segment: { borderDash: ctx => ctx.p1DataIndex >= historicalDataCount -1 ? [6, 6] : undefined }
-        }, {
-            label: 'Receita (Real + Previsão)', data: combinedReceita, borderColor: '#20c997',
-            backgroundColor: 'transparent', tension: 0.3,
-            segment: { borderDash: ctx => ctx.p1DataIndex >= historicalDataCount -1 ? [6, 6] : undefined }
-        }]
-    }, {
-        plugins: { tooltip: { callbacks: { label: function(context) { let label = context.dataset.label.split(' (')[0]; const isForecast = context.dataIndex >= historicalDataCount; label += isForecast ? ' (Previsão): ' : ' (Real): '; label += formatCurrency(context.parsed.y); return label; } } } },
-        scales: { y: { ticks: { callback: v => formatKilo(v) } } }
-    });
+            const lastHistoricalGasto = historicalGasto[historicalGasto.length - 1];
+            const lastHistoricalReceita = historicalReceita[historicalReceita.length - 1];
 
-    // ==========================================================
-    // --- INÍCIO DA NOVA LÓGICA DE ANÁLISE DE TEXTO ---
-    // ==========================================================
-    const analysisBox = document.getElementById('forecast-text-analysis');
-    let analysisPoints = [];
+            const allLabels = [...historicalLabels, ...forecastLabels];
+            const combinedGasto = [...historicalGasto.slice(0, -1), lastHistoricalGasto, ...forecastGasto];
+            const combinedReceita = [...historicalReceita.slice(0, -1), lastHistoricalReceita, ...forecastReceita];
 
-    // 1. Análise da Tendência Imediata
-    const firstForecastSpend = forecastGasto[0];
-    const spendChange = ((firstForecastSpend / lastHistoricalGasto) - 1) * 100;
-    let immediateTrendText = `A previsão inicia com tendência de <strong>estabilidade</strong>, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, similar aos <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
-    if (spendChange > 5) {
-        immediateTrendText = `A previsão aponta para uma <strong>tendência de alta</strong> imediata, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, um aumento de <strong>${spendChange.toFixed(0)}%</strong> sobre os <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
-    } else if (spendChange < -5) {
-        immediateTrendText = `A previsão aponta para uma <strong>tendência de baixa</strong> imediata, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, uma queda de <strong>${Math.abs(spendChange).toFixed(0)}%</strong> sobre os <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
-    }
-    analysisPoints.push(immediateTrendText);
+            const historicalDataCount = historicalLabels.length;
 
-    // 2. Análise da Média Semanal
-    const avgHistoricalSpend = historicalGasto.slice(-7).reduce((a, b) => a + b, 0) / 7;
-    const avgForecastSpend = forecastGasto.slice(0, 7).reduce((a, b) => a + b, 0) / 7;
-    const weeklyChange = ((avgForecastSpend / avgHistoricalSpend) - 1) * 100;
-    analysisPoints.push(`A média de gasto para os próximos 7 dias está projetada em <strong>${formatCurrency(avgForecastSpend)}</strong> por dia, uma variação de <strong>${weeklyChange.toFixed(1)}%</strong> em relação à média da última semana (<strong>${formatCurrency(avgHistoricalSpend)}</strong>).`);
+            createOrUpdateChart('advancedForecastChart', 'line', {
+                labels: allLabels,
+                datasets: [{
+                    label: 'Gasto (Real + Previsão)', data: combinedGasto, borderColor: '#6a82fb',
+                    backgroundColor: hexToRgba('#6a82fb', 0.1), fill: true, tension: 0.3,
+                    segment: { borderDash: ctx => ctx.p1DataIndex >= historicalDataCount - 1 ? [6, 6] : undefined }
+                }, {
+                    label: 'Receita (Real + Previsão)', data: combinedReceita, borderColor: '#20c997',
+                    backgroundColor: 'transparent', tension: 0.3,
+                    segment: { borderDash: ctx => ctx.p1DataIndex >= historicalDataCount - 1 ? [6, 6] : undefined }
+                }]
+            }, {
+                plugins: { tooltip: { callbacks: { label: function (context) { let label = context.dataset.label.split(' (')[0]; const isForecast = context.dataIndex >= historicalDataCount; label += isForecast ? ' (Previsão): ' : ' (Real): '; label += formatCurrency(context.parsed.y); return label; } } } },
+                scales: { y: { ticks: { callback: v => formatKilo(v) } } }
+            });
 
-    // 3. Análise do Ritmo Mensal (Pacing)
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const monthToDateSpend = historicalGasto.filter((_, i) => new Date(sortedHistoricalDates[i]).getMonth() === currentMonth).reduce((a, b) => a + b, 0);
-    const remainingForecastSpend = forecastGasto.filter((_, i) => rawDataForecast[i].data.getMonth() === currentMonth).reduce((a, b) => a + b, 0);
-    const fullMonthProjectedSpend = monthToDateSpend + remainingForecastSpend;
-    analysisPoints.push(`Mantendo o ritmo atual mais a previsão, o gasto total projetado para o final deste mês é de aproximadamente <strong>${formatKilo(fullMonthProjectedSpend)}</strong>.`);
+            // ==========================================================
+            // --- INÍCIO DA NOVA LÓGICA DE ANÁLISE DE TEXTO ---
+            // ==========================================================
+            const analysisBox = document.getElementById('forecast-text-analysis');
+            let analysisPoints = [];
 
-    // 4. Análise do Padrão Semanal
-    const dayNames = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-    const dailyForecasts = forecastGasto.slice(0, 7).map((value, i) => ({ day: dayNames[rawDataForecast[i].data.getDay()], value }));
-    const maxDay = dailyForecasts.reduce((prev, current) => (prev.value > current.value) ? prev : current);
-    const minDay = dailyForecasts.reduce((prev, current) => (prev.value < current.value) ? prev : current);
-    analysisPoints.push(`O modelo identificou um padrão semanal nos seus dados, projetando <strong>${maxDay.day}</strong> como o dia de maior investimento e <strong>${minDay.day}</strong> como o de menor atividade na próxima semana.`);
+            // 1. Análise da Tendência Imediata
+            const firstForecastSpend = forecastGasto[0];
+            const spendChange = ((firstForecastSpend / lastHistoricalGasto) - 1) * 100;
+            let immediateTrendText = `A previsão inicia com tendência de <strong>estabilidade</strong>, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, similar aos <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
+            if (spendChange > 5) {
+                immediateTrendText = `A previsão aponta para uma <strong>tendência de alta</strong> imediata, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, um aumento de <strong>${spendChange.toFixed(0)}%</strong> sobre os <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
+            } else if (spendChange < -5) {
+                immediateTrendText = `A previsão aponta para uma <strong>tendência de baixa</strong> imediata, projetando um gasto de <strong>${formatCurrency(firstForecastSpend)}</strong> para o próximo dia, uma queda de <strong>${Math.abs(spendChange).toFixed(0)}%</strong> sobre os <strong>${formatCurrency(lastHistoricalGasto)}</strong> do último dia real.`;
+            }
+            analysisPoints.push(immediateTrendText);
 
-    // Monta o HTML final e exibe a caixa
-    analysisBox.innerHTML = `
+            // 2. Análise da Média Semanal
+            const avgHistoricalSpend = historicalGasto.slice(-7).reduce((a, b) => a + b, 0) / 7;
+            const avgForecastSpend = forecastGasto.slice(0, 7).reduce((a, b) => a + b, 0) / 7;
+            const weeklyChange = ((avgForecastSpend / avgHistoricalSpend) - 1) * 100;
+            analysisPoints.push(`A média de gasto para os próximos 7 dias está projetada em <strong>${formatCurrency(avgForecastSpend)}</strong> por dia, uma variação de <strong>${weeklyChange.toFixed(1)}%</strong> em relação à média da última semana (<strong>${formatCurrency(avgHistoricalSpend)}</strong>).`);
+
+            // 3. Análise do Ritmo Mensal (Pacing)
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const monthToDateSpend = historicalGasto.filter((_, i) => new Date(sortedHistoricalDates[i]).getMonth() === currentMonth).reduce((a, b) => a + b, 0);
+            const remainingForecastSpend = forecastGasto.filter((_, i) => rawDataForecast[i].data.getMonth() === currentMonth).reduce((a, b) => a + b, 0);
+            const fullMonthProjectedSpend = monthToDateSpend + remainingForecastSpend;
+            analysisPoints.push(`Mantendo o ritmo atual mais a previsão, o gasto total projetado para o final deste mês é de aproximadamente <strong>${formatKilo(fullMonthProjectedSpend)}</strong>.`);
+
+            // 4. Análise do Padrão Semanal
+            const dayNames = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+            const dailyForecasts = forecastGasto.slice(0, 7).map((value, i) => ({ day: dayNames[rawDataForecast[i].data.getDay()], value }));
+            const maxDay = dailyForecasts.reduce((prev, current) => (prev.value > current.value) ? prev : current);
+            const minDay = dailyForecasts.reduce((prev, current) => (prev.value < current.value) ? prev : current);
+            analysisPoints.push(`O modelo identificou um padrão semanal nos seus dados, projetando <strong>${maxDay.day}</strong> como o dia de maior investimento e <strong>${minDay.day}</strong> como o de menor atividade na próxima semana.`);
+
+            // Monta o HTML final e exibe a caixa
+            analysisBox.innerHTML = `
         <h4>📝 Análise da Previsão</h4>
         <ul>
             ${analysisPoints.map(point => `<li>${point}</li>`).join('')}
         </ul>
     `;
-    analysisBox.style.display = 'block';
-}
+            analysisBox.style.display = 'block';
+        }
 
         // Funções de cálculo estatístico
         function linearRegression(y, x) {
@@ -3167,6 +4288,412 @@
             }
             covariance /= n;
             return covariance / (stdDevX * stdDevY);
+        }
+        // --- (Adicione estas funções junto com as outras de renderização de gráficos, como renderManagerCharts) ---
+
+        function populateManagerFilter(data) {
+            const trigger = document.getElementById('manager-select-trigger');
+            const optionsContainer = document.getElementById('manager-select-options');
+            const optionsList = document.getElementById('manager-options-list');
+            const searchInput = document.getElementById('manager-search-input');
+            if (!trigger || !optionsList) return;
+
+            optionsList.innerHTML = ''; // Limpa antes de popular
+            const managers = [...new Set(data.map(r => r.responsavelAquisicao).filter(Boolean))]
+                .filter(m => !EXCLUDED_MANAGERS.includes(m.toUpperCase()))
+                .sort();
+
+            managers.forEach(manager => {
+                const id = `manager-opt-${manager.replace(/\s+/g, '')}`;
+                const isChecked = selectedManagersForChart.includes(manager) ? 'checked' : '';
+                const optionHTML = `
+            <label for="${id}">
+                <input type="checkbox" id="${id}" value="${manager}" ${isChecked}>
+                ${manager}
+            </label>
+        `;
+                optionsList.innerHTML += optionHTML;
+            });
+
+            // --- Lógica do seletor customizado ---
+            trigger.addEventListener('click', () => optionsContainer.classList.toggle('open'));
+
+            searchInput.addEventListener('keyup', () => {
+                const filter = searchInput.value.toLowerCase();
+                optionsList.querySelectorAll('label').forEach(label => {
+                    const text = label.textContent.toLowerCase();
+                    label.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+
+            optionsList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    selectedManagersForChart = managers.filter(m => {
+                        const cb = document.getElementById(`manager-opt-${m.replace(/\s+/g, '')}`);
+                        return cb && cb.checked;
+                    });
+
+                    if (selectedManagersForChart.length === 0) {
+                        trigger.textContent = 'Selecione...';
+                    } else if (selectedManagersForChart.length === 1) {
+                        trigger.textContent = selectedManagersForChart[0];
+                    } else {
+                        trigger.textContent = `${selectedManagersForChart.length} gestores selecionados`;
+                    }
+                    filterAndRenderAll(); // Atualiza o dashboard
+                });
+            });
+
+            // Fecha o dropdown se clicar fora
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-select')) {
+                    optionsContainer.classList.remove('open');
+                }
+            });
+        }
+        function renderManagerEvolutionChart(data) {
+            const canvasId = 'gestorEvolucaoDiariaChart';
+            const hasSelection = selectedManagersForChart.length > 0;
+
+            let chartData = { labels: [], datasets: [] };
+            let chartOptions = {};
+
+            // Plugin para exibir a mensagem placeholder (mockup) quando não há seleção
+            const placeholderPlugin = {
+                id: 'emptyChartMessage',
+                afterDraw: chart => {
+                    if (chart.data.datasets.length === 0) {
+                        let ctx = chart.ctx;
+                        let width = chart.width;
+                        let height = chart.height;
+                        chart.clear();
+
+                        ctx.save();
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.font = "16px sans-serif";
+                        ctx.fillStyle = '#6c757d';
+                        ctx.fillText('Selecione um ou mais gestores para visualizar a evolução.', width / 2, height / 2);
+                        ctx.restore();
+                    }
+                }
+            };
+
+            if (hasSelection) {
+                const dailyDataByManager = {};
+                const allDates = new Set();
+
+                data.filter(row => selectedManagersForChart.includes(row.responsavelAquisicao) && row.data).forEach(row => {
+                    allDates.add(row.data);
+                    const manager = row.responsavelAquisicao;
+                    if (!dailyDataByManager[manager]) dailyDataByManager[manager] = {};
+                    if (!dailyDataByManager[manager][row.data]) {
+                        dailyDataByManager[manager][row.data] = { gasto: 0, receita: 0, leads: 0 };
+                    }
+                    dailyDataByManager[manager][row.data].gasto += row.gasto;
+                    dailyDataByManager[manager][row.data].receita += row.receita;
+                    dailyDataByManager[manager][row.data].leads += row.leads;
+                });
+
+                const sortedLabels = Array.from(allDates).sort((a, b) => parseDate(a) - parseDate(b));
+                const datasets = [];
+                const colors = ['#6a82fb', '#764ba2', '#20c997', '#fd7e14', '#e74c3c', '#3498db', '#f1c40f'];
+
+                selectedManagersForChart.forEach((manager, index) => {
+                    const color = colors[index % colors.length];
+                    const managerDailyData = dailyDataByManager[manager] || {};
+
+                    const gastoData = sortedLabels.map(date => managerDailyData[date]?.gasto ?? null);
+                    const roasData = sortedLabels.map(date => {
+                        const dayData = managerDailyData[date];
+                        return (dayData && dayData.gasto > 0) ? (dayData.receita / dayData.gasto) : null;
+                    });
+                    // 1. Cálculo do CPA
+                    const cpaData = sortedLabels.map(date => {
+                        const dayData = managerDailyData[date];
+                        return (dayData && dayData.leads > 0) ? (dayData.gasto / dayData.leads) : null;
+                    });
+
+                    // 2. Adição dos datasets (incluindo CPA) e garantia dos pontos visíveis
+                    datasets.push({
+                        label: `Invest. (${manager})`, data: gastoData, borderColor: color,
+                        yAxisID: 'yGasto', tension: 0.4, borderWidth: 2.5, spanGaps: true,
+                        backgroundColor: color, pointRadius: 4, pointHoverRadius: 7 // Pontos visíveis
+                    });
+                    datasets.push({
+                        label: `ROAS (${manager})`, data: roasData, borderColor: color,
+                        borderDash: [5, 5], yAxisID: 'yRoas', tension: 0.4, borderWidth: 2, spanGaps: true,
+                        backgroundColor: color, pointRadius: 4, pointHoverRadius: 7 // Pontos visíveis
+                    });
+                    datasets.push({
+                        label: `CPA (${manager})`, data: cpaData, borderColor: color,
+                        borderDash: [1, 3], yAxisID: 'yCpa', tension: 0.4, borderWidth: 1.5, spanGaps: true,
+                        backgroundColor: color, pointRadius: 4, pointHoverRadius: 7 // Pontos visíveis
+                    });
+                });
+
+                const subtitleText = 'Gestor(es): ' + selectedManagersForChart.join(', ');
+
+                chartData = { labels: sortedLabels, datasets };
+                chartOptions = {
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        // 3. Remoção dos números (data labels)
+                        datalabels: {
+                            display: false
+                        },
+                        subtitle: {
+                            display: true,
+                            text: subtitleText,
+                            align: 'start',
+                            padding: { bottom: 20 },
+                            font: { size: 14, style: 'italic' },
+                            color: '#6c757d'
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { autoSkip: true, maxTicksLimit: 15 } },
+                        yGasto: { type: 'linear', position: 'left', title: { display: true, text: 'Investimento (R$)' }, ticks: { callback: (v) => formatKilo(v) } },
+                        yRoas: { type: 'linear', position: 'right', title: { display: true, text: 'ROAS (x)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => v.toFixed(2) + 'x' }, afterFit: (scale) => { scale.width = 70; } },
+                        // 4. Criação do novo eixo para o CPA
+                        yCpa: { type: 'linear', position: 'right', title: { display: true, text: 'CPA (R$)' }, grid: { drawOnChartArea: false }, ticks: { callback: (v) => formatCurrency(v), padding: 15 }, afterFit: (scale) => { scale.width = 80; } }
+                    }
+                };
+            }
+
+            createOrUpdateChart(canvasId, 'line', chartData, chartOptions, [placeholderPlugin]);
+        }
+
+
+        // SUBSTITUA TODAS AS FUNÇÕES DE COORDENAÇÃO POR ESTE BLOCO COMPLETO
+
+        // SUBSTITUA A SUA FUNÇÃO 'renderCoordinationView' POR ESTA VERSÃO CORRIGIDA
+
+        function renderCoordinationView(data) {
+            const coordinators = selectedCoordinatorsForChart.length > 0 ? selectedCoordinatorsForChart : ['NICOLE', 'MARCELO', 'AMANDA'];
+
+            // CORREÇÃO CRÍTICA AQUI: Adicionamos 'endsWithTOTAL(row.operacao)' para usar apenas as linhas de total
+            const coordinationData = data.filter(row =>
+                endsWithTOTAL(row.operacao) && // <-- ESTA LINHA CORRIGE O GRÁFICO
+                row.coordenadorAquisicao &&
+                coordinators.includes(row.coordenadorAquisicao.trim().toUpperCase())
+            );
+
+            const summary = {};
+            const dailyData = {};
+            const allDates = new Set();
+
+            // Inicializa as estruturas de dados para todos os coordenadores selecionados
+            coordinators.forEach(coord => {
+                summary[coord] = { gasto: 0, receita: 0, leads: 0, activeDays: new Set(), operations: new Set() };
+                dailyData[coord] = {};
+            });
+
+            // Processa os dados já filtrados
+            coordinationData.forEach(row => {
+                const coord = row.coordenadorAquisicao.trim().toUpperCase();
+                if (summary[coord]) { // Garante que o coordenador está na lista a ser processada
+                    summary[coord].gasto += row.gasto;
+                    summary[coord].receita += row.receita;
+                    summary[coord].leads += row.leads;
+                    summary[coord].operations.add(row.operacao.replace(' TOTAL', ''));
+                    if (row.data) {
+                        summary[coord].activeDays.add(row.data);
+                        allDates.add(row.data);
+                        if (!dailyData[coord][row.data]) {
+                            dailyData[coord][row.data] = { gasto: 0, receita: 0, leads: 0 };
+                        }
+                        dailyData[coord][row.data].gasto += row.gasto;
+                        dailyData[coord][row.data].receita += row.receita;
+                        dailyData[coord][row.data].leads += row.leads;
+                    }
+                }
+            });
+
+            const sortedLabels = Array.from(allDates).sort((a, b) => parseDate(a) - parseDate(b));
+
+            renderCoordinatorSummaryCards(summary);
+            renderCoordinatorSpendPieChart(summary);
+            renderCoordinatorEvolutionChart(dailyData, sortedLabels, coordinators);
+            renderCoordinatorOpsCountChart(summary);
+            renderCoordinatorOpsList(summary); // Esta é a função que vamos melhorar a seguir
+        }
+
+        function renderCoordinatorSummaryCards(summaryData) {
+            const container = document.getElementById('coordination-summary-cards');
+            container.innerHTML = '';
+
+            if (Object.keys(summaryData).every(coord => summaryData[coord].gasto === 0)) {
+                container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--text-light);">Nenhum dado de coordenação encontrado para o período ou filtros selecionados.</p>';
+                return;
+            }
+
+            Object.entries(summaryData).forEach(([coord, data]) => {
+                if (data.gasto > 0) { // Só mostra o card se houver gasto
+                    const numDays = data.activeDays.size || 1;
+                    const roasMedio = data.gasto > 0 ? data.receita / data.gasto : 0;
+                    const cpaMedio = data.leads > 0 ? data.gasto / data.leads : 0;
+                    const gastoMedioDiario = data.gasto / numDays;
+
+                    const cardHTML = `
+                <div class="regional-section">
+                    <h3>👑 ${coord}</h3>
+                    <div class="summary-cards" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        ${createCardHTML({ icon: '💰', title: 'Gasto Total', value: formatCurrency(data.gasto) })}
+                        ${createCardHTML({ icon: '🎯', title: 'ROAS Médio', value: `${roasMedio.toFixed(2)}x` })}
+                        ${createCardHTML({ icon: '💸', title: 'CPA Médio', value: formatCurrency(cpaMedio) })}
+                        ${createCardHTML({ icon: '👥', title: 'Leads Totais', value: data.leads.toLocaleString('pt-BR') })}
+                    </div>
+                </div>`;
+                    container.innerHTML += cardHTML;
+                }
+            });
+        }
+
+        function renderCoordinatorSpendPieChart(summaryData) {
+            const labels = Object.keys(summaryData).filter(coord => summaryData[coord].gasto > 0);
+            const data = labels.map(coord => summaryData[coord].gasto);
+            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'];
+
+            createOrUpdateChart('coordinationSpendPieChart', 'pie', {
+                labels, datasets: [{ data, backgroundColor: labels.map((_, i) => colors[i % colors.length]) }]
+            }, {
+                plugins: {
+                    datalabels: { display: true, formatter: (v, ctx) => (ctx.chart.getDatasetMeta(0).total > 0 ? (v / ctx.chart.getDatasetMeta(0).total * 100).toFixed(1) + '%' : '0%'), color: '#fff', font: { weight: 'bold', size: 14 } }
+                }
+            });
+        }
+
+        function renderCoordinatorOpsCountChart(summaryData) {
+            const labels = Object.keys(summaryData).filter(coord => summaryData[coord].operations.size > 0);
+            const data = labels.map(coord => summaryData[coord].operations.size);
+            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'];
+            createOrUpdateChart('coordinationOpsCountChart', 'bar', {
+                labels, datasets: [{ data, backgroundColor: labels.map((_, i) => colors[i % colors.length]) }]
+            }, {
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { display: true, anchor: 'end', align: 'end', color: '#333', font: { weight: 'bold' } }
+                },
+                scales: { x: { display: false }, y: { grid: { display: false } } }
+            });
+        }
+
+        function renderCoordinatorEvolutionChart(dailyDataByCoord, sortedLabels, coordinators) {
+            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'];
+            const datasets = [];
+
+            coordinators.forEach((coord, index) => {
+                const color = colors[index % colors.length];
+                const dailyData = dailyDataByCoord[coord];
+
+                if (!dailyData) return; // Pula se o coordenador não tiver dados
+
+                const gastoData = sortedLabels.map(date => dailyData[date]?.gasto ?? null);
+                const roasData = sortedLabels.map(date => (dailyData[date] && dailyData[date].gasto > 0) ? (dailyData[date].receita / dailyData[date].gasto) : null);
+                const cpaData = sortedLabels.map(date => (dailyData[date] && dailyData[date].leads > 0) ? (dailyData[date].gasto / dailyData[date].leads) : null);
+
+                datasets.push({ label: `Gasto (${coord})`, data: gastoData, borderColor: color, yAxisID: 'yGasto', tension: 0.4, borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, backgroundColor: color });
+                datasets.push({ label: `ROAS (${coord})`, data: roasData, borderColor: color, borderDash: [5, 5], yAxisID: 'yRoas', tension: 0.4, borderWidth: 2, pointRadius: 3, pointHoverRadius: 6, backgroundColor: color });
+                datasets.push({ label: `CPA (${coord})`, data: cpaData, borderColor: color, borderDash: [1, 3], yAxisID: 'yCpa', tension: 0.4, borderWidth: 1.5, pointRadius: 3, pointHoverRadius: 6, backgroundColor: color });
+            });
+
+            createOrUpdateChart('coordinationEvolutionChart', 'line', { labels: sortedLabels, datasets }, {
+                interaction: { mode: 'index', intersect: false },
+                plugins: { datalabels: { display: false } },
+                scales: {
+                    x: { ticks: { autoSkip: true, maxTicksLimit: 10 } },
+                    yGasto: { type: 'linear', position: 'left', title: { display: true, text: 'Gasto Diário (R$)' }, ticks: { callback: v => formatKilo(v) } },
+                    yRoas: { type: 'linear', position: 'right', title: { display: true, text: 'ROAS (x)' }, grid: { drawOnChartArea: false }, ticks: { callback: v => v.toFixed(2) + 'x' }, afterFit: (s) => { s.width = 60; } },
+                    yCpa: { type: 'linear', position: 'right', title: { display: true, text: 'CPA (R$)' }, grid: { drawOnChartArea: false }, ticks: { padding: 15, callback: v => formatCurrency(v) }, afterFit: (s) => { s.width = 70; } }
+                }
+            });
+        }
+
+        function renderCoordinatorOpsCountChart(summaryData) {
+            const labels = Object.keys(summaryData);
+            const data = labels.map(coord => summaryData[coord].operations.size);
+            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'];
+
+            createOrUpdateChart('coordinationOpsCountChart', 'bar', {
+                labels, datasets: [{ data, backgroundColor: labels.map((_, i) => colors[i % colors.length]) }]
+            }, {
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { display: true, anchor: 'end', align: 'end', color: '#333', font: { weight: 'bold' } }
+                },
+                scales: { x: { display: false }, y: { grid: { display: false } } }
+            });
+        }
+
+        // SUBSTITUA A FUNÇÃO ANTIGA POR ESTA
+
+        // SUBSTITUA A FUNÇÃO ANTIGA POR ESTA NOVA VERSÃO
+
+        function renderCoordinatorOpsList(summaryData) {
+            const container = document.getElementById('coordination-ops-list-container');
+            container.innerHTML = ''; // Limpa o conteúdo anterior
+
+            Object.entries(summaryData).forEach(([coord, data]) => {
+                if (data.operations.size === 0) return; // Pula se o coordenador não tiver operações
+
+                const opsArray = Array.from(data.operations).sort();
+                const numColumns = 3; // Você pode ajustar para 2, 3 ou 4 colunas
+                const rowsPerColumn = Math.ceil(opsArray.length / numColumns);
+
+                let tableHTML = `
+            <div class="regional-section">
+                <h3>👑 Operações de ${coord} (${opsArray.length})</h3>
+                <table class="performance-table">
+                    <tbody>
+        `;
+
+                for (let i = 0; i < rowsPerColumn; i++) {
+                    tableHTML += '<tr>';
+                    for (let j = 0; j < numColumns; j++) {
+                        const opIndex = i + j * rowsPerColumn;
+                        const op = opIndex < opsArray.length ? opsArray[opIndex] : ''; // Pega a operação ou deixa a célula vazia
+                        tableHTML += `<td>${op}</td>`;
+                    }
+                    tableHTML += '</tr>';
+                }
+
+                tableHTML += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+                container.innerHTML += tableHTML;
+            });
+        }
+
+        function renderCoordinatorEvolutionChart(dailyDataByCoord, sortedLabels) {
+            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'];
+            const datasets = Object.keys(dailyDataByCoord).map((coord, index) => {
+                const data = sortedLabels.map(date => dailyDataByCoord[coord][date] || 0);
+                return {
+                    label: coord,
+                    data: data,
+                    borderColor: colors[index % colors.length],
+                    backgroundColor: hexToRgba(colors[index % colors.length], 0.1),
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointHoverRadius: 6
+                };
+            });
+
+            createOrUpdateChart('coordinationEvolutionChart', 'line', {
+                labels: sortedLabels,
+                datasets: datasets
+            }, {
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { title: { display: true, text: 'Gasto Diário (R$)' }, ticks: { callback: (v) => formatKilo(v) } }
+                }
+            });
         }
         // --- FUNÇÕES DE CONTROLE DE UI (ATUALIZADAS) ---
         function setupEventListeners() {
@@ -3223,11 +4750,28 @@
                     updateProportionCharts();
                 });
             });
+
+            // --- INÍCIO DA ADIÇÃO ---
+            // Conecta o botão do Planejador à sua função
+            const plannerButton = document.getElementById('plannerCalculateBtn');
+            if (plannerButton) {
+                plannerButton.addEventListener('click', runGoalPlanner);
+            }
+            // --- FIM DA ADIÇÃO ---
         }
         /// --- PONTO DE ENTRADA DA APLICAÇÃO ---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAllData();
-            setupEventListeners(); // Função unificada que inicializa todos os controles
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Chama a função e ESPERA ela terminar, guardando os dados retornados
+            const initialData = await loadAllData(true);
+
+            // Somente depois que os dados chegarem, inicializa o resto
+            if (initialData && initialData.length > 0) {
+                initializeDashboard(); // Agora chamamos a inicialização aqui
+                setupEventListeners();
+            } else {
+                console.error("Nenhum dado foi carregado na inicialização.");
+                document.getElementById('status').textContent = "❌ Falha ao carregar dados iniciais.";
+            }
         });
     </script>
 </body>
