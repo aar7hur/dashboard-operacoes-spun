@@ -1654,6 +1654,13 @@
                             <div id="sprint-1m-table" style="overflow-x: auto;"></div>
                         </div>
                         <div class="section-header">
+                            <h2 class="section-title">🎯 Sprint Fim de Semana (até 18/10)</h2>
+                        </div>
+                        <div class="chart-container chart-full" style="height: auto; padding: 25px;">
+                            <div id="sprint-1810-table-container" style="overflow-x: auto;">
+                            </div>
+                        </div>
+                        <div class="section-header">
                             <h2 class="section-title">Performance Detalhada vs. Metas Diárias</h2>
                         </div>
                         <div class="chart-container chart-full" style="height: auto; padding: 0;">
@@ -2237,6 +2244,17 @@
             'MG', 'JN', 'GRID', 'FM', 'CL', 'ND', 'BR', 'US', 'EUA',
             'UK', 'DE', 'AU', 'FR', 'ES', 'IT', 'CC', 'EMP'
         ]);
+        // Adicione esta constante no topo do seu script
+        const SPRINT_1810_TARGETS = {
+            'EUA': { meta: 800000, ordem: 1 },
+            'GRID US': { meta: 100000, ordem: 2, parent: 'EUA' },
+            'JN US': { meta: 300000, ordem: 3, parent: 'EUA' },
+            'MG US': { meta: 300000, ordem: 4, parent: 'EUA' },
+            'JN US EMP': { meta: 70000, ordem: 5, parent: 'EUA' },
+            'MG US EMP': { meta: 30000, ordem: 6, parent: 'EUA' },
+            'Brasil': { meta: 170000, ordem: 7 },
+            'Europa': { meta: 100000, ordem: 8 }
+        };
 
         const SPRINT_1M_DEADLINE = new Date(Date.UTC(2025, 9, 12));
         const SPRINT_1M_GOAL = 1000000;
@@ -2336,358 +2354,467 @@
                 }
             }
         }
+        // Adicione esta função inteira ao seu JavaScript
+        // SUBSTITUA a sua função antiga por esta versão completa
+        function renderSprint1810Table(allFilteredData, ontemData) {
+            const container = document.getElementById('sprint-1810-table-container');
+            if (!container || !ontemData || ontemData.length === 0) return;
+
+            const sprintEndDate = parseDate('18/10/2025');
+            const today = new Date();
+            today.setUTCHours(0, 0, 0, 0);
+
+            // Dias restantes para melhorar, incluindo hoje. Se hoje for dia 18, resta 1 dia para agir.
+            const daysLeft = Math.max(1, (sprintEndDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) + 1);
+
+            // Função interna agora usa 'ontemData', que já está filtrado para o último dia.
+            const getSpendForCategory = (category, dataset) => {
+                let filteredData = [];
+                const op = category.toUpperCase();
+
+                if (op === 'BRASIL') {
+                    filteredData = dataset.filter(r => r.operacao.toUpperCase().includes('BR'));
+                } else if (op === 'EUA') {
+                    filteredData = dataset.filter(r => r.operacao.toUpperCase().includes('US'));
+                } else if (op === 'EUROPA') {
+                    filteredData = dataset.filter(r => ['FR', 'DE', 'UK', 'AU'].some(c => r.operacao.toUpperCase().includes(c)));
+                } else if (op === 'GRID US') {
+                    filteredData = dataset.filter(r => r.operacao.toUpperCase().startsWith('GRID') && r.operacao.toUpperCase().includes('US'));
+                } else if (op === 'JN US') {
+                    filteredData = dataset.filter(r => r.operacao.toUpperCase().startsWith('JN') && r.operacao.toUpperCase().includes('US') && !r.operacao.toUpperCase().includes('EMP'));
+                } else if (op === 'MG US') {
+                    filteredData = dataset.filter(r => r.operacao.toUpperCase().startsWith('MG') && r.operacao.toUpperCase().includes('US') && !r.operacao.toUpperCase().includes('EMP'));
+                } else if (op === 'JN US EMP') {
+                    filteredData = dataset.filter(r => r.operacao.toUpperCase().startsWith('JN') && r.operacao.toUpperCase().includes('US') && r.operacao.toUpperCase().includes('EMP'));
+                } else if (op === 'MG US EMP') {
+                    filteredData = dataset.filter(r => r.operacao.toUpperCase().startsWith('MG') && r.operacao.toUpperCase().includes('US') && r.operacao.toUpperCase().includes('EMP'));
+                }
+                return filteredData.reduce((sum, r) => sum + r.gasto, 0);
+            };
+
+            let tableHTML = `<table class="performance-table">
+        <thead>
+            <tr>
+                <th>Operação/Região</th>
+                <th>Meta Diária (18/10)</th>
+                <th>Gasto Último Dia</th>
+                <th style="min-width: 180px;">Progresso</th>
+                <th>Gap para Meta</th>
+                <th>Incremento Diário Nec.</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+            let totals = { meta: 0, gastoUltimoDia: 0, gap: 0, incremento: 0 };
+
+            const sortedCategories = Object.keys(SPRINT_1810_TARGETS).sort((a, b) => SPRINT_1810_TARGETS[a].ordem - SPRINT_1810_TARGETS[b].ordem);
+
+            for (const category of sortedCategories) {
+                const item = SPRINT_1810_TARGETS[category];
+                const target = item.meta;
+                const lastDaySpend = getSpendForCategory(category, ontemData); // Usa os dados de ontem
+                const gap = target - lastDaySpend;
+                const dailyIncrementNeeded = gap > 0 ? gap / daysLeft : 0;
+                const progress = target > 0 ? (lastDaySpend / target) * 100 : 0;
+                const isSubItem = !!item.parent;
+
+                tableHTML += `
+            <tr style="${isSubItem ? 'font-size: 0.9em; background-color: #f8f9fa;' : ''}">
+                <td style="${isSubItem ? 'padding-left: 30px;' : ''}">${category}</td>
+                <td>${formatCurrency(target)}</td>
+                <td>${formatCurrency(lastDaySpend)}</td>
+                <td>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar"><div class="progress-bar-inner ${progress >= 100 ? 'positive' : ''}" style="width: ${Math.min(100, progress)}%;"></div></div>
+                        <span class="progress-percent">${progress.toFixed(1)}%</span>
+                    </div>
+                </td>
+                <td class="${gap <= 0 ? 'delta-positive' : 'delta-negative'}">${formatCurrency(gap)}</td>
+                <td style="font-weight: bold; color: var(--color-negative);">${gap > 0 ? `+${formatCurrency(dailyIncrementNeeded)}` : 'R$ 0,00'}</td>
+            </tr>`;
+
+                if (!isSubItem) {
+                    totals.meta += target;
+                    totals.gastoUltimoDia += lastDaySpend;
+                    totals.gap += gap;
+                    totals.incremento += dailyIncrementNeeded;
+                }
+            }
+
+            const totalProgress = totals.meta > 0 ? (totals.gastoUltimoDia / totals.meta) * 100 : 0;
+
+            tableHTML += `</tbody>
+        <tfoot>
+            <tr>
+                <td>Total Geral</td>
+                <td>${formatCurrency(totals.meta)}</td>
+                <td>${formatCurrency(totals.gastoUltimoDia)}</td>
+                <td>
+                     <div class="progress-bar-container">
+                        <div class="progress-bar"><div class="progress-bar-inner ${totalProgress >= 100 ? 'positive' : ''}" style="width: ${Math.min(100, totalProgress)}%;"></div></div>
+                        <span class="progress-percent">${totalProgress.toFixed(1)}%</span>
+                    </div>
+                </td>
+                <td>${formatCurrency(totals.gap)}</td>
+                <td>+${formatCurrency(totals.incremento)}</td>
+            </tr>
+        </tfoot>
+    </table>`;
+
+            container.innerHTML = tableHTML;
+        }
         // ADICIONE ESTE BLOCO DE NOVAS FUNÇÕES NO FINAL DO SEU SCRIPT
 
         /**
          * Popula o dropdown de seleção de operação do planejador.
          * Usa apenas sub-operações (não-TOTAL).
          */
-       // 1. SUBSTITUA ESTA FUNÇÃO
-               function populatePlannerOperationFilter(data) {
-            const select = document.getElementById('plannerOperationFilter');
-            if (!select) return;
-            
-            // MODIFICADO: Agora pega apenas operações "TOTAL"
-            const operations = [...new Set(data.map(r => r.operacao).filter(Boolean))]
-                .filter(op => endsWithTOTAL(op)) // Apenas operações TOTAIS
-                .sort();
-                
-            // MODIFICADO: Texto do select
-            select.innerHTML = '<option value="">-- Selecione uma Operação Total --</option>';
-            operations.forEach(op => {
-                // MODIFICADO: Remove " TOTAL" do texto
-                select.innerHTML += `<option value="${op}">${op.replace(' TOTAL', '')}</option>`;
-            });
-        }
+        // 1. SUBSTITUA ESTA FUNÇÃO
+        function populatePlannerOperationFilter(data) {
+            const select = document.getElementById('plannerOperationFilter');
+            if (!select) return;
 
-        // 2. SUBSTITUA ESTA FUNÇÃO
-        async function runGoalPlanner() {
-            const selectedTotalOp = document.getElementById('plannerOperationFilter').value;
-            const targetSpend = parseFloat(document.getElementById('plannerTargetSpend').value);
-            const endDateStr = document.getElementById('plannerEndDate').value;
+            // MODIFICADO: Agora pega apenas operações "TOTAL"
+            const operations = [...new Set(data.map(r => r.operacao).filter(Boolean))]
+                .filter(op => endsWithTOTAL(op)) // Apenas operações TOTAIS
+                .sort();
 
-            const summaryContainer = document.getElementById('plannerSummaryCards');
-            const chartContainer = document.getElementById('plannerChartContainer');
-            const tableContainer = document.getElementById('plannerTableContainer');
+            // MODIFICADO: Texto do select
+            select.innerHTML = '<option value="">-- Selecione uma Operação Total --</option>';
+            operations.forEach(op => {
+                // MODIFICADO: Remove " TOTAL" do texto
+                select.innerHTML += `<option value="${op}">${op.replace(' TOTAL', '')}</option>`;
+            });
+        }
 
-            if (!selectedTotalOp || !targetSpend || !endDateStr) {
-                alert("Por favor, preencha todos os campos: Operação, Meta de Gasto e Data Final.");
-                return;
-            }
+        // 2. SUBSTITUA ESTA FUNÇÃO
+        async function runGoalPlanner() {
+            const selectedTotalOp = document.getElementById('plannerOperationFilter').value;
+            const targetSpend = parseFloat(document.getElementById('plannerTargetSpend').value);
+            const endDateStr = document.getElementById('plannerEndDate').value;
 
-            // --- 1. Encontrar Sub-operações ---
-            const opPrefix = selectedTotalOp.replace(' TOTAL', '').trim();
-            const allOpsInRawData = [...new Set(rawData.map(r => r.operacao).filter(Boolean))];
-            const subOps = allOpsInRawData.filter(op => op.startsWith(opPrefix) && !endsWithTOTAL(op));
+            const summaryContainer = document.getElementById('plannerSummaryCards');
+            const chartContainer = document.getElementById('plannerChartContainer');
+            const tableContainer = document.getElementById('plannerTableContainer');
 
-            if (subOps.length === 0) {
-                alert(`Nenhuma sub-operação (ex: ${opPrefix} 01, ${opPrefix} 02) foi encontrada para a operação total '${selectedTotalOp}'. Não é possível calcular o pacing.`);
-                return;
-            }
+            if (!selectedTotalOp || !targetSpend || !endDateStr) {
+                alert("Por favor, preencha todos os campos: Operação, Meta de Gasto e Data Final.");
+                return;
+            }
 
-            // --- 2. Calcular Datas ---
-            const today = new Date();
-            today.setUTCHours(0, 0, 0, 0);
-            const endDate = new Date(endDateStr + 'T00:00:00Z');
-            endDate.setUTCHours(0, 0, 0, 0);
+            // --- 1. Encontrar Sub-operações ---
+            const opPrefix = selectedTotalOp.replace(' TOTAL', '').trim();
+            const allOpsInRawData = [...new Set(rawData.map(r => r.operacao).filter(Boolean))];
+            const subOps = allOpsInRawData.filter(op => op.startsWith(opPrefix) && !endsWithTOTAL(op));
 
-            // O plano começa amanhã
-            const tomorrow = new Date(today);
-            tomorrow.setUTCDate(today.getUTCDate() + 1);
-            
-            if (endDate < tomorrow) {
-                alert("A Data Final deve ser a partir de amanhã.");
-                return;
-            }
-            
-            const daysRemaining = Math.max(1, (endDate.getTime() - tomorrow.getTime()) / (1000 * 60 * 60 * 24) + 1);
+            if (subOps.length === 0) {
+                alert(`Nenhuma sub-operação (ex: ${opPrefix} 01, ${opPrefix} 02) foi encontrada para a operação total '${selectedTotalOp}'. Não é possível calcular o pacing.`);
+                return;
+            }
 
-            // --- 3. Calcular Gasto Acumulado (do grupo) ---
-            // Filtra rawData UMA VEZ para todas as sub-operações
-            const groupRawData = rawData.filter(r => subOps.includes(r.operacao) && r.data);
-            
-            const currentTotalSpend = groupRawData.reduce((sum, r) => sum + r.gasto, 0);
+            // --- 2. Calcular Datas ---
+            const today = new Date();
+            today.setUTCHours(0, 0, 0, 0);
+            const endDate = new Date(endDateStr + 'T00:00:00Z');
+            endDate.setUTCHours(0, 0, 0, 0);
 
-            // --- 4. Calcular Gasto Acumulado por Sub-op (para a tabela) ---
-            const currentSpendPerSubOp = subOps.reduce((acc, op) => {
-                acc[op] = 0;
-                return acc;
-            }, {});
-            groupRawData.forEach(r => {
-                if (currentSpendPerSubOp.hasOwnProperty(r.operacao)) {
-                	currentSpendPerSubOp[r.operacao] += r.gasto;
-                }
-            });
+            // O plano começa amanhã
+            const tomorrow = new Date(today);
+            tomorrow.setUTCDate(today.getUTCDate() + 1);
 
-            // --- 5. Calcular Incremento Total ---
-            const totalRemainingSpend = targetSpend - currentTotalSpend;
-            const totalDailyIncrement = totalRemainingSpend > 0 ? totalRemainingSpend / daysRemaining : 0;
-            
-            if (totalRemainingSpend <= 0) {
-                 alert(`Parabéns! A meta de ${formatCurrency(targetSpend)} já foi atingida (Gasto atual: ${formatCurrency(currentTotalSpend)}).`);
-            }
+            if (endDate < tomorrow) {
+                alert("A Data Final deve ser a partir de amanhã.");
+                return;
+            }
 
-            // --- 6. Calcular Pesos (Weighting) ---
-            const sevenDaysAgo = new Date(today);
-            sevenDaysAgo.setUTCDate(today.getUTCDate() - 7);
+            const daysRemaining = Math.max(1, (endDate.getTime() - tomorrow.getTime()) / (1000 * 60 * 60 * 24) + 1);
 
-            const subOpSpendL7D = subOps.reduce((acc, op) => {
-                acc[op] = 0;
-                return acc;
-            }, {});
-            let totalSpendL7D = 0;
+            // --- 3. Calcular Gasto Acumulado (do grupo) ---
+            // Filtra rawData UMA VEZ para todas as sub-operações
+            const groupRawData = rawData.filter(r => subOps.includes(r.operacao) && r.data);
 
-            groupRawData.forEach(r => {
-                const rowDate = parseDate(r.data);
-                if (rowDate >= sevenDaysAgo && rowDate < today) { // Gasto dos últimos 7 dias, sem incluir hoje
-                    if (subOpSpendL7D.hasOwnProperty(r.operacao)) {
-                    	subOpSpendL7D[r.operacao] += r.gasto;
-                    	totalSpendL7D += r.gasto;
-                    }
-                }
-            });
+            const currentTotalSpend = groupRawData.reduce((sum, r) => sum + r.gasto, 0);
 
-            // Calcular pesos e incremento diário por sub-op
-            const weights = {};
-            const dailyIncrementPerSubOp = {};
+            // --- 4. Calcular Gasto Acumulado por Sub-op (para a tabela) ---
+            const currentSpendPerSubOp = subOps.reduce((acc, op) => {
+                acc[op] = 0;
+                return acc;
+            }, {});
+            groupRawData.forEach(r => {
+                if (currentSpendPerSubOp.hasOwnProperty(r.operacao)) {
+                    currentSpendPerSubOp[r.operacao] += r.gasto;
+                }
+            });
 
-            subOps.forEach(op => {
-                if (totalSpendL7D > 0) {
-                    // Distribuição ponderada
-                    weights[op] = subOpSpendL7D[op] / totalSpendL7D;
-                } else {
-                    // Distribuição igual (caso de operações novas sem gasto nos L7D)
-                    weights[op] = 1 / subOps.length;
-                }
-                dailyIncrementPerSubOp[op] = totalDailyIncrement * weights[op];
-            });
+            // --- 5. Calcular Incremento Total ---
+            const totalRemainingSpend = targetSpend - currentTotalSpend;
+            const totalDailyIncrement = totalRemainingSpend > 0 ? totalRemainingSpend / daysRemaining : 0;
 
-            // --- 7. Exibir Resumo (para o GRUPO) ---
-            summaryContainer.style.display = 'grid';
-            summaryContainer.innerHTML = 
-                createCardHTML({ icon: '💰', title: 'Gasto Real (Acumulado)', value: formatCurrency(currentTotalSpend) }) +
-                createCardHTML({ icon: '🎯', title: 'Meta de Gasto Total', value: formatCurrency(targetSpend) }) +
-                createCardHTML({ icon: '💸', title: 'Gasto Restante', value: formatCurrency(totalRemainingSpend) }) +
-                createCardHTML({ icon: '🏃', title: 'Incremento Diário (Total)', value: formatCurrency(totalDailyIncrement) }) +
-                createCardHTML({ icon: '📅', title: 'Dias Restantes', value: `${daysRemaining} dias` });
+            if (totalRemainingSpend <= 0) {
+                alert(`Parabéns! A meta de ${formatCurrency(targetSpend)} já foi atingida (Gasto atual: ${formatCurrency(currentTotalSpend)}).`);
+            }
 
-            // --- 8. Renderizar Gráfico (para o GRUPO) ---
-            // Precisamos agregar os dados reais do grupo por dia
-            const groupDailyData = groupRawData.reduce((acc, r) => {
-                if (!acc[r.data]) {
-                    acc[r.data] = { gasto: 0 };
-                }
-                acc[r.data].gasto += r.gasto;
-                return acc;
-            }, {});
-            
-            const sortedGroupData = Object.keys(groupDailyData)
-                .sort((a, b) => parseDate(a) - parseDate(b))
-                .map(date => ({ data: date, gasto: groupDailyData[date].gasto }));
+            // --- 6. Calcular Pesos (Weighting) ---
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setUTCDate(today.getUTCDate() - 7);
 
-            // A função renderPlannerChart existente funciona perfeitamente se passarmos os dados do grupo
-            renderPlannerChart(sortedGroupData, currentTotalSpend, targetSpend, endDate, daysRemaining, totalDailyIncrement);
+            const subOpSpendL7D = subOps.reduce((acc, op) => {
+                acc[op] = 0;
+                return acc;
+            }, {});
+            let totalSpendL7D = 0;
 
-            // --- 9. Renderizar Tabela (detalhada) ---
-            renderPlannerTable(currentSpendPerSubOp, dailyIncrementPerSubOp, tomorrow, daysRemaining);
-            
-            chartContainer.style.display = 'grid';
-            tableContainer.style.display = 'block';
-        }
+            groupRawData.forEach(r => {
+                const rowDate = parseDate(r.data);
+                if (rowDate >= sevenDaysAgo && rowDate < today) { // Gasto dos últimos 7 dias, sem incluir hoje
+                    if (subOpSpendL7D.hasOwnProperty(r.operacao)) {
+                        subOpSpendL7D[r.operacao] += r.gasto;
+                        totalSpendL7D += r.gasto;
+                    }
+                }
+            });
+
+            // Calcular pesos e incremento diário por sub-op
+            const weights = {};
+            const dailyIncrementPerSubOp = {};
+
+            subOps.forEach(op => {
+                if (totalSpendL7D > 0) {
+                    // Distribuição ponderada
+                    weights[op] = subOpSpendL7D[op] / totalSpendL7D;
+                } else {
+                    // Distribuição igual (caso de operações novas sem gasto nos L7D)
+                    weights[op] = 1 / subOps.length;
+                }
+                dailyIncrementPerSubOp[op] = totalDailyIncrement * weights[op];
+            });
+
+            // --- 7. Exibir Resumo (para o GRUPO) ---
+            summaryContainer.style.display = 'grid';
+            summaryContainer.innerHTML =
+                createCardHTML({ icon: '💰', title: 'Gasto Real (Acumulado)', value: formatCurrency(currentTotalSpend) }) +
+                createCardHTML({ icon: '🎯', title: 'Meta de Gasto Total', value: formatCurrency(targetSpend) }) +
+                createCardHTML({ icon: '💸', title: 'Gasto Restante', value: formatCurrency(totalRemainingSpend) }) +
+                createCardHTML({ icon: '🏃', title: 'Incremento Diário (Total)', value: formatCurrency(totalDailyIncrement) }) +
+                createCardHTML({ icon: '📅', title: 'Dias Restantes', value: `${daysRemaining} dias` });
+
+            // --- 8. Renderizar Gráfico (para o GRUPO) ---
+            // Precisamos agregar os dados reais do grupo por dia
+            const groupDailyData = groupRawData.reduce((acc, r) => {
+                if (!acc[r.data]) {
+                    acc[r.data] = { gasto: 0 };
+                }
+                acc[r.data].gasto += r.gasto;
+                return acc;
+            }, {});
+
+            const sortedGroupData = Object.keys(groupDailyData)
+                .sort((a, b) => parseDate(a) - parseDate(b))
+                .map(date => ({ data: date, gasto: groupDailyData[date].gasto }));
+
+            // A função renderPlannerChart existente funciona perfeitamente se passarmos os dados do grupo
+            renderPlannerChart(sortedGroupData, currentTotalSpend, targetSpend, endDate, daysRemaining, totalDailyIncrement);
+
+            // --- 9. Renderizar Tabela (detalhada) ---
+            renderPlannerTable(currentSpendPerSubOp, dailyIncrementPerSubOp, tomorrow, daysRemaining);
+
+            chartContainer.style.display = 'grid';
+            tableContainer.style.display = 'block';
+        }
 
 
-        // 3. SUBSTITUA ESTA FUNÇÃO
-        function renderPlannerChart(actualData, currentSpend, targetSpend, endDate, daysRemaining, dailyIncrement) {
-            const labels = [];
-            const actualDataPoints = [];
-            let cumulativeSpend = 0;
+        // 3. SUBSTITUA ESTA FUNÇÃO
+        function renderPlannerChart(actualData, currentSpend, targetSpend, endDate, daysRemaining, dailyIncrement) {
+            const labels = [];
+            const actualDataPoints = [];
+            let cumulativeSpend = 0;
 
-            // MODIFICADO: Aceita o novo formato de dados
-            // Preenche com dados históricos reais
-            actualData.forEach(row => {
-                labels.push(row.data); // row.data já está formatado 'dd/mm/yyyy'
-                cumulativeSpend += row.gasto;
-                actualDataPoints.push(cumulativeSpend);
-            });
+            // MODIFICADO: Aceita o novo formato de dados
+            // Preenche com dados históricos reais
+            actualData.forEach(row => {
+                labels.push(row.data); // row.data já está formatado 'dd/mm/yyyy'
+                cumulativeSpend += row.gasto;
+                actualDataPoints.push(cumulativeSpend);
+            });
 
-            const lastActualDate = actualData.length > 0 ? parseDate(actualData[actualData.length - 1].data) : new Date(new Date().setUTCHours(0, 0, 0, 0));
-            
-            // Cria os pontos da projeção
-            const planDataPoints = [];
-            let projectedSpend = currentSpend;
-            
-            // Ponto de partida da projeção (último dia real)
-            planDataPoints.push(currentSpend);
-            
-            // O loop começa de amanhã
-            const tomorrow = new Date(lastActualDate.getTime());
-            tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+            const lastActualDate = actualData.length > 0 ? parseDate(actualData[actualData.length - 1].data) : new Date(new Date().setUTCHours(0, 0, 0, 0));
 
-            for (let i = 0; i < daysRemaining; i++) {
-                const nextDay = new Date(tomorrow.getTime() + (1000 * 60 * 60 * 24 * i));
-                projectedSpend += dailyIncrement;
-                
-                labels.push(formatDate(nextDay));
-                planDataPoints.push(projectedSpend);
-            }
-            
-            // Garante que o último ponto da projeção esteja no gráfico e com o valor exato
-            if (daysRemaining > 0) {
-                labels[labels.length - 1] = formatDate(endDate);
-                planDataPoints[planDataPoints.length - 1] = targetSpend;
-            }
+            // Cria os pontos da projeção
+            const planDataPoints = [];
+            let projectedSpend = currentSpend;
 
-            // Preenche os dados reais com 'null' para o futuro
-            const fullActualData = [...actualDataPoints, ...Array(planDataPoints.length - (actualDataPoints.length > 0 ? 1 : 0)).fill(null)];
+            // Ponto de partida da projeção (último dia real)
+            planDataPoints.push(currentSpend);
 
-            const datasets = [
-                {
-                    label: 'Gasto Real (Acumulado)',
-                    data: fullActualData,
-                    borderColor: '#2ecc71',
-                    backgroundColor: 'transparent',
-                    yAxisID: 'yCumulative',
-                    tension: 0.1,
-                    pointRadius: 4
-                },
-                {
-                    label: 'Projeção da Meta',
-                    // Começa do último ponto real
-                    data: [...Array(actualDataPoints.length - 1).fill(null), ...planDataPoints], 
-                    borderColor: '#6a82fb',
-                    backgroundColor: hexToRgba('#6a82fb', 0.1),
-                    fill: true,
-                    borderDash: [5, 5],
-                    yAxisID: 'yCumulative',
-                    tension: 0.1,
-                    pointRadius: 4
-                }
-            ];
+            // O loop começa de amanhã
+            const tomorrow = new Date(lastActualDate.getTime());
+            tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
-            const options = {
-                interaction: { mode: 'index', intersect: false },
-                plugins: { datalabels: { display: false } },
-                scales: {
-                    x: { title: { display: true, text: 'Data' }, grid: { display: false } },
-                    yCumulative: {
-                        type: 'linear',
-                        position: 'left',
-                        title: { display: true, text: 'Gasto Acumulado (R$)' },
-                        ticks: { callback: v => formatKilo(v) }
-                    }
-                }
-            };
-            
-            createOrUpdateChart('plannerChart', 'line', { labels, datasets }, options);
-        }
+            for (let i = 0; i < daysRemaining; i++) {
+                const nextDay = new Date(tomorrow.getTime() + (1000 * 60 * 60 * 24 * i));
+                projectedSpend += dailyIncrement;
 
-        // 4. SUBSTITUA ESTA FUNÇÃO
-        function renderPlannerTable(currentSpendPerSubOp, dailyIncrementPerSubOp, startDate, daysRemaining) {
-            const container = document.getElementById('plannerTable');
-            const subOps = Object.keys(currentSpendPerSubOp).sort();
-            
-            // Reutiliza a classe da tabela de Sprint para um bom layout largo
-            let tableHTML = `<table class="performance-table sprint-table"><thead><tr><th>Data</th>`; 
-            
-            subOps.forEach(op => {
-                tableHTML += `<th>${op} (Gasto Diário)</th>`;
-                tableHTML += `<th>${op} (Acumulado)</th>`;
-            });
-            
-            tableHTML += `<th>Total Diário</th><th>Total Acumulado</th></tr></thead><tbody>`;
+                labels.push(formatDate(nextDay));
+                planDataPoints.push(projectedSpend);
+            }
 
-            // Clona os gastos atuais para iniciar o acumulado do plano
-            const cumulativePlanPerSubOp = { ...currentSpendPerSubOp };
-            let cumulativeTotalPlan = Object.values(currentSpendPerSubOp).reduce((a, b) => a + b, 0);
+            // Garante que o último ponto da projeção esteja no gráfico e com o valor exato
+            if (daysRemaining > 0) {
+                labels[labels.length - 1] = formatDate(endDate);
+                planDataPoints[planDataPoints.length - 1] = targetSpend;
+            }
 
-            for (let i = 0; i < daysRemaining; i++) {
-                const nextDay = new Date(startDate.getTime() + (1000 * 60 * 60 * 24 * i));
-                let dailyTotalIncrement = 0;
+            // Preenche os dados reais com 'null' para o futuro
+            const fullActualData = [...actualDataPoints, ...Array(planDataPoints.length - (actualDataPoints.length > 0 ? 1 : 0)).fill(null)];
 
-                tableHTML += `<tr><td>${formatDate(nextDay)}</td>`;
-                
-                subOps.forEach(op => {
-                    const dailyIncrement = dailyIncrementPerSubOp[op];
-                    cumulativePlanPerSubOp[op] += dailyIncrement;
-                    dailyTotalIncrement += dailyIncrement;
-                    
-                    tableHTML += `<td style="color: var(--color-positive);">+${formatCurrency(dailyIncrement)}</td>`;
-                    tableHTML += `<td>${formatCurrency(cumulativePlanPerSubOp[op])}</td>`;
-                });
+            const datasets = [
+                {
+                    label: 'Gasto Real (Acumulado)',
+                    data: fullActualData,
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'transparent',
+                    yAxisID: 'yCumulative',
+                    tension: 0.1,
+                    pointRadius: 4
+                },
+                {
+                    label: 'Projeção da Meta',
+                    // Começa do último ponto real
+                    data: [...Array(actualDataPoints.length - 1).fill(null), ...planDataPoints],
+                    borderColor: '#6a82fb',
+                    backgroundColor: hexToRgba('#6a82fb', 0.1),
+                    fill: true,
+                    borderDash: [5, 5],
+                    yAxisID: 'yCumulative',
+                    tension: 0.1,
+                    pointRadius: 4
+                }
+            ];
 
-                cumulativeTotalPlan += dailyTotalIncrement;
-                tableHTML += `<td style="font-weight:bold; color: var(--color-positive);">+${formatCurrency(dailyTotalIncrement)}</td>`;
-                tableHTML += `<td style="font-weight:bold;">${formatCurrency(cumulativeTotalPlan)}</td>`;
-                tableHTML += `</tr>`;
-            }
+            const options = {
+                interaction: { mode: 'index', intersect: false },
+                plugins: { datalabels: { display: false } },
+                scales: {
+                    x: { title: { display: true, text: 'Data' }, grid: { display: false } },
+                    yCumulative: {
+                        type: 'linear',
+                        position: 'left',
+                        title: { display: true, text: 'Gasto Acumulado (R$)' },
+                        ticks: { callback: v => formatKilo(v) }
+                    }
+                }
+            };
 
-            tableHTML += `</tbody></table>`;
-            container.innerHTML = tableHTML;
-        }
+            createOrUpdateChart('plannerChart', 'line', { labels, datasets }, options);
+        }
 
-        // 5. SUBSTITUA ESTA FUNÇÃO (para incluir o listener do planner)
-        function setupEventListeners() {
-            // Controle da Sidebar
-            const sidebarToggleBtn = document.getElementById('sidebar-toggle');
-            if (sidebarToggleBtn) {
-                sidebarToggleBtn.addEventListener('click', () => {
-                    document.body.classList.toggle('sidebar-minimized');
-                    localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-minimized') ? 'minimized' : 'expanded');
-                    setTimeout(() => Object.values(charts).forEach(chart => chart && chart.resize()), 350);
-                });
-            }
-            if (localStorage.getItem('sidebarState') === 'minimized') {
-                document.body.classList.add('sidebar-minimized');
-            }
+        // 4. SUBSTITUA ESTA FUNÇÃO
+        function renderPlannerTable(currentSpendPerSubOp, dailyIncrementPerSubOp, startDate, daysRemaining) {
+            const container = document.getElementById('plannerTable');
+            const subOps = Object.keys(currentSpendPerSubOp).sort();
 
-            // Controle da Navegação por Abas (substitui a antiga setupNavbar)
-            const navButtons = document.querySelectorAll('.sidebar-nav .nav-btn');
-            const viewSections = document.querySelectorAll('.view-section');
-            const mainTitle = document.getElementById('main-title');
+            // Reutiliza a classe da tabela de Sprint para um bom layout largo
+            let tableHTML = `<table class="performance-table sprint-table"><thead><tr><th>Data</th>`;
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetId = button.dataset.target;
-                    if (!targetId) return;
+            subOps.forEach(op => {
+                tableHTML += `<th>${op} (Gasto Diário)</th>`;
+                tableHTML += `<th>${op} (Acumulado)</th>`;
+            });
 
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
+            tableHTML += `<th>Total Diário</th><th>Total Acumulado</th></tr></thead><tbody>`;
 
-                    viewSections.forEach(section => section.classList.toggle('active', section.id === targetId));
+            // Clona os gastos atuais para iniciar o acumulado do plano
+            const cumulativePlanPerSubOp = { ...currentSpendPerSubOp };
+            let cumulativeTotalPlan = Object.values(currentSpendPerSubOp).reduce((a, b) => a + b, 0);
 
-                    if (mainTitle) {
-                        mainTitle.textContent = button.dataset.tooltip || "Dashboard";
-                    }
+            for (let i = 0; i < daysRemaining; i++) {
+                const nextDay = new Date(startDate.getTime() + (1000 * 60 * 60 * 24 * i));
+                let dailyTotalIncrement = 0;
 
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        setTimeout(() => {
-                            targetSection.querySelectorAll('canvas').forEach(canvas => {
-                                const chartInstance = charts[canvas.id];
-                                if (chartInstance) chartInstance.resize();
-                            });
-                        }, 10);
-                    }
-                });
-            });
+                tableHTML += `<tr><td>${formatDate(nextDay)}</td>`;
 
-            // Controle do seletor de métrica
-            document.querySelectorAll('#metric-toggle .toggle-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    if (this.classList.contains('active')) return;
-                    document.querySelectorAll('#metric-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    updateProportionCharts();
-                });
-            });
-            
-            // --- ADIÇÃO PARA O PLANEJADOR DE METAS (DA RESPOSTA ANTERIOR) ---
-            const plannerButton = document.getElementById('plannerCalculateBtn');
-            if (plannerButton) {
-                plannerButton.addEventListener('click', runGoalPlanner);
-            }
-            // --- FIM DA ADIÇÃO ---
-        }
+                subOps.forEach(op => {
+                    const dailyIncrement = dailyIncrementPerSubOp[op];
+                    cumulativePlanPerSubOp[op] += dailyIncrement;
+                    dailyTotalIncrement += dailyIncrement;
+
+                    tableHTML += `<td style="color: var(--color-positive);">+${formatCurrency(dailyIncrement)}</td>`;
+                    tableHTML += `<td>${formatCurrency(cumulativePlanPerSubOp[op])}</td>`;
+                });
+
+                cumulativeTotalPlan += dailyTotalIncrement;
+                tableHTML += `<td style="font-weight:bold; color: var(--color-positive);">+${formatCurrency(dailyTotalIncrement)}</td>`;
+                tableHTML += `<td style="font-weight:bold;">${formatCurrency(cumulativeTotalPlan)}</td>`;
+                tableHTML += `</tr>`;
+            }
+
+            tableHTML += `</tbody></table>`;
+            container.innerHTML = tableHTML;
+        }
+
+        // 5. SUBSTITUA ESTA FUNÇÃO (para incluir o listener do planner)
+        function setupEventListeners() {
+            // Controle da Sidebar
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('sidebar-minimized');
+                    localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-minimized') ? 'minimized' : 'expanded');
+                    setTimeout(() => Object.values(charts).forEach(chart => chart && chart.resize()), 350);
+                });
+            }
+            if (localStorage.getItem('sidebarState') === 'minimized') {
+                document.body.classList.add('sidebar-minimized');
+            }
+
+            // Controle da Navegação por Abas (substitui a antiga setupNavbar)
+            const navButtons = document.querySelectorAll('.sidebar-nav .nav-btn');
+            const viewSections = document.querySelectorAll('.view-section');
+            const mainTitle = document.getElementById('main-title');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    if (!targetId) return;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    viewSections.forEach(section => section.classList.toggle('active', section.id === targetId));
+
+                    if (mainTitle) {
+                        mainTitle.textContent = button.dataset.tooltip || "Dashboard";
+                    }
+
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        setTimeout(() => {
+                            targetSection.querySelectorAll('canvas').forEach(canvas => {
+                                const chartInstance = charts[canvas.id];
+                                if (chartInstance) chartInstance.resize();
+                            });
+                        }, 10);
+                    }
+                });
+            });
+
+            // Controle do seletor de métrica
+            document.querySelectorAll('#metric-toggle .toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    if (this.classList.contains('active')) return;
+                    document.querySelectorAll('#metric-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateProportionCharts();
+                });
+            });
+
+            // --- ADIÇÃO PARA O PLANEJADOR DE METAS (DA RESPOSTA ANTERIOR) ---
+            const plannerButton = document.getElementById('plannerCalculateBtn');
+            if (plannerButton) {
+                plannerButton.addEventListener('click', runGoalPlanner);
+            }
+            // --- FIM DA ADIÇÃO ---
+        }
 
         function initializeDashboard() {
             buildOperationalGoals();
@@ -2809,11 +2936,77 @@
         function populateCompanyCheckboxes() { const container = document.getElementById('company-checkbox-group'); if (!container) return; container.innerHTML = ''; container.innerHTML += `<input type="checkbox" id="company-all" value="all" onchange="handleCompanySelection(this)" checked><label for="company-all">Todas</label>`; Object.entries(COMPANIES).forEach(([prefix, company]) => { container.innerHTML += ` <input type="checkbox" id="company-${prefix}" value="${prefix}" onchange="handleCompanySelection(this)"> <label for="company-${prefix}">${company.name}</label> `; }); }
         function handleCompanySelection(checkbox) { const allCheckbox = document.getElementById('company-all'); const companyCheckboxes = document.querySelectorAll('#company-checkbox-group input:not(#company-all)'); if (checkbox.id === 'company-all' && checkbox.checked) { companyCheckboxes.forEach(cb => cb.checked = false); } else if (checkbox.id !== 'company-all') { if (Array.from(companyCheckboxes).some(cb => cb.checked)) { allCheckbox.checked = false; } } if (!document.querySelector('#company-checkbox-group input:checked')) { allCheckbox.checked = true; } updateCompanyEvolutionChart(); }
         function updateCompanyEvolutionChart() { const selectedCompanyPrefixes = Array.from(document.querySelectorAll('#company-checkbox-group input:checked')).map(cb => cb.value); const dataOnlyTotal = filteredData.filter(r => endsWithTOTAL(r.operacao)); const allDates = [...new Set(dataOnlyTotal.map(r => r.data))].sort((a, b) => parseDate(a) - parseDate(b)); const evolutionDatasets = []; const companiesToDisplay = selectedCompanyPrefixes.includes('all') ? Object.keys(COMPANIES) : selectedCompanyPrefixes; companiesToDisplay.forEach(prefix => { const company = COMPANIES[prefix]; if (!company) return; const dailyData = {}; dataOnlyTotal.filter(row => row.operacao.startsWith(prefix)).forEach(row => { if (!dailyData[row.data]) dailyData[row.data] = 0; dailyData[row.data] += row.gasto; }); const investmentData = allDates.map(date => dailyData[date] || 0); if (selectedCompanyPrefixes.includes('all') && !investmentData.some(val => val > 0)) { return; } evolutionDatasets.push({ label: company.name, data: investmentData, borderColor: company.color, backgroundColor: hexToRgba(company.color, 0.1), fill: false, tension: 0.4 }); }); createOrUpdateChart('companyEvolutionChart', 'line', { labels: allDates, datasets: evolutionDatasets }); }
-        function renderMetasView(data, allFilteredData) { if (data.length === 0) return; const allDates = [...new Set(data.map(d => d.data))].filter(Boolean).sort((a, b) => parseDate(b) - parseDate(a)); const lastDateStr = allDates[0]; const dayBeforeLastDateStr = allDates[1]; const ontemData = data.filter(d => d.data === lastDateStr); const diaAnteriorData = dayBeforeLastDateStr ? data.filter(d => d.data === dayBeforeLastDateStr) : []; const totalPeriodDataByOp = {}; data.forEach(row => { const goalKey = getGoalKeyFromOperation(row.operacao); if (!goalKey) return; if (!totalPeriodDataByOp[goalKey]) totalPeriodDataByOp[goalKey] = { gasto: 0, receita: 0 }; totalPeriodDataByOp[goalKey].gasto += row.gasto; totalPeriodDataByOp[goalKey].receita += row.receita; }); const mergedData = []; const activeGoals = Object.entries(GOALS_DATA).filter(([, goal]) => goal.investimento > 0); activeGoals.forEach(([goalKey, goal]) => { const matchingOpsOntem = ontemData.filter(row => getGoalKeyFromOperation(row.operacao) === goalKey); const gastoOntem = matchingOpsOntem.reduce((sum, r) => sum + r.gasto, 0); const receitaOntem = matchingOpsOntem.reduce((sum, r) => sum + r.receita, 0); const matchingOpsDiaAnterior = diaAnteriorData.filter(row => getGoalKeyFromOperation(row.operacao) === goalKey); const gastoDiaAnterior = matchingOpsDiaAnterior.reduce((sum, r) => sum + r.gasto, 0); const totalData = totalPeriodDataByOp[goalKey] || { gasto: 0, receita: 0 }; const roasMedioTotal = totalData.gasto > 0 ? totalData.receita / totalData.gasto : 0; const roasOntem = gastoOntem > 0 ? receitaOntem / gastoOntem : 0; const progressoInvest = (goal.investimento > 0) ? (gastoOntem / goal.investimento) * 100 : 0; const progressoDiaAnterior = (goal.investimento > 0) ? (gastoDiaAnterior / goal.investimento) * 100 : 0; const diffProgresso = progressoInvest - progressoDiaAnterior; mergedData.push({ operacao: goalKey, atualInvestimento: gastoOntem, metaInvestimento: goal.investimento, progressoInvest: progressoInvest, gapInvestimento: goal.investimento - gastoOntem, atualRoas: roasOntem, metaRoas: goal.roas, diffRoas: (roasOntem - goal.roas) * 100, roasMedioTotal: roasMedioTotal, diffProgresso: diffProgresso }); }); segmentDataCache['metas-detailed-table'] = mergedData; const gastoTotalOntem = ontemData.reduce((sum, item) => sum + item.gasto, 0); const totalMeta = mergedData.reduce((sum, item) => sum + item.metaInvestimento, 0); const progressoTotal = totalMeta > 0 ? (gastoTotalOntem / totalMeta) * 100 : 0; document.getElementById('metas-kpi-cards').innerHTML = createCardHTML({ icon: '💰', title: `Progresso Meta Diária (${lastDateStr || 'N/A'})`, value: `${progressoTotal.toFixed(1)}%`, footerHTML: `<div class="progress-bar"><div class="progress-bar-inner" style="width: ${Math.min(progressoTotal, 100)}%;"></div></div> <div style="font-size: 0.9em; color: var(--text-light); margin-top: 5px;">${formatCurrency(gastoTotalOntem)} de ${formatCurrency(totalMeta)}</div>` }); _renderAndAttachSortListenersForMetasTable('metas-detailed-table', mergedData); renderDailyGoalProgressionTable(gastoTotalOntem, mergedData); renderSprint1MCard(allFilteredData, gastoTotalOntem); renderSprint1MTable(allFilteredData, ontemData); }
         function _renderAndAttachSortListenersForMetasTable(elementId, dataToRender) { const container = document.getElementById(elementId); if (!container) return; const currentSort = metasTableSortState[elementId] || {}; const getSortIndicator = (key) => { if (currentSort.key !== key) return '⇅'; return currentSort.order === 'desc' ? '▼' : '▲'; }; const headers = [{ key: 'operacao', label: 'Operação' }, { key: 'atualInvestimento', label: 'Investimento de Ontem' }, { key: 'metaInvestimento', label: 'Meta Diária' }, { key: 'progressoInvest', label: 'Progresso', style: 'min-width: 180px;' }, { key: 'diffProgresso', label: 'Status Investimento' }, { key: 'gapInvestimento', label: 'Gap (R$)' }, { key: 'atualRoas', label: 'ROAS de Ontem' }, { key: 'roasMedioTotal', label: 'ROAS Médio Total' }, { key: 'metaRoas', label: 'Meta ROAS' }, { key: 'diffRoas', label: 'Status ROAS' }]; let tableHtml = `<table class="performance-table"><thead><tr>`; headers.forEach(h => { tableHtml += `<th class="sortable" data-sort="${h.key}" style="${h.style || ''}">${h.label} <span class="sort-indicator">${getSortIndicator(h.key)}</span></th>`; }); tableHtml += `</tr></thead><tbody>`; dataToRender.forEach(d => { const progresso = Math.min(d.progressoInvest, 100); const roasClass = d.diffRoas >= 0 ? 'delta-positive' : 'delta-negative'; const roasSign = d.diffRoas >= 0 ? '+' : ''; const statusInvestClass = d.diffProgresso >= 0 ? 'delta-positive' : 'delta-negative'; const statusInvestSign = d.diffProgresso > 0 ? '+' : ''; const statusInvestText = !isNaN(d.diffProgresso) ? `${statusInvestSign}${d.diffProgresso.toFixed(1)} p.p.` : '-'; tableHtml += `<tr> <td>${d.operacao}</td> <td>${formatCurrency(d.atualInvestimento)}</td> <td>${formatCurrency(d.metaInvestimento)}</td> <td> <div class="progress-bar-container"> <div class="progress-bar"> <div class="progress-bar-inner" style="width: ${progresso}%;"></div> </div> <span class="progress-percent">${d.progressoInvest.toFixed(0)}%</span> </div> </td> <td><span class="${statusInvestClass}">${statusInvestText}</span></td> <td>${formatCurrency(d.gapInvestimento)}</td> <td>${(d.atualRoas * 100).toFixed(0)}%</td> <td>${(d.roasMedioTotal * 100).toFixed(0)}%</td> <td>${(d.metaRoas * 100).toFixed(0)}%</td> <td><span class="${roasClass}">${roasSign}${d.diffRoas.toFixed(1)} p.p.</span></td> </tr>`; }); container.innerHTML = tableHtml + `</tbody></table>`; container.querySelectorAll('.sortable').forEach(th => { th.addEventListener('click', () => { sortTable(elementId, th.dataset.sort, segmentDataCache, metasTableSortState, _renderAndAttachSortListenersForMetasTable); }); }); }
         function renderDailyGoalProgressionTable(gastoTotalOntem, metasData) { const container = document.getElementById('metas-acceleration-table'); if (!container) return; const totalMetaDiariaOriginal = metasData.reduce((sum, item) => sum + item.metaInvestimento, 0); const cenarios = [{ label: 'Cenário 1M/dia', target: 1000000 }, { label: 'Cenário 1.5M/dia', target: 1500000 }, { label: 'Cenário 2M/dia', target: 2000000 }, { label: 'Cenário 2.5M/dia', target: 2500000 }]; let tableHTML = `<table class="performance-table acceleration-table">`; tableHTML += `<thead><tr> <th rowspan="2" style="min-width: 200px;">Operação</th> <th rowspan="2">Gasto de Ontem</th> <th rowspan="2">Meta Original</th>`; cenarios.forEach((c, index) => { tableHTML += `<th colspan="2" class="${index === 0 ? 'scenario-group-start' : ''}">${c.label}</th>`; }); tableHTML += `</tr>`; tableHTML += `<tr>`; cenarios.forEach((c, index) => { tableHTML += `<th class="${index === 0 ? 'scenario-group-start' : ''}">Gasto Alvo</th><th>Acréscimo</th>`; }); tableHTML += `</tr></thead>`; tableHTML += `<tbody>`; metasData.forEach(op => { tableHTML += `<tr> <td>${op.operacao}</td> <td>${formatCurrency(op.atualInvestimento)}</td> <td>${formatCurrency(op.metaInvestimento)}</td>`; cenarios.forEach((c, index) => { const gapGlobal = c.target - gastoTotalOntem; const groupClass = index === 0 ? 'scenario-group-start' : ''; if (gapGlobal <= 0) { tableHTML += `<td class="delta-positive ${groupClass}">Atingido</td><td>-</td>`; } else { const peso = (totalMetaDiariaOriginal > 0) ? op.metaInvestimento / totalMetaDiariaOriginal : 0; const acrescimo = gapGlobal * peso; const gastoAlvo = op.atualInvestimento + acrescimo; tableHTML += `<td class="${groupClass}">${formatCurrency(gastoAlvo)}</td> <td class="delta-negative acrescimo-cell"><span>+${formatCurrency(acrescimo)}</span></td>`; } }); tableHTML += `</tr>`; }); container.innerHTML = tableHTML + '</tbody></table>'; }
         function renderSprint1MCard(allFilteredData, gastoTotalOntem) { const container = document.getElementById('sprint-kpi-cards'); if (!container) return; const progress = SPRINT_1M_GOAL > 0 ? (gastoTotalOntem / SPRINT_1M_GOAL) * 100 : 0; container.innerHTML = createCardHTML({ icon: '🚀', title: `Progresso Sprint 1M (até ${formatDate(SPRINT_1M_DEADLINE, true)})`, value: `${progress.toFixed(1)}%`, footerHTML: `<div class="progress-bar"><div class="progress-bar-inner" style="width: ${Math.min(progress, 100)}%;"></div></div> <div style="font-size: 0.9em; color: var(--text-light); margin-top: 5px;">${formatCurrency(gastoTotalOntem)} de ${formatCurrency(SPRINT_1M_GOAL)}</div>` }); }
         function renderSprint1MTable(allFilteredData, ontemData) { const container = document.getElementById('sprint-1m-table'); if (!container) return; const today = new Date(); today.setUTCHours(0, 0, 0, 0); const daysRemaining = Math.max(1, (SPRINT_1M_DEADLINE.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) + 1); const opMetrics = {}; const sprintOperations = SPRINT_1M_BASE_OPERATIONS.filter(opKey => !SPRINT_1M_RULES[opKey]?.exclude); sprintOperations.forEach(opKey => { const opData = allFilteredData.filter(row => getGoalKeyFromOperation(row.operacao) === opKey); const totalGasto = opData.reduce((sum, r) => sum + r.gasto, 0); const totalReceita = opData.reduce((sum, r) => sum + r.receita, 0); const gastoOntem = ontemData.filter(row => getGoalKeyFromOperation(row.operacao) === opKey).reduce((sum, r) => sum + r.gasto, 0); opMetrics[opKey] = { roas: totalGasto > 0 ? totalReceita / totalGasto : 0, gastoOntem: gastoOntem }; }); const gastoTotalOntem = ontemData.reduce((sum, r) => sum + r.gasto, 0); let totalGapParaAcelerar = SPRINT_1M_GOAL - gastoTotalOntem; const tableData = []; let totalIncrementoFixo = 0; sprintOperations.forEach(opKey => { const rule = SPRINT_1M_RULES[opKey]; if (rule) { let incrementoDiario = 0; let metaDiariaFinal = 0; if (rule.finalTarget) { metaDiariaFinal = rule.finalTarget; const gap = metaDiariaFinal - opMetrics[opKey].gastoOntem; incrementoDiario = gap / daysRemaining; } else if (rule.target) { metaDiariaFinal = rule.target; const gap = metaDiariaFinal - opMetrics[opKey].gastoOntem; incrementoDiario = gap > 0 ? gap / daysRemaining : 0; } totalIncrementoFixo += incrementoDiario; tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal, incrementoDiario }); } }); const gapParaDistribuir = (totalGapParaAcelerar / daysRemaining) - totalIncrementoFixo; const opsParaDistribuir = sprintOperations.filter(opKey => !SPRINT_1M_RULES[opKey] && opMetrics[opKey].roas > 0.9); const pesoTotal = opsParaDistribuir.reduce((sum, opKey) => sum + (GOALS_DATA[opKey]?.investimento || 50000), 0); opsParaDistribuir.forEach(opKey => { const peso = (GOALS_DATA[opKey]?.investimento || 50000) / pesoTotal; const incrementoDiario = gapParaDistribuir > 0 ? gapParaDistribuir * peso : 0; const metaDiariaFinal = opMetrics[opKey].gastoOntem + (incrementoDiario * daysRemaining); tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal, incrementoDiario }); }); sprintOperations.forEach(opKey => { if (!tableData.find(d => d.operacao === opKey)) { tableData.push({ operacao: opKey, ...opMetrics[opKey], metaDiariaFinal: opMetrics[opKey].gastoOntem, incrementoDiario: 0 }); } }); const dateHeaders = Array.from({ length: daysRemaining }, (_, i) => { const d = new Date(today); d.setUTCDate(today.getUTCDate() + i); return d; }); const dailySpendByOp = allFilteredData.reduce((acc, row) => { const key = getGoalKeyFromOperation(row.operacao); if (key) { if (!acc[key]) acc[key] = {}; acc[key][row.data] = (acc[key][row.data] || 0) + row.gasto; } return acc; }, {}); let tableHTML = `<table class="performance-table sprint-table"><thead><tr> <th>Operação</th><th>Gasto Ontem</th><th>Meta Diária Final</th><th>Gap p/ Meta</th><th>Incremento Diário</th>`; dateHeaders.forEach(d => tableHTML += `<th>${formatDate(d, true)}</th>`); tableHTML += `</tr></thead><tbody>`; tableData.sort((a, b) => sprintOperations.indexOf(a.operacao) - sprintOperations.indexOf(b.operacao)); tableData.forEach(d => { const gap = d.metaDiariaFinal - d.gastoOntem; tableHTML += `<tr> <td>${d.operacao}</td><td>${formatCurrency(d.gastoOntem)}</td> <td style="font-weight:bold;">${formatCurrency(d.metaDiariaFinal)}</td> <td class="${gap >= 0 ? 'delta-negative' : 'delta-positive'}">${formatCurrency(gap)}</td> <td style="font-style: italic; color: ${d.incrementoDiario >= 0 ? 'var(--color-negative)' : 'var(--color-positive)'};">${d.incrementoDiario >= 0 ? '+' : ''}${formatCurrency(d.incrementoDiario)}</td>`; dateHeaders.forEach((date, i) => { const plannedSpend = d.gastoOntem + (d.incrementoDiario * (i + 1)); const actualSpend = dailySpendByOp[d.operacao]?.[formatDate(date)]; if (actualSpend !== undefined) { const performanceClass = actualSpend >= plannedSpend ? 'delta-positive' : 'delta-negative'; const progressPct = plannedSpend > 0.01 ? (actualSpend / plannedSpend * 100).toFixed(0) : 100; tableHTML += `<td> <div class="daily-cell ${performanceClass}"> <div>Real: ${formatCurrency(actualSpend)} (${progressPct}%)</div> <div>Planj: ${formatCurrency(plannedSpend)}</div> </div></td>`; } else { tableHTML += `<td><div class="daily-cell"><div>Planj: ${formatCurrency(plannedSpend)}</div></div></td>`; } }); tableHTML += `</tr>`; }); tableHTML += `</tbody><tfoot><tr><td>Total</td>`; const footerTotals = { gastoOntem: tableData.reduce((s, d) => s + d.gastoOntem, 0), metaDiariaFinal: tableData.reduce((s, d) => s + d.metaDiariaFinal, 0), gap: tableData.reduce((s, d) => s + (d.metaDiariaFinal - d.gastoOntem), 0), incrementoDiario: tableData.reduce((s, d) => s + d.incrementoDiario, 0) }; tableHTML += `<td>${formatCurrency(footerTotals.gastoOntem)}</td> <td>${formatCurrency(footerTotals.metaDiariaFinal)}</td> <td>${formatCurrency(footerTotals.gap)}</td> <td>+${formatCurrency(footerTotals.incrementoDiario)}</td>`; dateHeaders.forEach((date, i) => { const totalPlanned = tableData.reduce((s, d) => s + (d.gastoOntem + (d.incrementoDiario * (i + 1))), 0); const totalActual = sprintOperations.reduce((s, opKey) => s + (dailySpendByOp[opKey]?.[formatDate(date)] || 0), 0); if (totalActual > 0) { tableHTML += `<td>${formatCurrency(totalActual)}</td>`; } else { tableHTML += `<td>${formatCurrency(totalPlanned)}</td>`; } }); tableHTML += `</tr></tfoot>`; container.innerHTML = tableHTML + `</table>`; }
+        // SUBSTITUA sua função antiga por esta versão completa e atualizada
+        function renderMetasView(data, allFilteredData) {
+            if (data.length === 0) return;
+            const allDates = [...new Set(data.map(d => d.data))].filter(Boolean).sort((a, b) => parseDate(b) - parseDate(a));
+            const lastDateStr = allDates[0];
+            const dayBeforeLastDateStr = allDates[1];
+            const ontemData = data.filter(d => d.data === lastDateStr);
+            const diaAnteriorData = dayBeforeLastDateStr ? data.filter(d => d.data === dayBeforeLastDateStr) : [];
+            const totalPeriodDataByOp = {};
+            data.forEach(row => {
+                const goalKey = getGoalKeyFromOperation(row.operacao);
+                if (!goalKey) return;
+                if (!totalPeriodDataByOp[goalKey]) totalPeriodDataByOp[goalKey] = {
+                    gasto: 0,
+                    receita: 0
+                };
+                totalPeriodDataByOp[goalKey].gasto += row.gasto;
+                totalPeriodDataByOp[goalKey].receita += row.receita;
+            });
+            const mergedData = [];
+            const activeGoals = Object.entries(GOALS_DATA).filter(([, goal]) => goal.investimento > 0);
+            activeGoals.forEach(([goalKey, goal]) => {
+                const matchingOpsOntem = ontemData.filter(row => getGoalKeyFromOperation(row.operacao) === goalKey);
+                const gastoOntem = matchingOpsOntem.reduce((sum, r) => sum + r.gasto, 0);
+                const receitaOntem = matchingOpsOntem.reduce((sum, r) => sum + r.receita, 0);
+                const matchingOpsDiaAnterior = diaAnteriorData.filter(row => getGoalKeyFromOperation(row.operacao) === goalKey);
+                const gastoDiaAnterior = matchingOpsDiaAnterior.reduce((sum, r) => sum + r.gasto, 0);
+                const totalData = totalPeriodDataByOp[goalKey] || {
+                    gasto: 0,
+                    receita: 0
+                };
+                const roasMedioTotal = totalData.gasto > 0 ? totalData.receita / totalData.gasto : 0;
+                const roasOntem = gastoOntem > 0 ? receitaOntem / gastoOntem : 0;
+                const progressoInvest = (goal.investimento > 0) ? (gastoOntem / goal.investimento) * 100 : 0;
+                const progressoDiaAnterior = (goal.investimento > 0) ? (gastoDiaAnterior / goal.investimento) * 100 : 0;
+                const diffProgresso = progressoInvest - progressoDiaAnterior;
+                mergedData.push({
+                    operacao: goalKey,
+                    atualInvestimento: gastoOntem,
+                    metaInvestimento: goal.investimento,
+                    progressoInvest: progressoInvest,
+                    gapInvestimento: goal.investimento - gastoOntem,
+                    atualRoas: roasOntem,
+                    metaRoas: goal.roas,
+                    diffRoas: (roasOntem - goal.roas) * 100,
+                    roasMedioTotal: roasMedioTotal,
+                    diffProgresso: diffProgresso
+                });
+            });
+            segmentDataCache['metas-detailed-table'] = mergedData;
+            const gastoTotalOntem = ontemData.reduce((sum, item) => sum + item.gasto, 0);
+            const totalMeta = mergedData.reduce((sum, item) => sum + item.metaInvestimento, 0);
+            const progressoTotal = totalMeta > 0 ? (gastoTotalOntem / totalMeta) * 100 : 0;
+            document.getElementById('metas-kpi-cards').innerHTML = createCardHTML({
+                icon: '💰',
+                title: `Progresso Meta Diária (${lastDateStr || 'N/A'})`,
+                value: `${progressoTotal.toFixed(1)}%`,
+                footerHTML: `<div class="progress-bar"><div class="progress-bar-inner" style="width: ${Math.min(progressoTotal, 100)}%;"></div></div> <div style="font-size: 0.9em; color: var(--text-light); margin-top: 5px;">${formatCurrency(gastoTotalOntem)} de ${formatCurrency(totalMeta)}</div>`
+            });
+            _renderAndAttachSortListenersForMetasTable('metas-detailed-table', mergedData);
+            renderDailyGoalProgressionTable(gastoTotalOntem, mergedData);
+            renderSprint1MCard(allFilteredData, gastoTotalOntem);
+            renderSprint1MTable(allFilteredData, ontemData);
+
+            // LINHA MODIFICADA:
+            renderSprint1810Table(allFilteredData, ontemData);
+        }
         function createOrUpdateChart(canvasId, type, data, customOptions = {}, customPlugins = []) {
             const ctx = document.getElementById(canvasId);
             if (!ctx) {
