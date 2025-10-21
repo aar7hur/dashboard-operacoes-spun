@@ -55,6 +55,53 @@
             align-items: center;
             justify-content: center;
         }
+        /* --- ESTILOS PARA SUB-ABAS (DENTRO DE UMA VIEW SECTION) --- */
+        .sub-nav-container {
+            display: flex;
+            gap: 5px;
+            background-color: var(--bg-light);
+            padding: 8px; /* Mais sutil que a nav principal */
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px; /* Espaço antes do conteúdo da sub-aba */
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap; /* Permite quebrar linha se não couber */
+        }
+
+        .sub-nav-btn {
+            flex-grow: 1; /* Ocupa espaço disponível */
+            padding: 10px 15px; /* Ligeiramente menor */
+            background: transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.95em; /* Ligeiramente menor */
+            border: none;
+            border-radius: 8px; /* Menor raio */
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-align: center;
+             min-width: 150px; /* Largura mínima para evitar botões muito pequenos */
+        }
+
+        .sub-nav-btn:hover {
+            background-color: #f1f3f5;
+            color: var(--text-color);
+        }
+
+        .sub-nav-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 1px 4px rgba(106, 130, 251, 0.25); /* Sombra mais sutil */
+        }
+
+        .operacoes-sub-view {
+            display: none; /* Esconde por padrão */
+        }
+
+        .operacoes-sub-view.active {
+            display: block; /* Mostra a ativa */
+        }
+        /* --- FIM DOS ESTILOS PARA SUB-ABAS --- */
 
         .loader {
             border: 6px solid #e9ecef;
@@ -957,6 +1004,75 @@
             text-transform: uppercase;
             opacity: 0.8;
         }
+        /* --- ESTILOS PARA COMPARAÇÃO DE FUNIS --- */
+        .comparison-filters {
+            margin-bottom: 25px;
+            justify-content: flex-start; /* Alinha filtros à esquerda */
+        }
+
+        #comparison-table-container .performance-table th,
+        #comparison-table-container .performance-table td {
+            text-align: right; /* Alinha números à direita */
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+         #comparison-table-container .performance-table th:first-child,
+         #comparison-table-container .performance-table td:first-child {
+            text-align: left; /* Alinha nome da operação à esquerda */
+            font-weight: 600;
+             position: sticky; /* Congela a primeira coluna */
+             left: 0;
+             background-color: var(--bg-light); /* Fundo para cobrir rolagem */
+             z-index: 1;
+        }
+         #comparison-table-container .performance-table thead th:first-child {
+             z-index: 2; /* Garante que o header fique sobre as células */
+         }
+
+
+        .data-bar-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Alinha barra e texto à direita */
+            min-width: 120px; /* Largura mínima para visualização */
+            position: relative; /* Para a barra de fundo */
+            padding: 2px 5px; /* Pequeno padding interno */
+            margin: -2px -5px; /* Compensa o padding para alinhar com outras células */
+        }
+
+        .data-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background-color: #cfe2ff; /* Azul claro (Bootstrap info-light) */
+            border-radius: 3px;
+            opacity: 0.6;
+             z-index: -1; /* Fica atrás do texto */
+             transition: width 0.3s ease-out;
+        }
+
+        .data-bar-container span {
+             position: relative; /* Garante que o texto fique sobre a barra */
+             font-weight: 500;
+        }
+
+        /* Cores condicionais (Exemplo) */
+        .positive-metric .data-bar {
+             background-color: #d1e7dd; /* Verde claro (Bootstrap success-light) */
+        }
+         .negative-metric .data-bar {
+             background-color: #f8d7da; /* Vermelho claro (Bootstrap danger-light) */
+        }
+         /* Para CPA baixo ser bom (barra menor é melhor visualmente) */
+         .lower-is-better.positive-metric .data-bar { background-color: #f8d7da; }
+         .lower-is-better.negative-metric .data-bar { background-color: #d1e7dd; }
+
+
+        #comparison-table-container {
+             overflow-x: auto; /* Permite rolagem horizontal se necessário */
+        }
+        /* --- FIM DOS ESTILOS PARA COMPARAÇÃO --- */
 
         .funnel-value {
             fill: white;
@@ -1401,9 +1517,19 @@
                 <button class="nav-btn active" data-target="view-general" data-tooltip="Visão Geral">
                     <span class="nav-icon">👁️</span> <span>Visão Geral</span>
                 </button>
-                <button class="nav-btn" data-target="view-operational" data-tooltip="Visão Operacional">
-                    <span class="nav-icon">⚙️</span> <span>Visão Operacional</span>
-                </button>
+      
+                <div class="menu-group">
+                    <div class="menu-group-title">Operações</div>
+                    <button class="nav-btn" data-target="operacoes-sub-funis" data-parent-view="view-operacoes" data-tooltip="Funis Agregados (Operações)">
+                         <span class="nav-icon">📊</span> <span>Funis Agregados</span>
+                    </button>
+                    <button class="nav-btn" data-target="operacoes-sub-consolidado" data-parent-view="view-operacoes" data-tooltip="Visão Consolidada (Operações)">
+                         <span class="nav-icon">📋</span> <span>Visão Consolidada</span>
+                    </button>
+                    <button class="nav-btn" data-target="operacoes-sub-comparacao" data-parent-view="view-operacoes" data-tooltip="Comparar Funis por Região">
+                         <span class="nav-icon">⚖️</span> <span>Comparar Funis</span>
+                    </button>
+                    </div>
                 <button class="nav-btn" data-target="view-proportion" data-tooltip="Análise de Proporção">
                     <span class="nav-icon">📊</span> <span>Análise de Proporção</span>
                 </button>
@@ -1413,14 +1539,17 @@
                 <button class="nav-btn" data-target="view-companies" data-tooltip="Performance por Empresa">
                     <span class="nav-icon">🏢</span> <span>Performance por Empresa</span>
                 </button>
-                <div class="menu-group-title">Metas</div>
-                <button class="nav-btn" data-target="view-metas-geral" data-tooltip="Metas Gerais">
-                    <span class="nav-icon">🎯</span> <span>Metas Gerais</span>
-                </button>
-                <button class="nav-btn" data-target="view-metas-planner" data-tooltip="Planejador de Metas">
-                    <span class="nav-icon">🏃</span> <span>Planejador de Metas</span>
-                </button>
-
+      
+                <div class="menu-group">
+                     <div class="menu-group-title">Metas</div>
+                     <button class="nav-btn" data-target="view-metas-geral" data-tooltip="Metas Gerais">
+                         <span class="nav-icon">🎯</span> <span>Metas Gerais</span>
+                     </button>
+                     <button class="nav-btn" data-target="view-metas-planner" data-tooltip="Planejador de Metas">
+                         <span class="nav-icon">🏃</span> <span>Planejador de Metas</span>
+                     </button>
+                </div>
+      
                 <div class="menu-group">
                     <div class="menu-group-title">Performance</div>
                     <button class="nav-btn" data-target="view-managers" data-tooltip="Performance por Gestor">
@@ -1433,6 +1562,7 @@
                         <span class="nav-icon">👩‍💻</span> <span>Por AdOps</span>
                     </button>
                 </div>
+      
                 <div class="menu-group">
                     <div class="menu-group-title">Análise Avançada</div>
                     <button class="nav-btn" data-target="view-correlation" data-tooltip="Análise de Correlação">
@@ -1441,11 +1571,8 @@
                     <button class="nav-btn" data-target="view-forecast" data-tooltip="Previsão Avançada">
                         <span class="nav-icon">🔮</span> <span>Previsão Avançada</span>
                     </button>
-
-
                 </div>
-
-
+      
                 <div class="menu-group">
                     <div class="menu-group-title">Análise de Contas</div>
                     <button class="nav-btn" data-target="view-jn-analysis" data-tooltip="Análise de Contas JN">
@@ -1548,13 +1675,59 @@
                         <div class="summary-cards" id="projectionCards"></div>
                     </div>
 
-                    <div id="view-operational" class="view-section">
-                        <div class="section-header">
-                            <h2 class="section-title">Análise Consolidada por Operação</h2>
+                    <div id="view-operacoes" class="view-section">
+            
+                        <div id="operacoes-sub-funis" class="operacoes-sub-view active">
+                            <div class="section-header">
+                                <h2 class="section-title">Funis Agregados por Operação (JN/MG/GRID - Dados Reais)</h2>
+                            </div>
+                            <div id="aggregated-funnel-container" class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px;">
+                                <p style="grid-column: 1 / -1; text-align: center; padding: 20px;">Calculando funis...</p>
+                                </div>
+            
+                            <div class="section-header" style="margin-top: 30px;">
+                                <h2 class="section-title">Tabela Comparativa de Funis Agregados</h2>
+                            </div>
+                            <div id="aggregated-funnel-table-container" class="chart-container chart-full" style="height: auto; padding: 0; overflow-x: auto;">
+                                 <p style="text-align: center; padding: 20px;">Calculando tabela...</p>
+                                 </div>
+                            </div>
+            
+                        <div id="operacoes-sub-consolidado" class="operacoes-sub-view">
+                             <div class="section-header" style="margin-top: 20px;"> <h2 class="section-title">Visão Operacional Consolidada (Dados 'TOTAL')</h2>
+                            </div>
+                            <div id="operational-view-container">
+                                <p style="padding: 20px; text-align: center;">Carregando dados operacionais...</p>
+                                 </div>
                         </div>
-                        <div id="operational-view-container">
-                            <p style="padding: 20px; text-align: center;">Carregando dados operacionais...</p>
-                        </div>
+                        <div id="operacoes-sub-comparacao" class="operacoes-sub-view">
+                            <div class="section-header">
+                               <h2 class="section-title">Comparação de Funis por País</h2>
+                           </div>
+           
+                           <div class="filters comparison-filters">
+                               <div class="filter-group">
+                                    <label for="compare-country-select">Selecione o País:</label>
+                                   <select id="compare-country-select" onchange="renderComparisonView()">
+                                        <option value="">-- País --</option>
+                                       </select>
+                               </div>
+                               <div class="filter-group">
+                                   <label for="compare-niche-select">Filtrar por Nicho (Opcional):</label>
+                                   <select id="compare-niche-select" onchange="renderComparisonView()">
+                                       <option value="all">Todos os Nichos</option>
+                                       <option value="CC">Apenas CC</option>
+                                       <option value="EMP">Apenas EMP</option>
+                                   </select>
+                               </div>
+                           </div>
+           
+                           <div id="comparison-table-container" style="margin-top: 25px;">
+                                <p style="text-align: center; padding: 20px; color: var(--text-light);">Selecione um país para iniciar a comparação.</p>
+                                </div>
+           
+                       </div>
+            
                     </div>
 
                     <div id="view-proportion" class="view-section">
@@ -2161,6 +2334,8 @@
         let selectedManagersForChart = [];
         let selectedCoordinatorsForChart = []; // Adicione esta linha
         let selectedAdopsForChart = []; // Adicione esta linha
+        let comparisonTableSortState = {}; // Adicione esta linha
+        let aggregatedFunnelTableSortState = {}; // Adicione esta linha
 
         const COMPANIES = {
             'MG': { name: 'MG', color: '#3498db' }, 'JN': { name: 'JN', color: '#2ecc71' }, 'GRID': { name: 'GRID', color: '#e74c3c' }, 'FM': { name: 'FM', color: '#f1c40f' }, 'CL': { name: 'CL', color: '#9b59b6' }, 'ND': { name: 'ND', color: '#34495e' }
@@ -2496,6 +2671,617 @@
                 select.innerHTML += `<option value="${op}">${op.replace(' TOTAL', '')}</option>`;
             });
         }
+        function getOperationKeyFromAccountName(accountName) {
+            if (!accountName) return 'Desconhecida';
+            const upperName = accountName.toUpperCase();
+
+            let company = null;
+            if (upperName.includes('JN')) company = 'JN';
+            else if (upperName.includes('MG')) company = 'MG';
+            else if (upperName.includes('GRID')) company = 'GRID';
+            else if (upperName.includes('FM')) company = 'FM';
+            else if (upperName.includes('CL')) company = 'CL';
+            else if (upperName.includes('ND')) company = 'ND';
+
+
+            let region = null;
+            // Regra especial para JN NAM US
+            if (company === 'JN' && upperName.includes('NAM') && (upperName.includes(' US ') || upperName.includes(' US|') || upperName.endsWith(' US'))) {
+                region = 'US';
+            } else if (upperName.includes(' US ') || upperName.includes(' EUA ') || upperName.includes('|US|') || upperName.endsWith(' US')) {
+                 region = 'US';
+            } else if (upperName.includes(' BR ') || upperName.includes(' BRASIL ') || upperName.includes('|BR|') || upperName.endsWith(' BR')) {
+                 region = 'BR';
+            } else if (upperName.includes(' DE ') || upperName.includes('|DE|') || upperName.endsWith(' DE')) {
+                 region = 'DE';
+            } else if (upperName.includes(' FR ') || upperName.includes('|FR|') || upperName.endsWith(' FR')) {
+                 region = 'FR';
+            } else if (upperName.includes(' UK ') || upperName.includes('|UK|') || upperName.endsWith(' UK')) {
+                 region = 'UK';
+            } else if (upperName.includes(' AU ') || upperName.includes('|AU|') || upperName.endsWith(' AU')) {
+                 region = 'AU';
+            }
+             // Adicione outras regiões se necessário (ES, IT, MX...)
+             else if (upperName.includes(' ES ') || upperName.includes('|ES|') || upperName.endsWith(' ES')) { region = 'ES'; }
+             else if (upperName.includes(' IT ') || upperName.includes('|IT|') || upperName.endsWith(' IT')) { region = 'IT'; }
+             else if (upperName.includes(' MX ') || upperName.includes('|MX|') || upperName.endsWith(' MX')) { region = 'MX'; }
+
+            let niche = null;
+            if (upperName.includes(' CC ') || upperName.includes('CREDIT') || upperName.includes('|CC|')) {
+                niche = 'CC';
+            } else if (upperName.includes(' EMP ') || upperName.includes('EMPRÉSTIMO') || upperName.includes('EMPRESTIMO') || upperName.includes('|EMP|')) {
+                niche = 'EMP';
+            }
+
+            if (company && region && niche) {
+                // Ajusta EUA para US na chave final
+                const finalRegion = region === 'EUA' ? 'US' : region;
+                return `${company} ${finalRegion} ${niche}`;
+            }
+
+            // Fallback: Tenta encontrar uma correspondência em GOALS_DATA (menos preciso)
+            const parts = upperName.split(/[\s|_-]+/); // Divide por espaço, pipe, underscore, hífen
+            const foundCompany = parts.find(p => ['JN', 'MG', 'GRID', 'FM', 'CL', 'ND'].includes(p));
+            const foundRegion = parts.find(p => ['US', 'EUA', 'BR', 'DE', 'FR', 'UK', 'AU', 'ES', 'IT', 'MX'].includes(p));
+            const foundNiche = parts.find(p => ['CC', 'EMP'].includes(p));
+            if (foundCompany && foundRegion && foundNiche) {
+                 // Ajusta EUA para US
+                 const finalRegion = foundRegion === 'EUA' ? 'US' : foundRegion;
+                 return `${foundCompany} ${finalRegion} ${foundNiche}`;
+            }
+
+            console.warn(`Não foi possível classificar a conta: ${accountName}`); // Log para contas não classificadas
+            return `Outros (${company || '?'})`; // Retorna uma chave genérica se não identificar
+        }
+
+        /**
+         * Gera o código SVG para um funil de operação individual.
+         * Recebe o nome da operação e os totais agregados.
+         */
+        function createSingleOperationFunnelSVG(operationName, totals) {
+            const ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
+            const cvr = totals.clicks > 0 ? (totals.conversions / totals.clicks) * 100 : 0;
+
+            // Dimensões e cálculos (iguais aos da renderAccountFunnel)
+            const svgWidth = 400; // Um pouco menor para caber melhor na grade
+            const svgHeight = 200;
+            const sectionHeight = svgHeight / 3;
+            const funnelTopWidth = svgWidth;
+            const funnelBottomWidth = svgWidth * 0.3;
+            const topX = 0;
+            const topRightX = funnelTopWidth;
+            const mid1_LeftX = (funnelTopWidth - (funnelTopWidth * 0.75)) / 2;
+            const mid1_RightX = funnelTopWidth - mid1_LeftX;
+            const mid2_LeftX = (funnelTopWidth - (funnelTopWidth * 0.52)) / 2;
+            const mid2_RightX = funnelTopWidth - mid2_LeftX;
+            const bottomX = (funnelTopWidth - funnelBottomWidth) / 2;
+            const bottomRightX = funnelTopWidth - bottomX;
+
+            // Formatação de números grandes
+            const formatFunnelValue = (value) => {
+                if (!value) return '0'; // Retorna '0' se o valor for nulo ou indefinido
+                if (value >= 1000000) return (value / 1000000).toFixed(1).replace('.',',') + 'M';
+                if (value >= 1000) return (value / 1000).toFixed(0) + 'k';
+                // Para conversões que podem ser decimais
+                return value.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: (value % 1 !== 0 ? 2 : 0) });
+            };
+
+
+            const funnelHTML = `
+                <div class="funnel-wrapper" style="padding: 20px 15px; border-radius: var(--border-radius); box-shadow: var(--shadow); border: 1px solid var(--border-color); background: var(--bg-light);">
+                    <h3 style="font-size: 1.2em; margin-bottom: 15px; color: var(--text-color); text-align: center;">${operationName}</h3>
+                    <svg class="funnel-svg" viewBox="0 0 ${svgWidth + 80} ${svgHeight}" preserveAspectRatio="xMidYMid meet" style="max-width: 100%; display: block; margin: 0 auto;">
+
+                        <g class="funnel-section-group">
+                            <title>Impressões: ${totals.impressions.toLocaleString('pt-BR')}</title>
+                            <polygon class="funnel-polygon" points="${topX},0 ${topRightX},0 ${mid1_RightX},${sectionHeight} ${mid1_LeftX},${sectionHeight}" fill="#6a82fb" />
+                            <text class="funnel-label" x="${svgWidth / 2}" y="${sectionHeight / 2 - 8}" font-size="12">Impressões</text>
+                            <text class="funnel-value" x="${svgWidth / 2}" y="${sectionHeight / 2 + 18}" font-size="24">${formatFunnelValue(totals.impressions)}</text>
+                        </g>
+
+                        <g class="funnel-section-group">
+                            <title>Cliques: ${totals.clicks.toLocaleString('pt-BR')} (CTR: ${ctr.toFixed(1)}%)</title>
+                            <polygon class="funnel-polygon" points="${mid1_LeftX},${sectionHeight} ${mid1_RightX},${sectionHeight} ${mid2_RightX},${sectionHeight * 2} ${mid2_LeftX},${sectionHeight * 2}" fill="#5087f8" />
+                            <text class="funnel-label" x="${svgWidth / 2}" y="${sectionHeight * 1.5 - 8}" font-size="12">Cliques</text>
+                            <text class="funnel-value" x="${svgWidth / 2}" y="${sectionHeight * 1.5 + 18}" font-size="24">${formatFunnelValue(totals.clicks)}</text>
+                        </g>
+
+                        <g class="funnel-section-group">
+                            <title>Conversões: ${totals.conversions.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} (CVR: ${cvr.toFixed(1)}%)</title>
+                            <polygon class="funnel-polygon" points="${mid2_LeftX},${sectionHeight * 2} ${mid2_RightX},${sectionHeight * 2} ${bottomRightX},${svgHeight} ${bottomX},${svgHeight}" fill="#3478e8" />
+                            <text class="funnel-label" x="${svgWidth / 2}" y="${sectionHeight * 2.5 - 8}" font-size="12">Conversões</text>
+                            <text class="funnel-value" x="${svgWidth / 2}" y="${sectionHeight * 2.5 + 18}" font-size="24">${formatFunnelValue(totals.conversions)}</text>
+                        </g>
+
+                        <defs>
+                            <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="0" refY="2.5" orient="auto">
+                                <polygon points="0 0, 8 2.5, 0 5" fill="#adb5bd" />
+                            </marker>
+                        </defs>
+
+                        <path class="funnel-loss-arrow" stroke="#adb5bd" stroke-width="1.5" fill="none" d="M ${topRightX + 10} ${sectionHeight * 0.4} Q ${topRightX + 40} ${sectionHeight * 0.9}, ${mid1_RightX + 10} ${sectionHeight * 1.4}" marker-end="url(#arrowhead)"></path>
+                        <text class="funnel-loss-text" fill="#6c757d" font-size="13" x="${topRightX + 45}" y="${sectionHeight * 0.95}">
+                            ${ctr.toFixed(1)}%
+                        </text>
+
+                        <path class="funnel-loss-arrow" stroke="#adb5bd" stroke-width="1.5" fill="none" d="M ${mid1_RightX + 10} ${sectionHeight * 1.4} Q ${mid1_RightX + 30} ${sectionHeight * 1.9}, ${mid2_RightX + 10} ${sectionHeight * 2.4}" marker-end="url(#arrowhead)"></path>
+                         <text class="funnel-loss-text" fill="#6c757d" font-size="13" x="${mid1_RightX + 35}" y="${sectionHeight * 1.95}">
+                            ${cvr.toFixed(1)}%
+                        </text>
+                    </svg>
+                </div>
+            `;
+            return funnelHTML;
+        }
+
+        /**
+         * Agrega dados de JN, MG, GRID por operação e renderiza os funis.
+         */
+        /**
+         * Agrega dados de JN, MG, GRID por operação e chama as funções
+         * para renderizar os funis SVG e a tabela comparativa.
+         */
+         /**
+         * Agrega dados de JN, MG, GRID por CATEGORIA (US CC, US EMP, etc.)
+         * e chama as funções para renderizar os funis SVG e a tabela comparativa.
+         */
+        function renderAggregatedFunnel() {
+            const svgContainer = document.getElementById('aggregated-funnel-container');
+            const tableContainer = document.getElementById('aggregated-funnel-table-container');
+
+            if (!svgContainer || !tableContainer) return;
+            console.log("--- renderAggregatedFunnel (por Categoria) Iniciada ---"); // Log
+
+            // 1. Combina os dados filtrados das três fontes
+            const combinedData = [...filteredDataJn, ...filteredDataMg, ...filteredDataGrid];
+            console.log(`Total de ${combinedData.length} linhas detalhadas (filtradas por data) para agregar por categoria.`);
+
+            if (combinedData.length === 0) {
+                 const placeholder = '<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-light);">Nenhum dado detalhado de contas (JN/MG/GRID) encontrado para o período selecionado.</p>';
+                 svgContainer.innerHTML = placeholder;
+                 tableContainer.innerHTML = placeholder.replace('grid-column: 1 / -1; ','');
+                 console.warn("Sem dados detalhados para agregar.");
+                 return;
+            }
+
+            // 2. Agrega por CHAVE DE CATEGORIA usando a nova função
+            const aggregatedCategories = combinedData.reduce((acc, row) => {
+                const categoryKey = getCategoryKeyFromAccountName(row.accountName); // Usa a nova função
+                if (categoryKey) { // Só agrega se pertencer a uma categoria definida
+                     if (!acc[categoryKey]) {
+                         acc[categoryKey] = { impressions: 0, clicks: 0, conversions: 0, spend: 0 };
+                     }
+                     acc[categoryKey].impressions += Number(row.impressions) || 0;
+                     acc[categoryKey].clicks += Number(row.clicks) || 0;
+                     acc[categoryKey].conversions += Number(row.conversions) || 0;
+                     acc[categoryKey].spend += Number(row.spend) || 0;
+                 } else {
+                     // Log opcional para contas não categorizadas
+                     // console.log(`Conta não categorizada: ${row.accountName}`);
+                 }
+                return acc;
+            }, {});
+            console.log("Dados agregados por CATEGORIA:", aggregatedCategories);
+
+
+            // 3. Converte para array, calcula métricas e ordena (pode remover filtro de impressões se quiser mostrar todas as categorias)
+            const categoryData = Object.entries(aggregatedCategories)
+                // .filter(([key, data]) => data.impressions > 100) // Pode remover ou ajustar este filtro
+                .map(([categoryKey, data]) => { // Calcula métricas
+                    const ctr = data.impressions > 0 ? (data.clicks / data.impressions) * 100 : 0;
+                    const cvrClicks = data.clicks > 0 ? (data.conversions / data.clicks) * 100 : 0;
+                    const cvrImpr = data.impressions > 0 ? (data.conversions / data.impressions) * 100 : 0;
+                    const cpa = data.conversions > 0 ? data.spend / data.conversions : 0;
+                    const cpm = data.impressions > 0 ? (data.spend / data.impressions) * 1000 : 0;
+                    return {
+                        opKey: categoryKey, // Mantém opKey para compatibilidade com a função da tabela
+                        impressions: data.impressions,
+                        clicks: data.clicks,
+                        conversions: data.conversions,
+                        spend: data.spend,
+                        ctr,
+                        cvrClicks,
+                        cvrImpr,
+                        cpa,
+                        cpm
+                    };
+                })
+                // Ordena por uma ordem específica desejada, depois alfabeticamente
+                .sort((a, b) => {
+                     const order = ["US CC", "US EMP", "BR CC", "BR EMP", "Europa CC"];
+                     const indexA = order.indexOf(a.opKey);
+                     const indexB = order.indexOf(b.opKey);
+                     if (indexA !== -1 && indexB !== -1) return indexA - indexB; // Ordena pela lista
+                     if (indexA !== -1) return -1; // Coloca itens da lista primeiro
+                     if (indexB !== -1) return 1;
+                     return a.opKey.localeCompare(b.opKey); // Ordena outros alfabeticamente
+                 });
+
+            console.log(`Dados finais das categorias para renderizar (${categoryData.length}):`, categoryData);
+
+            if (categoryData.length === 0) {
+                const placeholder = '<p style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-light);">Nenhuma das categorias agregadas (US CC, BR EMP, etc.) teve dados no período selecionado.</p>';
+                 svgContainer.innerHTML = placeholder;
+                 tableContainer.innerHTML = placeholder.replace('grid-column: 1 / -1; ','');
+                 console.warn("Nenhuma categoria com dados encontrada após agregação.");
+                 return;
+            }
+
+            // 4. Renderiza os Funis SVG para cada CATEGORIA
+            svgContainer.innerHTML = '';
+            categoryData.forEach(catData => {
+                 const svgTotals = { impressions: catData.impressions, clicks: catData.clicks, conversions: catData.conversions };
+                 // Passa a CHAVE DA CATEGORIA (catData.opKey) como nome
+                 svgContainer.innerHTML += createSingleOperationFunnelSVG(catData.opKey, svgTotals);
+            });
+            console.log("Funis SVG renderizados.");
+
+            // 5. Renderiza a Tabela Comparativa para as CATEGORIAS
+            _renderAndAttachSortListenersForAggregatedFunnelTable('aggregated-funnel-table-container', categoryData);
+            console.log("Tabela agregada renderizada.");
+        }
+        /**
+         * Helper para renderizar a tabela comparativa de funis agregados e adicionar listeners de ordenação.
+         */
+         function _renderAndAttachSortListenersForAggregatedFunnelTable(elementId, data) {
+            const container = document.getElementById(elementId);
+            if (!container) return;
+
+            const currentSort = aggregatedFunnelTableSortState[elementId] || { key: 'impressions', order: 'desc' }; // Default sort
+            const getSortIndicator = (key) => {
+                if (currentSort.key !== key) return '⇅';
+                return currentSort.order === 'desc' ? '▼' : '▲';
+            };
+
+             // Ordena os dados ANTES de renderizar
+            const sortedData = [...data].sort((a, b) => {
+                const valA = a[currentSort.key];
+                const valB = b[currentSort.key];
+                // CPA é melhor menor, strings ordenam alfabeticamente
+                if (currentSort.key === 'opKey') {
+                     return currentSort.order === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                } else if (currentSort.key === 'cpa') {
+                    // Trata CPA 0 ou inválido como 'pior' (maior valor) na ordenação
+                     const effectiveA = (valA && isFinite(valA) && valA > 0) ? valA : Infinity;
+                     const effectiveB = (valB && isFinite(valB && valB > 0)) ? valB : Infinity;
+                    return currentSort.order === 'asc' ? effectiveA - effectiveB : effectiveB - effectiveA;
+                } else { // Outras métricas numéricas (Impressões, Cliques, Conv, CTR, CVRs, Spend) são melhores maiores
+                    return currentSort.order === 'asc' ? valA - valB : valB - valA;
+                }
+            });
+
+            // Define os cabeçalhos da tabela
+            const headers = [
+                // MUDE O LABEL AQUI
+                { key: 'opKey', label: 'Categoria Agregada' }, // <- MUDOU DE 'Operação'
+                { key: 'impressions', label: 'Impressões', format: v => v.toLocaleString('pt-BR') },
+                { key: 'clicks', label: 'Cliques', format: v => v.toLocaleString('pt-BR') },
+                { key: 'ctr', label: 'CTR (Cliques/Impr.)', format: v => `${v.toFixed(1)}%`, positive: true },
+                { key: 'conversions', label: 'Conversões', format: v => v.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) },
+                { key: 'cvrClicks', label: 'CVR (Conv./Cliques)', format: v => `${v.toFixed(1)}%`, positive: true },
+                { key: 'cvrImpr', label: 'CVR (Conv./Impr.)', format: v => `${v.toFixed(2)}%`, positive: true },
+                { key: 'spend', label: 'Gasto', format: v => formatCurrency(v) },
+                { key: 'cpm', label: 'CPM', format: v => formatCurrency(v), lowerIsBetter: true },
+                { key: 'cpa', label: 'CPA', format: v => formatCurrency(v), lowerIsBetter: true }
+            ];
+
+            // Constrói o HTML da tabela
+            let tableHtml = `<table class="performance-table"><thead><tr>`;
+            headers.forEach(h => {
+                // Adiciona classe 'sortable' e data-sort
+                tableHtml += `<th class="sortable" data-sort="${h.key}" style="${h.key === 'opKey' ? 'text-align: left;' : 'text-align: right;'}">${h.label} <span class="sort-indicator">${getSortIndicator(h.key)}</span></th>`;
+            });
+            tableHtml += `</tr></thead><tbody>`;
+
+            sortedData.forEach(row => {
+                tableHtml += `<tr>`;
+                headers.forEach(h => {
+                    const value = row[h.key];
+                    const formattedValue = h.format ? h.format(value) : value;
+                    // Aplica alinhamento
+                    tableHtml += `<td style="${h.key === 'opKey' ? 'text-align: left; font-weight: 600;' : 'text-align: right;'}">${formattedValue}</td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+             tableHtml += `</tbody>`;
+
+             // --- Calcula Totais/Médias para o Footer ---
+             const totals = sortedData.reduce((acc, row) => {
+                 acc.impressions += row.impressions;
+                 acc.clicks += row.clicks;
+                 acc.conversions += row.conversions;
+                 acc.spend += row.spend;
+                 return acc;
+             }, { impressions: 0, clicks: 0, conversions: 0, spend: 0 });
+
+             const overallMetrics = {
+                 ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
+                 cvrClicks: totals.clicks > 0 ? (totals.conversions / totals.clicks) * 100 : 0,
+                 cvrImpr: totals.impressions > 0 ? (totals.conversions / totals.impressions) * 100 : 0,
+                 cpa: totals.conversions > 0 ? totals.spend / totals.conversions : 0
+             };
+
+             tableHtml += `<tfoot><tr>`;
+             headers.forEach(h => {
+                  let footerValue = '';
+                  if (h.key === 'opKey') footerValue = 'TOTAL / MÉDIA';
+                  else if (h.key === 'impressions') footerValue = totals.impressions.toLocaleString('pt-BR');
+                  else if (h.key === 'clicks') footerValue = totals.clicks.toLocaleString('pt-BR');
+                  else if (h.key === 'conversions') footerValue = totals.conversions.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+                  else if (h.key === 'spend') footerValue = formatCurrency(totals.spend);
+                  else if (h.key === 'ctr') footerValue = `${overallMetrics.ctr.toFixed(1)}%`;
+                  else if (h.key === 'cvrClicks') footerValue = `${overallMetrics.cvrClicks.toFixed(1)}%`;
+                  else if (h.key === 'cvrImpr') footerValue = `${overallMetrics.cvrImpr.toFixed(2)}%`;
+                  else if (h.key === 'cpa') footerValue = formatCurrency(overallMetrics.cpa);
+                  // Aplica alinhamento
+                  tableHtml += `<td style="${h.key === 'opKey' ? 'text-align: left;' : 'text-align: right;'}">${footerValue}</td>`;
+             });
+             tableHtml += `</tr></tfoot></table>`;
+
+
+            container.innerHTML = tableHtml;
+
+            // Adiciona listeners de ordenação
+            container.querySelectorAll('.performance-table .sortable').forEach(th => {
+                th.addEventListener('click', () => {
+                    const sortKey = th.dataset.sort;
+                    // Usa a função sortTable genérica, passando o cache correto e a função de renderização
+                    // Precisamos recriar o cache temporário aqui, pois a função sortTable espera um objeto
+                    const tempDataCache = { [elementId]: data };
+                    sortTable(elementId, sortKey, tempDataCache, aggregatedFunnelTableSortState, _renderAndAttachSortListenersForAggregatedFunnelTable);
+                });
+            });
+        }
+        /**
+         * Renderiza a tabela de comparação de funis com base nos filtros de País e Nicho.
+         */
+         /**
+         * Renderiza a tabela de comparação de funis com base nos filtros de País e Nicho.
+         */
+        /**
+         * Renderiza a tabela de comparação de funis com base nos filtros de País e Nicho. CORRIGIDO CPM
+         */
+         function renderComparisonView() {
+            console.log("--- renderComparisonView chamada ---");
+
+            const country = document.getElementById('compare-country-select').value;
+            const niche = document.getElementById('compare-niche-select').value;
+            const container = document.getElementById('comparison-table-container');
+
+            if (!container) {
+                 console.error("Container da tabela de comparação não encontrado!");
+                 return;
+            }
+
+            console.log(`Filtros selecionados -> País: ${country || 'Nenhum'}, Nicho: ${niche}`);
+
+            if (!country) {
+                container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--text-light);">Selecione um país para iniciar a comparação.</p>';
+                console.log("Nenhum país selecionado, mostrando placeholder.");
+                return;
+            }
+
+             // 1. Combina os dados JÁ FILTRADOS POR DATA
+             const combinedData = [...filteredDataJn, ...filteredDataMg, ...filteredDataGrid];
+             console.log(`Total de ${combinedData.length} linhas de dados detalhados (filtrados por data) combinadas.`);
+
+             if (combinedData.length === 0) {
+                 container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--text-light);">Não há dados detalhados (JN/MG/GRID) para o período selecionado.</p>';
+                 console.warn("Não há dados detalhados combinados após filtro de data.");
+                 return;
+             }
+
+             // 2. Agrega por chave de operação, incluindo GASTO (spend)
+             const aggregatedOps = combinedData.reduce((acc, row) => {
+                 const opKey = getOperationKeyFromAccountName(row.accountName);
+                  if (opKey && !opKey.startsWith('Desconhecida') && !opKey.startsWith('Outros')) {
+                     if (!acc[opKey]) {
+                         acc[opKey] = { impressions: 0, clicks: 0, conversions: 0, spend: 0 };
+                     }
+                     acc[opKey].impressions += Number(row.impressions) || 0;
+                     acc[opKey].clicks += Number(row.clicks) || 0;
+                     acc[opKey].conversions += Number(row.conversions) || 0;
+                     acc[opKey].spend += Number(row.spend) || 0;
+                 }
+                 return acc;
+            }, {});
+            console.log("Dados agregados por chave de operação (antes de filtrar por país/nicho):", aggregatedOps);
+
+
+             // 3. Filtra por País e Nicho e calcula métricas derivadas
+             const comparisonData = Object.entries(aggregatedOps)
+                 .map(([opKey, data]) => ({ opKey, ...data }))
+                 .filter(op => {
+                     const parts = op.opKey.split(' ');
+                     const opCountry = parts.length > 1 ? parts[1] : null;
+                     const opNiche = parts.length > 2 ? parts[2] : null;
+                     const countryMatch = opCountry === country;
+                     const nicheMatch = (niche === 'all' || opNiche === niche);
+                     return countryMatch && nicheMatch && (op.impressions > 0 || op.clicks > 0 || op.conversions > 0 || op.spend > 0);
+                 })
+                 .map(op => { // Calcula métricas
+                     const ctr = op.impressions > 0 ? (op.clicks / op.impressions) * 100 : 0;        // Cliques / Impressões
+                     const cvrClicks = op.clicks > 0 ? (op.conversions / op.clicks) * 100 : 0;     // Conversões / Cliques
+                     const cvrImpr = op.impressions > 0 ? (op.conversions / op.impressions) * 100 : 0; // Conversões / Impressões
+                     const cpa = op.conversions > 0 ? op.spend / op.conversions : 0;
+                     // --- ADICIONA CÁLCULO CPM ---
+                     const cpm = op.impressions > 0 ? (op.spend / op.impressions) * 1000 : 0;    // (Gasto / Impressões) * 1000
+                     // --- FIM ADIÇÃO ---
+                     return { ...op, ctr, cvrClicks, cvrImpr, cpa, cpm }; // Inclui cpm no retorno
+                 });
+
+            console.log(`Dados para comparação (após filtro País/Nicho): ${comparisonData.length} operações`, comparisonData);
+
+            if (comparisonData.length === 0) {
+                 container.innerHTML = `<p style="text-align: center; padding: 20px; color: var(--text-light);">Nenhuma operação encontrada para o País '${country}' ${niche !== 'all' ? `e Nicho '${niche}'` : ''} no período selecionado.</p>`;
+                 console.warn("Nenhuma operação encontrada após aplicar filtros de país/nicho.");
+                 return;
+            }
+
+            // 4. Renderiza a tabela com ordenação
+            console.log("Chamando _renderAndAttachSortListenersForComparisonTable...");
+             _renderAndAttachSortListenersForComparisonTable('comparison-table-container', comparisonData);
+        }
+        
+        /**
+         * Helper para renderizar a tabela de comparação e adicionar listeners de ordenação.
+         */
+         /**
+         * Helper para renderizar a tabela de comparação e adicionar listeners de ordenação. CORRIGIDO
+         */
+        /**
+         * Helper para renderizar a tabela de comparação e adicionar listeners de ordenação. CORRIGIDO CPM + LABELS
+         */
+         function _renderAndAttachSortListenersForComparisonTable(elementId, data) {
+            const container = document.getElementById(elementId);
+            if (!container) {
+                 console.error(`Container com ID "${elementId}" não encontrado.`);
+                 return;
+             }
+
+            const currentSort = comparisonTableSortState[elementId] || { key: 'impressions', order: 'desc' };
+            const getSortIndicator = (key) => {
+                if (currentSort.key !== key) return '⇅';
+                return currentSort.order === 'desc' ? '▼' : '▲';
+            };
+
+            const sortedData = [...data].sort((a, b) => {
+                const valA = a[currentSort.key];
+                const valB = b[currentSort.key];
+                if (currentSort.key === 'opKey') {
+                     return currentSort.order === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+                } else if (currentSort.key === 'cpa' || currentSort.key === 'cpm') { // CPA e CPM são melhores menores
+                     const effectiveA = (valA && isFinite(valA) && valA > 0) ? valA : Infinity;
+                     const effectiveB = (valB && isFinite(valB && valB > 0)) ? valB : Infinity;
+                    return currentSort.order === 'asc' ? effectiveA - effectiveB : effectiveB - effectiveA;
+                } else { // Outras métricas numéricas
+                     const numA = Number(valA) || 0;
+                     const numB = Number(valB) || 0;
+                    return currentSort.order === 'asc' ? numA - numB : numB - numA;
+                }
+            });
+
+            // Adiciona CPM aos maxValues
+            const maxValues = {
+                impressions: Math.max(...sortedData.map(d => d.impressions), 0),
+                clicks: Math.max(...sortedData.map(d => d.clicks), 0),
+                conversions: Math.max(...sortedData.map(d => d.conversions), 0),
+                ctr: Math.max(...sortedData.map(d => d.ctr), 0),
+                cvrClicks: Math.max(...sortedData.map(d => d.cvrClicks), 0),
+                cvrImpr: Math.max(...sortedData.map(d => d.cvrImpr), 0),
+                spend: Math.max(...sortedData.map(d => d.spend), 0),
+                cpa: Math.max(...sortedData.map(d => d.cpa).filter(cpa => cpa > 0 && isFinite(cpa)), 0),
+                cpm: Math.max(...sortedData.map(d => d.cpm).filter(cpm => cpm > 0 && isFinite(cpm)), 0) // Max CPM válido
+            };
+             for(const key in maxValues) { if(maxValues[key] === 0) maxValues[key] = 1; }
+
+            // Atualiza labels e adiciona CPM
+            const headers = [
+                { key: 'opKey', label: 'Operação' },
+                { key: 'impressions', label: 'Impressões', format: v => v.toLocaleString('pt-BR') },
+                { key: 'clicks', label: 'Cliques', format: v => v.toLocaleString('pt-BR') },
+                { key: 'ctr', label: 'CTR (Cliques/Impr.)', format: v => `${v.toFixed(1)}%`, positive: true }, // Label corrigida
+                { key: 'conversions', label: 'Conversões', format: v => v.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) },
+                { key: 'cvrClicks', label: 'CVR (Conv./Cliques)', format: v => `${v.toFixed(1)}%`, positive: true }, // Label corrigida
+                { key: 'cvrImpr', label: 'CVR (Conv./Impr.)', format: v => `${v.toFixed(2)}%`, positive: true }, // Label corrigida
+                { key: 'spend', label: 'Gasto', format: v => formatCurrency(v) },
+                { key: 'cpm', label: 'CPM', format: v => formatCurrency(v), lowerIsBetter: true }, // CPM adicionado
+                { key: 'cpa', label: 'CPA', format: v => formatCurrency(v), lowerIsBetter: true }
+            ];
+
+            let tableHtml = `<table class="performance-table"><thead><tr>`;
+            headers.forEach(h => {
+                tableHtml += `<th class="sortable" data-sort="${h.key}">${h.label} <span class="sort-indicator">${getSortIndicator(h.key)}</span></th>`;
+            });
+            tableHtml += `</tr></thead><tbody>`;
+
+            sortedData.forEach(row => {
+                tableHtml += `<tr>`;
+                headers.forEach(h => {
+                    const value = row[h.key];
+                    const formattedValue = (h.format && typeof h.format === 'function') ? h.format(value) : (value != null ? value : '-');
+                    let barWidth = 0;
+                    let cellClass = '';
+
+                    if (h.key === 'opKey') {
+                         cellClass = '';
+                    } else if (typeof value === 'number' && isFinite(value) && maxValues[h.key] > 0) {
+                        barWidth = (value / maxValues[h.key]) * 100;
+                         if (h.lowerIsBetter) { // CPA e CPM
+                             const validValues = sortedData.map(d=>d[h.key]).filter(v => v > 0 && isFinite(v)).sort((a,b)=>a-b);
+                             const medianValue = validValues.length > 0 ? validValues[Math.floor(validValues.length/2)] : 0;
+                             cellClass = (value > 0 && value <= medianValue) ? 'positive-metric' : (value > 0 ? 'negative-metric' : '');
+                             cellClass += ' lower-is-better';
+                         } else if (h.positive) { // CTR, CVRs
+                              const validValues = sortedData.map(d=>d[h.key]).filter(v => isFinite(v)).sort((a,b)=>a-b);
+                              const medianValue = validValues.length > 0 ? validValues[Math.floor(validValues.length/2)] : 0;
+                             cellClass = value >= medianValue ? 'positive-metric' : 'negative-metric';
+                         }
+                        barWidth = Math.min(100, Math.max(0, barWidth));
+                    } else {
+                         cellClass = 'text-muted';
+                    }
+
+                    tableHtml += `<td class="${cellClass}" style="${h.key === 'opKey' ? 'text-align: left; font-weight: 600;' : 'text-align: right;'}">`;
+                    if (barWidth > 0 && h.key !== 'opKey') {
+                        tableHtml += `<div class="data-bar-container">
+                                          <div class="data-bar" style="width: ${barWidth.toFixed(1)}%;"></div>
+                                          <span>${formattedValue}</span>
+                                      </div>`;
+                    } else {
+                        tableHtml += formattedValue;
+                    }
+                    tableHtml += `</td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+             tableHtml += `</tbody>`;
+
+            // --- Calcula Totais/Médias para o Footer ---
+            const totals = sortedData.reduce((acc, row) => {
+                acc.impressions += row.impressions;
+                acc.clicks += row.clicks;
+                acc.conversions += row.conversions;
+                acc.spend += row.spend;
+                return acc;
+            }, { impressions: 0, clicks: 0, conversions: 0, spend: 0 });
+
+            const overallMetrics = {
+                ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
+                cvrClicks: totals.clicks > 0 ? (totals.conversions / totals.clicks) * 100 : 0,
+                cvrImpr: totals.impressions > 0 ? (totals.conversions / totals.impressions) * 100 : 0,
+                cpa: totals.conversions > 0 ? totals.spend / totals.conversions : 0,
+                cpm: totals.impressions > 0 ? (totals.spend / totals.impressions) * 1000 : 0 // CPM Médio Total
+            };
+
+            tableHtml += `<tfoot><tr>`;
+            headers.forEach(h => {
+                 let footerValue = '';
+                 if (h.key === 'opKey') footerValue = 'TOTAL / MÉDIA';
+                 else if (h.key === 'impressions') footerValue = totals.impressions.toLocaleString('pt-BR');
+                 else if (h.key === 'clicks') footerValue = totals.clicks.toLocaleString('pt-BR');
+                 else if (h.key === 'conversions') footerValue = totals.conversions.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+                 else if (h.key === 'spend') footerValue = formatCurrency(totals.spend);
+                 else if (h.key === 'ctr') footerValue = `${overallMetrics.ctr.toFixed(1)}%`;
+                 else if (h.key === 'cvrClicks') footerValue = `${overallMetrics.cvrClicks.toFixed(1)}%`;
+                 else if (h.key === 'cvrImpr') footerValue = `${overallMetrics.cvrImpr.toFixed(2)}%`;
+                 else if (h.key === 'cpm') footerValue = formatCurrency(overallMetrics.cpm); // Adiciona CPM ao footer
+                 else if (h.key === 'cpa') footerValue = formatCurrency(overallMetrics.cpa);
+                 tableHtml += `<td style="${h.key === 'opKey' ? 'text-align: left;' : 'text-align: right;'}">${footerValue}</td>`;
+            });
+            tableHtml += `</tr></tfoot></table>`; // Fecha a tabela
+
+            container.innerHTML = tableHtml;
+
+            // Adiciona listeners de ordenação
+            container.querySelectorAll('.performance-table .sortable').forEach(th => {
+                th.addEventListener('click', () => {
+                    const sortKey = th.dataset.sort;
+                    const tempDataCache = { [elementId]: data };
+                    sortTable(elementId, sortKey, tempDataCache, comparisonTableSortState, _renderAndAttachSortListenersForComparisonTable);
+                });
+            });
+        }
 
         // 2. SUBSTITUA ESTA FUNÇÃO
         async function runGoalPlanner() {
@@ -2632,6 +3418,34 @@
             tableContainer.style.display = 'block';
         }
 
+        /**
+         * Classifica um nome de conta em uma categoria agregada (US CC, US EMP, BR CC, BR EMP, EU CC).
+         * Retorna a string da categoria ou null se não corresponder.
+         */
+         function getCategoryKeyFromAccountName(accountName) {
+            if (!accountName) return null;
+            const upperName = accountName.toUpperCase();
+
+            // Flags para país e nicho
+            let isUS = upperName.includes(' US ') || upperName.includes(' EUA ') || upperName.includes('|US|') || upperName.endsWith(' US') || (upperName.includes('JN') && upperName.includes('NAM')); // Considera JN NAM
+            let isBR = upperName.includes(' BR ') || upperName.includes(' BRASIL ') || upperName.includes('|BR|') || upperName.endsWith(' BR');
+            let isEU = upperName.includes(' UK ') || upperName.includes('|UK|') || upperName.endsWith(' UK') ||
+                       upperName.includes(' FR ') || upperName.includes('|FR|') || upperName.endsWith(' FR') ||
+                       upperName.includes(' DE ') || upperName.includes('|DE|') || upperName.endsWith(' DE');
+            // Adicione outros países da Europa se necessário (ES, IT...)
+
+            let isCC = upperName.includes(' CC ') || upperName.includes('CREDIT') || upperName.includes('|CC|');
+            let isEMP = upperName.includes(' EMP ') || upperName.includes('EMPRÉSTIMO') || upperName.includes('EMPRESTIMO') || upperName.includes('|EMP|');
+
+            // Define a categoria com base nas flags
+            if (isUS && isCC) return "US CC";
+            if (isUS && isEMP) return "US EMP";
+            if (isBR && isCC) return "BR CC";
+            if (isBR && isEMP) return "BR EMP";
+            if (isEU && isCC) return "Europa CC"; // Agrupa UK, FR, DE em Europa CC
+
+            return null; // Não pertence a nenhuma categoria agregada
+        }
 
         // 3. SUBSTITUA ESTA FUNÇÃO
         function renderPlannerChart(actualData, currentSpend, targetSpend, endDate, daysRemaining, dailyIncrement) {
@@ -2764,66 +3578,180 @@
 
         // 5. SUBSTITUA ESTA FUNÇÃO (para incluir o listener do planner)
         function setupEventListeners() {
-            // Controle da Sidebar
-            const sidebarToggleBtn = document.getElementById('sidebar-toggle');
-            if (sidebarToggleBtn) {
-                sidebarToggleBtn.addEventListener('click', () => {
-                    document.body.classList.toggle('sidebar-minimized');
-                    localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-minimized') ? 'minimized' : 'expanded');
-                    setTimeout(() => Object.values(charts).forEach(chart => chart && chart.resize()), 350);
-                });
+          // --- Controle da Sidebar (Minimizar/Expandir) ---
+          const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+          if (sidebarToggleBtn) {
+              sidebarToggleBtn.addEventListener('click', () => {
+                  document.body.classList.toggle('sidebar-minimized');
+                  localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-minimized') ? 'minimized' : 'expanded');
+                  setTimeout(() => Object.values(charts).forEach(chart => chart && chart.resize()), 350); // Delay menor pode ser suficiente
+              });
+          }
+          if (localStorage.getItem('sidebarState') === 'minimized') {
+              document.body.classList.add('sidebar-minimized');
+          }
+
+          // --- Controle da Navegação Principal e Submenus ---
+          const sidebarMenu = document.querySelector('.sidebar-menu');
+          const viewSections = document.querySelectorAll('.view-section');
+          const mainTitle = document.getElementById('main-title');
+          const allNavButtons = document.querySelectorAll('.sidebar-nav .nav-btn');
+          let comparisonFiltersPopulated = false; // Flag ainda útil
+
+          if (!sidebarMenu) return;
+
+          sidebarMenu.addEventListener('click', (event) => {
+              const button = event.target.closest('.nav-btn');
+              if (!button) return;
+
+              const targetId = button.dataset.target;
+              const parentViewId = button.dataset.parentView || targetId;
+              const tooltip = button.dataset.tooltip;
+
+              if (!targetId || !parentViewId) return;
+
+              // --- 1. Atualiza Botões ---
+              allNavButtons.forEach(btn => btn.classList.remove('active'));
+              button.classList.add('active');
+              if (button.dataset.parentView) {
+                  const parentButton = sidebarMenu.querySelector(`.nav-btn[data-target="${parentViewId}"]`);
+                  if (parentButton) parentButton.classList.add('active');
+              }
+
+              // --- 2. Atualiza Seções Principais e Sub-views ---
+              viewSections.forEach(section => {
+                  const shouldSectionBeActive = section.id === parentViewId;
+                  section.classList.toggle('active', shouldSectionBeActive);
+
+                  if (shouldSectionBeActive) {
+                      const subViews = section.querySelectorAll('.operacoes-sub-view');
+                      if (subViews.length > 0) {
+                          subViews.forEach(subView => {
+                              const shouldSubViewBeActive = subView.id === targetId;
+                              subView.classList.toggle('active', shouldSubViewBeActive);
+
+                              // Tenta popular filtros SEMPRE que a subview for ativada,
+                              // mas a função interna pode decidir não fazer nada se já feito.
+                              if (subView.id === 'operacoes-sub-comparacao' && shouldSubViewBeActive) {
+                                  // Adiciona log para saber se está tentando popular
+                                  console.log("Tentando popular filtros de comparação...");
+                                  // Chama a função que agora pode ter a flag interna ou verificar se já tem opções
+                                  populateComparisonFilters();
+                              }
+                          });
+                      }
+                  } else {
+                       section.querySelectorAll('.operacoes-sub-view').forEach(sv => sv.classList.remove('active'));
+                  }
+              });
+
+              // --- 3. Atualiza Título ---
+              if (mainTitle && tooltip) {
+                  mainTitle.textContent = tooltip;
+              }
+
+              // --- 4. Redimensiona Gráficos ---
+              setTimeout(() => {
+                  const activeMainView = document.querySelector('.view-section.active');
+                  if (activeMainView) {
+                      const activeSubView = activeMainView.querySelector('.operacoes-sub-view.active');
+                      const containerToScan = activeSubView || activeMainView;
+                      containerToScan.querySelectorAll('canvas').forEach(canvas => {
+                          const chartInstance = charts[canvas.id];
+                          if (chartInstance && typeof chartInstance.resize === 'function') {
+                               try { chartInstance.resize(); } catch (e) { console.warn("Erro resize:", canvas.id, e); }
+                          }
+                      });
+                  }
+              }, 50);
+          });
+
+          // --- Mantém as outras lógicas ---
+          document.querySelectorAll('#metric-toggle .toggle-btn').forEach(btn => { /* ...código mantido... */ });
+          const plannerButton = document.getElementById('plannerCalculateBtn');
+          if (plannerButton) { plannerButton.addEventListener('click', runGoalPlanner); }
+
+          // Inicializa o estado visual
+          const initialActiveButton = sidebarMenu.querySelector('.nav-btn.active');
+          if (initialActiveButton) {
+              // Atraso leve para garantir que os dados iniciais tenham chance de carregar antes do primeiro clique simulado
+              setTimeout(() => {
+                   initialActiveButton.click();
+              }, 100);
+          }
+      }
+      /**
+         * Popula os filtros da aba de comparação (País).
+         */
+         /**
+         * Popula os filtros da aba de comparação (País).
+         */
+        function populateComparisonFilters() {
+            const countrySelect = document.getElementById('compare-country-select');
+            if (!countrySelect) {
+                 console.error("Select 'compare-country-select' não encontrado.");
+                 return;
             }
-            if (localStorage.getItem('sidebarState') === 'minimized') {
-                document.body.classList.add('sidebar-minimized');
+
+            // Verifica se já foi populado para evitar trabalho repetido
+            if (countrySelect.options.length > 1 && countrySelect.options[1]?.value) { // Verifica se há mais que o placeholder
+                 console.log("Filtros de país já populados. Pulando.");
+                 return;
             }
+             console.log("Iniciando população dos filtros de país...");
 
-            // Controle da Navegação por Abas (substitui a antiga setupNavbar)
-            const navButtons = document.querySelectorAll('.sidebar-nav .nav-btn');
-            const viewSections = document.querySelectorAll('.view-section');
-            const mainTitle = document.getElementById('main-title');
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetId = button.dataset.target;
-                    if (!targetId) return;
+            // Usa rawData para garantir que temos todos os nomes de conta possíveis ANTES da filtragem por data
+            const combinedRawData = [...rawDataJn, ...rawDataMg, ...rawDataGrid];
 
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
+            if (combinedRawData.length === 0) {
+                console.warn("Não há dados detalhados (Jn, Mg, Grid) carregados INICIALMENTE para extrair países.");
+                countrySelect.innerHTML = '<option value="">-- Sem Dados --</option>';
+                return;
+            }
+            console.log(`Total de ${combinedRawData.length} linhas de dados detalhados (raw) encontradas.`);
 
-                    viewSections.forEach(section => section.classList.toggle('active', section.id === targetId));
 
-                    if (mainTitle) {
-                        mainTitle.textContent = button.dataset.tooltip || "Dashboard";
-                    }
-
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        setTimeout(() => {
-                            targetSection.querySelectorAll('canvas').forEach(canvas => {
-                                const chartInstance = charts[canvas.id];
-                                if (chartInstance) chartInstance.resize();
-                            });
-                        }, 10);
-                    }
-                });
+            // Usa getOperationKeyFromAccountName para extrair chaves de operação
+            const operationKeys = new Set();
+            combinedRawData.forEach(row => {
+                 // Adiciona um log para cada nome de conta sendo processado
+                 // console.log(`Processando conta: ${row.accountName}`);
+                 const opKey = getOperationKeyFromAccountName(row.accountName);
+                 if (opKey && !opKey.startsWith('Desconhecida') && !opKey.startsWith('Outros')) {
+                      operationKeys.add(opKey);
+                 }
             });
 
-            // Controle do seletor de métrica
-            document.querySelectorAll('#metric-toggle .toggle-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    if (this.classList.contains('active')) return;
-                    document.querySelectorAll('#metric-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    updateProportionCharts();
-                });
-            });
+             console.log("Chaves de Operação únicas encontradas:", [...operationKeys]);
 
-            // --- ADIÇÃO PARA O PLANEJADOR DE METAS (DA RESPOSTA ANTERIOR) ---
-            const plannerButton = document.getElementById('plannerCalculateBtn');
-            if (plannerButton) {
-                plannerButton.addEventListener('click', runGoalPlanner);
+
+             // Extrai países (segunda parte da chave, com 2 letras) das chaves das operações
+             const countries = new Set();
+             operationKeys.forEach(opKey => {
+                 const parts = opKey.split(' ');
+                 // Verifica se a segunda parte existe, tem 2 letras e é Maiúscula
+                 if (parts.length >= 2 && parts[1].length === 2 && /^[A-Z]{2}$/.test(parts[1])) {
+                     console.log(`País encontrado: ${parts[1]} (da chave: ${opKey})`); // Log país encontrado
+                     countries.add(parts[1]);
+                 } else {
+                      console.log(`Chave de operação "${opKey}" não tem formato de país esperado (ex: JN US CC).`);
+                 }
+             });
+
+             console.log("Países ÚNICOS extraídos:", [...countries]);
+
+            // Popula o select
+            countrySelect.innerHTML = '<option value="">-- País --</option>'; // Limpa e adiciona placeholder
+            if (countries.size > 0) {
+                 [...countries].sort().forEach(countryCode => {
+                     countrySelect.innerHTML += `<option value="${countryCode}">${countryCode}</option>`;
+                 });
+                 console.log("Dropdown de países populado com sucesso.");
+            } else {
+                 console.warn("Nenhum código de país válido (ex: US, BR, DE) foi encontrado nas chaves de operação extraídas.");
+                 countrySelect.innerHTML = '<option value="">-- Nenhum País --</option>';
             }
-            // --- FIM DA ADIÇÃO ---
         }
         function processGridData() { // Chamada se necessário no futuro
             populateGridAccountFilter();
@@ -3176,6 +4104,7 @@
             populateManagerFilter(rawData); // Popula o seletor de gestores
             populateAdopsFilter(rawData); // <== ADICIONE ESTA LINHA
             populateCoordinationFilter(rawData);
+            populateComparisonFilters();
             filterAndRenderAll();
         }
 
@@ -3213,12 +4142,15 @@
 
             filteredDataJn = filterDetailData(rawDataJn);
             filteredDataMg = filterDetailData(rawDataMg);
-            filteredDataGrid = filterDetailData(rawDataGrid); // <-- FILTRO APLICADO
+            filteredDataGrid = filterDetailData(rawDataGrid);
 
-            updateDashboard(); // Renderiza partes gerais
-            renderJnAnalysisView(); // Renderiza view JN
-            renderMgAnalysisView(); // Renderiza view MG
-            renderGridAnalysisView(); // <-- CHAMADA ADICIONADA
+            updateDashboard(); // Renderiza partes gerais que usam filteredData
+            renderJnAnalysisView(); // Renderiza view JN (usa filteredDataJn)
+            renderMgAnalysisView(); // Renderiza view MG (usa filteredDataMg)
+            renderGridAnalysisView(); // Renderiza view GRID (usa filteredDataGrid)
+            renderAggregatedFunnel(); // <-- ADICIONADO (usa filteredDataJn, Mg, Grid)
+            // Certifique-se que renderOperationalView usa filteredData (já deve estar correto)
+            renderOperationalView();
         }
 
         function clearFilters() {
@@ -5402,68 +6334,103 @@
         }
         // --- FUNÇÕES DE CONTROLE DE UI (ATUALIZADAS) ---
         function setupEventListeners() {
-            // Controle da Sidebar
-            const sidebarToggleBtn = document.getElementById('sidebar-toggle');
-            if (sidebarToggleBtn) {
-                sidebarToggleBtn.addEventListener('click', () => {
-                    document.body.classList.toggle('sidebar-minimized');
-                    localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-minimized') ? 'minimized' : 'expanded');
-                    setTimeout(() => Object.values(charts).forEach(chart => chart && chart.resize()), 350);
-                });
-            }
-            if (localStorage.getItem('sidebarState') === 'minimized') {
-                document.body.classList.add('sidebar-minimized');
-            }
+          // --- Controle da Sidebar (Minimizar/Expandir) ---
+          const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+          if (sidebarToggleBtn) {
+              sidebarToggleBtn.addEventListener('click', () => {
+                  document.body.classList.toggle('sidebar-minimized');
+                  localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-minimized') ? 'minimized' : 'expanded');
+                  setTimeout(() => {
+                      Object.values(charts).forEach(chart => {
+                          if (chart && typeof chart.resize === 'function') {
+                              try { chart.resize(); } catch (e) { console.warn("Erro resize:", chart.canvas.id, e); }
+                          }
+                      });
+                  }, 400);
+              });
+          }
+          if (localStorage.getItem('sidebarState') === 'minimized') {
+              document.body.classList.add('sidebar-minimized');
+          }
 
-            // Controle da Navegação por Abas (substitui a antiga setupNavbar)
-            const navButtons = document.querySelectorAll('.sidebar-nav .nav-btn');
-            const viewSections = document.querySelectorAll('.view-section');
-            const mainTitle = document.getElementById('main-title');
+          // --- Controle da Navegação Principal e Itens de Menu Group ---
+          const sidebarMenu = document.querySelector('.sidebar-menu');
+          const viewSections = document.querySelectorAll('.view-section');
+          const mainTitle = document.getElementById('main-title');
+          const allNavButtons = document.querySelectorAll('.sidebar-nav .nav-btn');
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetId = button.dataset.target;
-                    if (!targetId) return;
+          if (!sidebarMenu) return;
 
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
+          sidebarMenu.addEventListener('click', (event) => {
+              const button = event.target.closest('.nav-btn');
+              if (!button) return;
 
-                    viewSections.forEach(section => section.classList.toggle('active', section.id === targetId));
+              const targetId = button.dataset.target;
+              const parentViewId = button.dataset.parentView || targetId;
+              const tooltip = button.dataset.tooltip;
 
-                    if (mainTitle) {
-                        mainTitle.textContent = button.dataset.tooltip || "Dashboard";
-                    }
+              if (!targetId || !parentViewId) return;
 
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        setTimeout(() => {
-                            targetSection.querySelectorAll('canvas').forEach(canvas => {
-                                const chartInstance = charts[canvas.id];
-                                if (chartInstance) chartInstance.resize();
-                            });
-                        }, 10);
-                    }
-                });
-            });
+              // --- 1. Atualiza Botões ---
+              allNavButtons.forEach(btn => btn.classList.remove('active'));
+              button.classList.add('active');
+              if (button.dataset.parentView) {
+                  const parentButton = sidebarMenu.querySelector(`.nav-btn[data-target="${parentViewId}"]`);
+                  if (parentButton) parentButton.classList.add('active');
+              }
 
-            // Controle do seletor de métrica
-            document.querySelectorAll('#metric-toggle .toggle-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    if (this.classList.contains('active')) return;
-                    document.querySelectorAll('#metric-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    updateProportionCharts();
-                });
-            });
+              // --- 2. Atualiza Seções Principais e Sub-views ---
+              viewSections.forEach(section => {
+                  const shouldSectionBeActive = section.id === parentViewId;
+                  section.classList.toggle('active', shouldSectionBeActive);
 
-            // --- INÍCIO DA ADIÇÃO ---
-            // Conecta o botão do Planejador à sua função
-            const plannerButton = document.getElementById('plannerCalculateBtn');
-            if (plannerButton) {
-                plannerButton.addEventListener('click', runGoalPlanner);
-            }
-            // --- FIM DA ADIÇÃO ---
-        }
+                  if (shouldSectionBeActive) {
+                      const subViews = section.querySelectorAll('.operacoes-sub-view');
+                      if (subViews.length > 0) {
+                          subViews.forEach(subView => {
+                              const shouldSubViewBeActive = subView.id === targetId;
+                              subView.classList.toggle('active', shouldSubViewBeActive);
+                              // REMOVIDA A CHAMADA A populateComparisonFilters DAQUI
+                          });
+                      }
+                  } else {
+                       section.querySelectorAll('.operacoes-sub-view').forEach(sv => sv.classList.remove('active'));
+                  }
+              });
+
+              // --- 3. Atualiza Título ---
+              if (mainTitle && tooltip) {
+                  mainTitle.textContent = tooltip;
+              }
+
+              // --- 4. Redimensiona Gráficos ---
+              setTimeout(() => {
+                  const activeMainView = document.querySelector('.view-section.active');
+                  if (activeMainView) {
+                      const activeSubView = activeMainView.querySelector('.operacoes-sub-view.active');
+                      const containerToScan = activeSubView || activeMainView;
+                      containerToScan.querySelectorAll('canvas').forEach(canvas => {
+                          const chartInstance = charts[canvas.id];
+                          if (chartInstance && typeof chartInstance.resize === 'function') {
+                               try { chartInstance.resize(); } catch (e) { console.warn("Erro resize:", canvas.id, e); }
+                          }
+                      });
+                  }
+              }, 50);
+          });
+
+          // --- Mantém as outras lógicas ---
+          document.querySelectorAll('#metric-toggle .toggle-btn').forEach(btn => { /* ...código mantido... */ });
+          const plannerButton = document.getElementById('plannerCalculateBtn');
+          if (plannerButton) { plannerButton.addEventListener('click', runGoalPlanner); }
+
+          // Inicializa o estado visual
+          const initialActiveButton = sidebarMenu.querySelector('.nav-btn.active');
+          if (initialActiveButton) {
+              // Sem timeout aqui, o clique deve ocorrer após listeners estarem prontos
+              initialActiveButton.click();
+          }
+      }
         /// --- PONTO DE ENTRADA DA APLICAÇÃO ---
         document.addEventListener('DOMContentLoaded', async () => {
             // Chama a função e ESPERA ela terminar, guardando os dados retornados
